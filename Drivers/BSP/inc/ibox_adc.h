@@ -7,44 +7,34 @@
 *描述：iBox iot adc驱动。
 * ************************************************************************************************
 */
+#ifndef __IBOX_ADC_H
+#define __IBOX_ADC_H
+
 #include "stdint.h"
 #include "stm32f10x.h"
 
-
-
-#ifndef _adc_config_h
-#define _adc_config_h
+#ifdef __cplusplus
+    extern "C" {
+#endif
 
 #define ADC1_DR_Address             ((u32)0x40012400+0x4c)
 
 #define AD_TIMES                    10
-#define TOTAL_AD_CHANNEL            6
+#define TOTAL_AD_CHANNEL            3
 
-#define BAT2_VOL_INDEX              0
-#define BAT2_NTC_INDEX              1
-#define MOTOR_CURRENT_INDEX         2
-#define BAT1_NTC_INDEX              3
-#define BAT1_VOL_INDEX              4
-#define CPU_TEMP_INDEX              5
+#define ADC1_INDEX                  0
+#define ADC2_INDEX                  1
+#define CPU_TEMP_INDEX              2
 
-/**
-  * @brief  禁止ADC模块.
-  * @param  None
-  * @retval None
-  */
+
 extern void adc_disable(void);
-
-/**
-  * @brief  ADC模块初始化.
-  * @param  None
-  * @retval None
-  */
 extern void adc_init(void);
-
 extern uint8_t get_cpu_temperature(void);
-extern uint8_t get_battery_temperature(uint8_t battery_No);
-extern uint8_t get_battery_voltage(uint8_t battery_No);
-extern uint32_t get_motor_current(void);
+extern uint16_t get_adc_voltage(uint8_t adc_channel);
 
 
-#endif
+#ifdef __cplusplus
+}
+#endif /*__cplusplus*/
+
+#endif /*__IBOX_ADC_H*/

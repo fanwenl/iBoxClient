@@ -22,6 +22,8 @@ int main (void)
     led_init(LED_SYS);
     uart_init(UART1_DEBUG, 115200);
     
+    adc_init();
+    
     printf("system is runing....\r\n");
     
     while(1)
@@ -31,7 +33,7 @@ int main (void)
         led_toggle(LED_SYS);
         sys_delay_ms(500);
         
-        printf("hello iBox....\r\n");
+        printf("[CPU:%d][ADC1:%d][ADC2:%d]\r\n",get_cpu_temperature(),get_adc_voltage(0),get_adc_voltage(1));
     }
     
 }

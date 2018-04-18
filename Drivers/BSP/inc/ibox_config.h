@@ -21,6 +21,9 @@
 #include "ibox_led.h"
 #include "ibox_sys.h"
 #include "ibox_uart.h"
+#include "ibox_adc.h"
+#include "ibox_dac.h"
+
 
 
 #ifdef __cplusplus
