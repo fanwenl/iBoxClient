@@ -10,6 +10,7 @@
 #include "ibox_sys.h"
 
 static void delay_ms(uint32_t delay);
+static void delay_us(uint32_t delay);
 
 void sys_clk_init(void)
 {
@@ -109,6 +110,21 @@ static void delay_ms(uint32_t delay)
    {
       i=12000;
       while(i--) ;    
+   }   
+    
+}
+void sys_delay_us(uint32_t delay)
+{
+#ifdef USING_RTOS
+    
+#else
+    delay_us(delay);
+#endif    
+}
+static void delay_us(uint32_t delay)
+{  
+   while(delay--)
+   {  
    }   
     
 }

@@ -23,8 +23,16 @@ int main (void)
     uart_init(UART1_DEBUG, 115200);
     
     adc_init();
+    dac_init();
     
     printf("system is runing....\r\n");
+
+    dac_set_vol(2.0);
+    
+    uint8_t buf[] = "20180419225500";
+
+    RTC_alarm_init();
+    RTC_StrSetTime(buf);
     
     while(1)
     {
@@ -34,6 +42,7 @@ int main (void)
         sys_delay_ms(500);
         
         printf("[CPU:%d][ADC1:%d][ADC2:%d]\r\n",get_cpu_temperature(),get_adc_voltage(0),get_adc_voltage(1));
+        printf("[RTC:%d]\r\n",RTC_GetCounter());
     }
     
 }

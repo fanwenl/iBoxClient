@@ -23,6 +23,7 @@
 #include "ibox_uart.h"
 #include "ibox_adc.h"
 #include "ibox_dac.h"
+#include "ibox_rtc.h"
 
 
 
