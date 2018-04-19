@@ -40,7 +40,7 @@ void led_on(led_typedef led);
 void led_off(led_typedef led);
 void led_toggle(led_typedef led);
 #ifdef __cplusplus
-}
+    }
 #endif /*__cplusplus*/
 
 #endif /*__IBOX_LED_H*/
