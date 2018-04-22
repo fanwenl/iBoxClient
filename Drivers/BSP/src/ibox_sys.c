@@ -9,6 +9,11 @@
 */
 #include "ibox_sys.h"
 
+/*degug信息输出控制*/
+uint8_t ibox_debug_all = 0;
+uint8_t ibox_sys_debug = 1;
+uint8_t ibox_wifi_debug = 1;
+
 static void delay_ms(uint32_t delay);
 static void delay_us(uint32_t delay);
 
