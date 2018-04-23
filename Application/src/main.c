@@ -1,6 +1,6 @@
 #include "ibox_config.h"
 
-int main(void)
+int main (void)
 {
     RCC_ClocksTypeDef RCC_ClockFreq;
     /*系统时钟初始化*/
@@ -13,39 +13,36 @@ int main(void)
     /* Enable Clock Security System(CSS): this will generate an NMI exception
      when HSE clock fails */
     RCC_ClockSecuritySystemCmd(ENABLE);
-
+     
     /* NVIC configuration ------------------------------------------------------*/
     sys_nvic_init();
-
+    
     led_init(LED_LORA);
     led_init(LED_NET);
     led_init(LED_SYS);
     uart_init(UART1_DEBUG, 115200);
-
-
+    
     adc_init();
     dac_init();
-
     
+    printf("system is runing....\r\n");
 
     dac_set_vol(2.0);
-
+    
     uint8_t buf[] = "20180419225500";
 
     RTC_alarm_init();
     RTC_StrSetTime(buf);
-    ibox_printf(1, ("system is runing....\r\n"));
-    uart_init(UART3_GPRS_WIFI, 115200);
-    wifi_init();
-
-    while (1) {
+    
+    while(1)
+    {
         led_toggle(LED_LORA);
         led_toggle(LED_NET);
         led_toggle(LED_SYS);
         sys_delay_ms(500);
-
-        ibox_printf(1, ("[CPU:%d][ADC1:%d][ADC2:%d]\r\n", get_cpu_temperature(), get_adc_voltage(0),\
-                        get_adc_voltage(1)));
-        ibox_printf(1, ("[RTC:%d]\r\n", RTC_GetCounter()));
+        
+        printf("[CPU:%d][ADC1:%d][ADC2:%d]\r\n",get_cpu_temperature(),get_adc_voltage(0),get_adc_voltage(1));
+        printf("[RTC:%d]\r\n",RTC_GetCounter());
     }
+    
 }

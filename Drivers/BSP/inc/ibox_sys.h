@@ -16,23 +16,9 @@
 
 #include "stm32f10x.h"
 #include "stdint.h"
-#include "stdio.h"
 
-/*设置打印信息使用的函数*/
-#ifdef USING_RTOS
-#define ibox_printf 
-#else
-#define ibox_printf(flag, message) \
-do{ \
-    if(flag) \
-        printf message; \
-}while(0)
-#endif
- 
-extern uint8_t ibox_debug_all;
-extern uint8_t ibox_sys_debug;
-extern uint8_t ibox_wifi_debug;
-       
+
+        
 void sys_clk_init(void);
 void sys_nvic_init(void);
 void sys_delay_ms(uint32_t delay);        

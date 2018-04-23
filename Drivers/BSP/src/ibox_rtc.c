@@ -45,11 +45,11 @@ void RTC_alarm_init(void)
     }
 
     if (time == 5000) {
-        ibox_printf(1, ("RCC_FLAG_LSERDY error\r\n"));
+        printf("RCC_FLAG_LSERDY error\r\n");
         /* Enable the LSI OSC */
         RCC_LSICmd(ENABLE);
         while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET) {
-            ibox_printf(1, ("RCC_FLAG_LSIRDY error\r\n"));
+            printf("RCC_FLAG_LSIRDY error\r\n");
         }
         RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
             /* Enable the RTC Clock */
