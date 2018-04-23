@@ -10,8 +10,8 @@
       <TargetName>iBoxClient</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pCCUsed>6090000::V6.9::.\ARMCLANG</pCCUsed>
-      <uAC6>1</uAC6>
+      <pCCUsed>5060750::V5.06 update 6 (build 750)::ARMCC</pCCUsed>
+      <uAC6>0</uAC6>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F103ZE</Device>
@@ -320,7 +320,7 @@
             <PlainCh>0</PlainCh>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
-            <wLevel>3</wLevel>
+            <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
@@ -335,7 +335,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER,HSE_VALUE=12000000</Define>
+              <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER,HSE_VALUE=12000000,USE_WIFI</Define>
               <Undefine></Undefine>
               <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\STM32F10x_StdPeriph_Driver\inc</IncludePath>
             </VariousControls>
@@ -455,6 +455,11 @@
               <FileName>ibox_rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\src\ibox_rtc.c</FilePath>
+            </File>
+            <File>
+              <FileName>ibox_key.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\src\ibox_key.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -67,7 +67,8 @@
                 "__ARMCC_VERSION",
                 "STM32F10X_HD",
                 "USE_STDPERIPH_DRIVER",
-                "HSE_VALUE=12000000"
+                "HSE_VALUE=12000000",
+                "USE_WIFI"
 
                 
             ],

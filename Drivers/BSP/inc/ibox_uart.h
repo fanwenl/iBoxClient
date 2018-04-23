@@ -16,11 +16,12 @@
 
 #include "stm32f10x.h"
 #include "stdint.h"
+#include "ibox_sys.h"
 
 typedef enum {
     UART1_DEBUG      = 0,         /*uart1*/
-    UART4_485        = 1,           /*uart4*/
-    UART3_GPRS_WIFI  = 2,     /*uart3*/
+    UART3_GPRS_WIFI  = 1,         /*uart3*/
+    UART4_485        = 2,         /*uart4*/
 }uart_enum;
 
 #define UART_485                  UART4
@@ -35,14 +36,17 @@ typedef enum {
 #define UART_DEBUG_PIN2           GPIO_Pin_9
 #define UART_DEBUG_PORT           GPIOA
 
-#define UART_GPRS_WIFI_PIN1       GPIO_Pin_11
-#define UART_GPRS_WIFI_PIN2       GPIO_Pin_10
+#define UART_GPRS_WIFI_PIN1       GPIO_Pin_11       /*RX*/
+#define UART_GPRS_WIFI_PIN2       GPIO_Pin_10       /*Tx*/
 #define UART_GPRS_WIFI_PORT       GPIOB
 
-#define UART_485_RCC_CLK          RCC_APB1Periph_UART4
-#define UART_DEBUG_RCC_CLK        RCC_APB2Periph_USART1
-#define UART_GPRS_WIFI_RCC_CLK    RCC_APB1Periph_USART3
+#define UART_485_UART_RCC_CLK          RCC_APB1Periph_UART4
+#define UART_DEBUG_UART_RCC_CLK        RCC_APB2Periph_USART1
+#define UART_GPRS_WIFI_UART_RCC_CLK    RCC_APB1Periph_USART3
 
+#define UART_485_GPIO_RCC_CLK          RCC_APB2Periph_GPIOC
+#define UART_DEBUG_GPIO_RCC_CLK        RCC_APB2Periph_GPIOA
+#define UART_GPRS_WIFI_GPIO_RCC_CLK    RCC_APB2Periph_GPIOB
 
 void uart_init(uart_enum uart_num, uint32_t baud_rate);
 

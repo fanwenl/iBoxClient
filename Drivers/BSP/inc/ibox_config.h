@@ -24,6 +24,20 @@
 #include "ibox_adc.h"
 #include "ibox_dac.h"
 #include "ibox_rtc.h"
+#ifdef USE_WIFI
+#include "ibox_wifi.h"
+#endif
+#include "ibox_wdog.h"
+
+/*服务器信息配置*/
+#define SERVER_IP   "192.168.0.0"
+#define SERVER_PORT "10000"
+#define SERVER_DNS  "fanwenl.top"
+
+#ifdef USE_WIFI
+#define WIFI_SSID   "ziroom2" 
+#define WIFI_Password "4001001111"
+#endif
 
 
 

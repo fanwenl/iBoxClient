@@ -28,6 +28,7 @@ void led_init(led_typedef led)
 }
 void led_on(led_typedef led) { GPIO_ResetBits(led_port[led], led_pin[led]); }
 void led_off(led_typedef led) { GPIO_SetBits(led_port[led], led_pin[led]); }
+
 void led_toggle(led_typedef led)
 {
     if (GPIO_ReadOutputDataBit(led_port[led], led_pin[led]) == 1)
