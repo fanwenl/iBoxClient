@@ -133,3 +133,12 @@ static void delay_us(uint32_t delay)
    }   
     
 }
+uint32_t get_sys_time(void)
+{
+#ifdef USING_RTOS
+    /*添加实时系统的systick，单位是s*/
+    return os_tick();
+#else
+    return RTC_GetCounter(); 
+#endif
+}

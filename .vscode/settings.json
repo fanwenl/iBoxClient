@@ -2,6 +2,7 @@
     "C_Cpp.errorSquiggles": "Disabled",
     "C_Cpp.intelliSenseEngineFallback": "Disabled",
     "files.associations": {
-        "stm32f10x_rtc.h": "c"
+        "stm32f10x_rtc.h": "c",
+        "ibox_wifi.h": "c"
     }
 }

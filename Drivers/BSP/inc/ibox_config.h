@@ -28,6 +28,7 @@
 #include "ibox_wifi.h"
 #endif
 #include "ibox_wdog.h"
+#include "ibox_485.h"
 
 /*服务器信息配置*/
 #define SERVER_IP   "192.168.0.0"
