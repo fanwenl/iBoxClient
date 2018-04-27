@@ -12,9 +12,15 @@
 #include "ibox_sys.h"
 #include "ibox_uart.h"
 
-static uint8_t uart3_rx_buf[MAX485_UART4_RX_SIZE];
-uint16_t uart3_rx_wr_index = 0;
-uint16_t uart3_rx_lines = 0;
+static uint8_t uart3_rx_buf[UART3_RX_SIZE];
+uint16_t uart3_rx_wr_index = 0; // uart3接收buf位置标记
+uint16_t uart3_rx_lines    = 0; // uart3接收到的行数计数器
+uint16_t uart3_rx_count    = 0; // uart3接收到的字符串计数器
+uint16_t uart3_rx_re_index = 0; // uart3读取位置标记
+
+uint8_t wifi_error_count      = 0; // wifi状态机错误计数器
+uint8_t wifi_link_error_count = 0; // wifi连接错误计数器
+uint32_t wifi_timeout         = 0; // wifi连接超时
 
 ESP8266_STATUS_ENUM esp8266_status = ESP8266_STATUS_INIT;
 
@@ -33,32 +39,90 @@ static void wifi_ctrl_pin_config(void)
     GPIO_Init(WIFI_CH_PD_PORT, &GPIO_InitStruct);
 }
 /*ESP8266联网状态机*/
+/*不采用透传方式，断网之后好不判断*/
 static void esp8266_at_fsm(void)
 {
+    static uint8_t wifi_rx_temp[UART3_RX_SIZE];
+    uint16_t wifi_rx_len = 0;
+
+    memset(wifi_rx_temp, 0, UART3_RX_SIZE);
+    /*获取一帧数据*/
+    wifi_rx_len = get_line_from_uart3(wifi_rx_temp);
+    if (wifi_rx_len) {
+        ibox_printf(ibox_wifi_debug, ("wifi rec:%s\r\n", wifi_rx_temp));
+    }
+
     switch (esp8266_status) {
     case ESP8266_STATUS_INIT: //状态机及esp8266初始化
+        wifi_error_count = 0;
+        esp8266_status = ESP8266_STATUS_CHECK;
         break;
     case ESP8266_STATUS_CHECK: //检测模块
+        uart3_send_data("AT\r\n");
+        esp8266_status = ESP8266_STATUS_WAIT_CHECK;
+        break;
+    case ESP8266_STATUS_WAIT_CHECK:
+        if (strstr(wifi_rx_temp, "OK") != NULL) {
+            esp8266_status = ESP8266_STATUS_SET_MODE;
+            wifi_error_count = 0;
+            wifi_timeout = get_sys_time();
+        }
+        else{
+            if(wifi_timeout - get_sys_time() > 2)
+            {
+                wifi_timeout = get_sys_time();
+                wifi_error_count++;
+                if(wifi_error_count > 5) //超过错误计数值
+                {
+
+                }
+                else
+                {
+                    uart3_send_data("AT\r\n");
+                }
+
+            }
+        }
+        esp8266_status = ESP8266_STATUS_WAIT_CHECK;
         break;
     case ESP8266_STATUS_SET_MODE: //设置模式
+        uart3_send_data("AT+CWMODE=3\r\n");
+        esp8266_status = ESP8266_STATUS_WAIT_CHECK;
+        break;
+    case ESP8266_STATUS_WAIT_SET_MODE:
+        if (strstr(wifi_rx_temp, "OK") != NULL) {
+            esp8266_status = ESP8266_STATUS_RESET;
+        }
+        esp8266_status = ESP8266_STATUS_WAIT_SET_MODE;
         break;
     case ESP8266_STATUS_RESET: //重启模块
+        uart3_send_data("AT+RST\r\n");
+        esp8266_status = ESP8266_STATUS_WAIT_CHECK;
+        break;
+    case ESP8266_STATUS_WAIT_RESET:
         break;
     case ESP8266_STATUS_LINK: //连接wifi
+        uart3_send_data("AT+CWJAP=\"ssid\",\"password\"\r\n");
+        break;
+    case ESP8266_STATUS_WAIT_LINK:
         break;
     case ESP8266_STATUS_GET_IP: //查询IP
+        uart3_send_data("AT+CIFSR\r\n");
+        break;
+    case ESP8266_STATUS_GET_MAC:
         break;
     case ESP8266_STATUS_LINK_SERVER: //连接服务器
+        uart3_send_data("AT+CIPSTART=\"TCP\",\"192\",\"80000\"\r\n");
         break;
-    case ESP8266_STATUS_SEND_AUTHEN: //发送认证信息
+    case ESP8266_STATUS_WAIT_LINK_SERVER:
         break;
-    case ESP8266_STATUS_CHECK_AUTHEN: //收到认证信息
+    case ESP8266_STATUS_SEND_AUTHEN: //发送认证信息(MAC地址)
+        uart3_send_data("AT+CIPSEND=6\r\n");
+        uart3_send_data("AT+CIPSEND=4\r\n"); //发送MAC地址
         break;
-    case ESP8266_STATUS_SET_CIPMODE: //设置透传模式
+    case ESP8266_STATUS_WAIT_SEND_AUTHEN：
         break;
-    case ESP8266_STATUS_SETART_CIP: //开始透传
-        break;
-    case ESP8266_STATUS_END_CIP: //结束透传
+    case ESP8266_STATUS_CHECK_AUTHEN: //收到认证信息(RTC时间等其他的信息)
         break;
     default:
         break;
@@ -77,8 +141,6 @@ void wifi_init(void)
     sys_delay_ms(1000);
     WIFI_RESET_H;
     WIFI_CH_PD_H;
-
-    uart3_send_str("AT\r\n");
 }
 void uart3_send_data(uint8_t *data)
 {
@@ -103,9 +165,12 @@ void USART3_IRQHandler(void)
         if (data == 0x0d) //回车符
             uart3_rx_lines++;
         uart3_rx_buf[uart3_rx_wr_index] = data;
-        if (++uart3_rx_wr_index == UART3_RX_SIZE) {
+        if (++uart3_rx_wr_index == UART3_RX_SIZE)
             uart3_rx_wr_index = 0;
-            uart3_rx_lines = 0;
+        if (++uart3_rx_count == UART3_RX_SIZE) {
+            uart3_rx_wr_index = 0;
+            uart3_rx_lines    = 0;
+            uart3_rx_count    = 0;
             memset(uart3_rx_buf, 0, UART3_RX_SIZE);
             ibox_printf(ibox_wifi_debug, ("uart3 USART_FLAG_ORE is set\r\n"));
         }
@@ -129,18 +194,17 @@ uint16_t get_line_from_uart3(uint8_t *buf)
     }
     data_len = 0;
     while (1) {
-        if (rx_counter2) //于4月25日修改
-        {
-            data = GET_CHAR_FROM_GSM();
+        if (uart3_rx_count) {
+            data = get_char_form_uart3();
         } else {
-            recvlines = 0;
-            *buf      = NULL;
+            uart3_rx_lines = 0;
+            *buf           = NULL;
             return 0;
         }
-        if (data == 0x0a)
-            continue; //收到0x0A直接丢弃
-        if (data == 0x0d) {
-            recvlines--;
+        if (data == 0x0a) //换行直接丢掉
+            continue;
+        if (data == 0x0d) { //回车，收到一帧
+            uart3_rx_lines--;
             *buf = '\0';
             return data_len;
         }
@@ -150,16 +214,17 @@ uint16_t get_line_from_uart3(uint8_t *buf)
     }
 }
 
-uint8_t get_char_form_uart3(void){
+uint8_t get_char_form_uart3(void)
+{
     uint8_t data;
-    while (rx_counter2==0){
-      EBIKE_DEBUG_LOG(ebike_debug_gprs,("getchar2 rx_counter2 is 0\r\n"));
+    while (uart3_rx_count == 0) {
+        ibox_printf(ibox_wifi_debug, ("uart3 rx count is 0\r\n"));
     }
-    data = rx_buffer2[rx_rd_index2];
-//    if (bike_state.debug_mode) putchar4(data);
-    if (++rx_rd_index2 == RX_BUFFER_SIZE2) rx_rd_index2=0;
+    data = uart3_rx_buf[uart3_rx_re_index];
+    if (++uart3_rx_re_index == UART3_RX_SIZE)
+        uart3_rx_re_index = 0;
     USART_ITConfig(USART2, USART_IT_RXNE, DISABLE);
-    --rx_counter2;
+    --uart3_rx_count;
     USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
     return data;
 }
