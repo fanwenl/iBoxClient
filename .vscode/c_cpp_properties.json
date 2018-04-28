@@ -57,8 +57,7 @@
                 "${workspaceRoot}/Drivers/CMSIS/CM3/DeviceSupport/ST/STM32F10x",
                 "${workspaceRoot}/Drivers/CMSIS/CM3/CoreSupport",
                 "${workspaceRoot}/Drivers/BSP/inc",
-                "${workspaceRoot}/Middlewares/LwIP/src/include",
-                "${workspaceRoot}/Middlewares/LwIP/system",
+                "${workspaceRoot}/Middlewares/Eth",
                 "${workspaceRoot}/Middlewares/LwIP/test/unit",
                 "${workspaceFolder}/Application/inc"
             ],

@@ -50,6 +50,8 @@ static void esp8266_at_fsm(void)
     wifi_rx_len = get_line_from_uart3(wifi_rx_temp);
     if (wifi_rx_len) {
         ibox_printf(ibox_wifi_debug, ("wifi rec:%s\r\n", wifi_rx_temp));
+    } else {
+        return;
     }
 
     switch (esp8266_status) {
