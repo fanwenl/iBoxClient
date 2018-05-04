@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER,HSE_VALUE=12000000,USE_WIFI</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\STM32F10x_StdPeriph_Driver\inc</IncludePath>
+              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -460,6 +460,11 @@
               <FileName>ibox_key.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\src\ibox_key.c</FilePath>
+            </File>
+            <File>
+              <FileName>w5500.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\src\w5500.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -616,6 +621,21 @@
               <FileName>iBoxClient.map</FileName>
               <FileType>5</FileType>
               <FilePath>.\Listings\iBoxClient.map</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Ethernet</GroupName>
+          <Files>
+            <File>
+              <FileName>socket.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\socket.c</FilePath>
+            </File>
+            <File>
+              <FileName>wizchip_conf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\wizchip_conf.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -11,6 +11,7 @@
 #include "ibox_wifi.h"
 #include "ibox_sys.h"
 #include "ibox_uart.h"
+#include "string.h"
 
 static uint8_t uart3_rx_buf[UART3_RX_SIZE];
 uint16_t uart3_rx_wr_index = 0; // uart3接收buf位置标记
@@ -64,7 +65,7 @@ static void esp8266_at_fsm(void)
         esp8266_status = ESP8266_STATUS_WAIT_CHECK;
         break;
     case ESP8266_STATUS_WAIT_CHECK:
-        if (strstr(wifi_rx_temp, "OK") != NULL) {
+        if (strstr((char *)wifi_rx_temp, "OK") != NULL) {
             esp8266_status = ESP8266_STATUS_SET_MODE;
             wifi_error_count = 0;
             wifi_timeout = get_sys_time();
@@ -92,7 +93,7 @@ static void esp8266_at_fsm(void)
         esp8266_status = ESP8266_STATUS_WAIT_CHECK;
         break;
     case ESP8266_STATUS_WAIT_SET_MODE:
-        if (strstr(wifi_rx_temp, "OK") != NULL) {
+        if (strstr((char *)wifi_rx_temp, "OK") != NULL) {
             esp8266_status = ESP8266_STATUS_RESET;
         }
         esp8266_status = ESP8266_STATUS_WAIT_SET_MODE;
@@ -122,7 +123,7 @@ static void esp8266_at_fsm(void)
         uart3_send_data("AT+CIPSEND=6\r\n");
         uart3_send_data("AT+CIPSEND=4\r\n"); //发送MAC地址
         break;
-    case ESP8266_STATUS_WAIT_SEND_AUTHEN：
+    case ESP8266_STATUS_WAIT_SEND_AUTHEN:
         break;
     case ESP8266_STATUS_CHECK_AUTHEN: //收到认证信息(RTC时间等其他的信息)
         break;
@@ -144,12 +145,12 @@ void wifi_init(void)
     WIFI_RESET_H;
     WIFI_CH_PD_H;
 }
-void uart3_send_data(uint8_t *data)
+void uart3_send_data(const char *data)
 {
     uint32_t timeout = 0;
 
     while (*data) {
-        tiemout = get_sys_time();
+        timeout = get_sys_time();
         USART_SendData(USART3, (uint8_t) *data++);
         while (USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET) {
             if (get_sys_time() - timeout > 1)

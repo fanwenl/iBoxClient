@@ -61,7 +61,9 @@ typedef enum {
 #define UART3_RX_SIZE 1024
 
 void wifi_init(void);
-void uart3_send_str(uint8_t *data);
+void uart3_send_data(const char *data);
+uint8_t get_char_form_uart3(void);
+uint16_t get_line_from_uart3(uint8_t *buf);
 
 #ifdef __cplusplus
 }
