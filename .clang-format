@@ -47,7 +47,7 @@ PointerAlignment: Right
 MaxEmptyLinesToKeep: 1
 
 #每行字符的长度
-ColumnLimit: 100
+ColumnLimit: 110
 
 #括号后加空格
 SpaceAfterCStyleCast: true

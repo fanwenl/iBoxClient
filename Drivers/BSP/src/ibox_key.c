@@ -53,7 +53,7 @@ void EXTI15_10_IRQHandler(void)
 {
     if (EXTI_GetITStatus(EXTI_Line15) != RESET) {
 
-                                             //关闭中断防止多次触发
+        //关闭中断防止多次触发?
         sys_delay_ms(10);
         if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15) == 0)
         {

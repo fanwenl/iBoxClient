@@ -9,6 +9,7 @@
 */
 #include "ibox_Ethernet.h"
 #include "ibox_sys.h"
+#include "ibox_spi.h"
 
 static void w5500_reset_pin_config(void)
 {
@@ -67,6 +68,7 @@ void w5500_init(void)
 {
     w5500_reset_pin_config();
     w5500_inth_pin_config();
+    spi_init(W5500);
 }
 
 void EXTI9_5_IRQHandler(void)

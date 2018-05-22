@@ -2,6 +2,8 @@
 
 int main(void)
 {
+	    uint8_t buf[] = "20180419225500";
+	
     RCC_ClocksTypeDef RCC_ClockFreq;
     /*系统时钟初始化*/
     sys_clk_init();
@@ -31,7 +33,7 @@ int main(void)
 
     dac_set_vol(2.0);
 
-    uint8_t buf[] = "20180419225500";
+
 
     RTC_alarm_init();
     RTC_StrSetTime(buf);

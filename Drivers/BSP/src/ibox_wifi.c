@@ -19,8 +19,9 @@ uint16_t uart3_rx_lines    = 0; // uart3接收到的行数计数器
 uint16_t uart3_rx_count    = 0; // uart3接收到的字符串计数器
 uint16_t uart3_rx_re_index = 0; // uart3读取位置标记
 
-uint8_t wifi_error_count      = 0; // wifi状态机错误计数器
+uint8_t wifi_status_error_count      = 0; // wifi状态机错误计数器
 uint8_t wifi_link_error_count = 0; // wifi连接错误计数器
+uint8_t wifi_error_count = 0; //wifi错误计数器
 uint32_t wifi_timeout         = 0; // wifi连接超时
 
 ESP8266_STATUS_ENUM esp8266_status = ESP8266_STATUS_INIT;
@@ -77,7 +78,7 @@ static void esp8266_at_fsm(void)
                 wifi_error_count++;
                 if(wifi_error_count > 5) //超过错误计数值
                 {
-
+                    wifi_link_error_count++;
                 }
                 else
                 {
@@ -85,8 +86,8 @@ static void esp8266_at_fsm(void)
                 }
 
             }
+            esp8266_status = ESP8266_STATUS_WAIT_CHECK;
         }
-        esp8266_status = ESP8266_STATUS_WAIT_CHECK;
         break;
     case ESP8266_STATUS_SET_MODE: //设置模式
         uart3_send_data("AT+CWMODE=3\r\n");

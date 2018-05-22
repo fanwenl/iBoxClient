@@ -3,6 +3,8 @@
     "C_Cpp.intelliSenseEngineFallback": "Enabled",
     "files.associations": {
         "stm32f10x_rtc.h": "c",
-        "ibox_wifi.h": "c"
+        "ibox_wifi.h": "c",
+        "ibox_config.h": "c",
+        "stm32f10x_conf.h": "c"
     }
 }
