@@ -1,7 +1,6 @@
 DIRECTORIES += Drivers/BSP/src
 
-C_SOURCES += Drivers/BSP/src/ibox_485.c  \
-             Drivers/BSP/src/ibox_adc.c  \
+C_SOURCES += Drivers/BSP/src/ibox_adc.c  \
 			 Drivers/BSP/src/ibox_dac.c   \
 			 Drivers/BSP/src/ibox_Ethernet.c \
 			 Drivers/BSP/src/ibox_gprs.c  \

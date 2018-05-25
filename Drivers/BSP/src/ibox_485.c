@@ -44,7 +44,8 @@ void max485_send_data(uint8_t *data)
 
     MAX485_DIR_OUTPUT;
     while (*data) {
-        timeout = get_sys_time() USART_SendData(UART4_485, (uint8_t) *Data++);
+        timeout = get_sys_time();
+         USART_SendData(UART4_485, (uint8_t) *Data++);
         while (USART_GetFlagStatus(UART4_485, USART_FLAG_TXE) == RESET) {
             if (get_sys_time() - timeout > 1)
                 break; //需要break还是return

@@ -7,9 +7,9 @@ C_SOURCES += Drivers/STM32F10x_StdPeriph_Driver/src/misc.c          \
 			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_cec.c \
 			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_crc.c \
 			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dac.c \
-			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dbgmuc.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dbgmcu.c \
 			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dma.c   \
-			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_exit.c  \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_exti.c  \
 			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_flash.c \
 			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_fsmc.c  \
 			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_gpio.c  \

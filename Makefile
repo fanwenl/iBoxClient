@@ -58,8 +58,8 @@ endif
 APPDIR ?= ${SOURCE_ROOT}/Application/src
 
 CFLAGS  = -g -O0 -Wall
-CFLAGS += -mlittle-endian  -mcpu=cortex-m3  -march=armv7-m -ffreestanding -mthumb -mthumb-interwork -std=gnu99 --specs=rdimon.specs
-
+CFLAGS += -mlittle-endian  -mcpu=cortex-m3  -march=armv7-m -ffreestanding -mthumb -mthumb-interwork -std=gnu99 --specs=nosys.specs
+# --specs=rdimon.specs https://stackoverflow.com/questions/19419782/exit-c-text0x18-undefined-reference-to-exit-when-using-arm-none-eabi-gcc
 # 增加定义
 DEFINES += HSE_VALUE=12000000
 DEFINES += STM32F10X_HD
@@ -77,15 +77,16 @@ endif
 # 头文件
 vpath %.c    ${SOURCE_ROOT}
 vpath %.h    ${SOURCE_ROOT}
-#vpath %.S    ${SOURCE_ROOT}
-#vpath %.s    ${SOURCE_ROOT}
+vpath %.S    ${SOURCE_ROOT}
+vpath %.s    ${SOURCE_ROOT}
 
 
 INCLUDE_DIRS = ${SOURCE_ROOT}/Application/inc                 \
 	       	   ${SOURCE_ROOT}/Drivers/BSP/inc                 \
                ${SOURCE_ROOT}/Drivers/CMSIS/CM3/CoreSupport		\
 			   ${SOURCE_ROOT}/Drivers/CMSIS/CM3/DeviceSupport/ST/STM32F10x  \
-			   ${SOURCE_ROOT}/Drivers/STM32F10x_StdPeriph_Driver/inc 
+			   ${SOURCE_ROOT}/Drivers/STM32F10x_StdPeriph_Driver/inc  \
+			   ${SOURCE_ROOT}/Middlewares/Eth
 
 
 INCLUDES += ${INCLUDE_DIRS:%=-I%}
@@ -104,6 +105,7 @@ include ${SOURCE_ROOT}/Application/Makefile
 include ${SOURCE_ROOT}/Drivers/BSP/Makefile
 include ${SOURCE_ROOT}/Drivers/CMSIS/Makefile
 include ${SOURCE_ROOT}/Drivers/STM32F10x_StdPeriph_Driver/Makefile
+include ${SOURCE_ROOT}/Middlewares/Eth/Makefile
 
 OBJECTS += ${patsubst %.c,build/%.o,$(C_SOURCES)}
 OBJECTS += ${patsubst %.s,build/%.o,$(ASM_SOURCES)}
@@ -131,16 +133,17 @@ build/$(TARGET_BIN):build/$(TARGET_ELF)
 	@echo 'Finished building target: $@'
 	@echo -----------------------------------------------------------------------------------
 
-
+# link 的时候需要加参数--specs=rdimon.specs
 build/$(TARGET_ELF):$(OBJECTS) 
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 build/%.o:%.c 
 	#$(CC) $(CFLAGS) -c  -o  $(addprefix $(dir $^), $(notdir $@))    $^
 	mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $^
 
-build/%.o:%.s 
+build/%.o:%.s
+	mkdir -p $(dir $@)
 	$(CC) $(ASFLAGS) -c -o $@ $^
 
 clean:
