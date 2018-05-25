@@ -25,7 +25,7 @@
 #define MAX485_DIR_INPUT        GPIO_ResetBits(MAX485_DIR_PORT, MAX485_DIR_PIN);
 
 /*485 UART4串口接收变量定义*/
-#define UART4_RX_SIZE    1024 
+#define MAX485_UART4_RX_SIZE    1024 
 
 
 #ifdef __cplusplus

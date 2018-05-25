@@ -1,32 +1,25 @@
-CC=arm-none-eabi-gcc
-AR=arm-none-eabi-ar
+DIRECTORIES += Drivers/STM32F10x_StdPeriph_Driver/src
 
-###########################################
-vpath %.c src 
-
-CFLAGS += -mthumb -mcpu=cortex-m3
-
-CFLAGS  = -g -O0 -Wall
-CFLAGS += -mthumb -mcpu=cortex-m3
-CFLAGS += -mlittle-endian  -mthumb-interwork
-
-CFLAGS += -ffreestanding -nostdlib
-
-CFLAGS += -Iinc -I../CMSIS/CM3/CoreSupport -I../CMSIS/CM3/DeviceSupport/ST/STM32F10x 
-CFLAGS += -IInc/Legacy -I../../Application/inc
-CFLAGS += -DSTM32F10X_HD -DUSE_STDPERIPH_DRIVER
-
-#CFLAGS += --specs=nosys.specs
-#LFLAGS += --specs=nosys.specs
-
-SRCS = $(wildcard src/*.c)
-OBJS = $(SRCS:.c=.o)
-
-.PHONY: libstm32f1.a
-all: libstm32f1.a
-%.o : %.c
-	$(CC) $^ $(CFLAGS) -c -o $@ 
-libstm32f1.a: $(OBJS)
-	$(AR) -r $@ $(OBJS)
-clean:
-	rm -f $(OBJS) libstm32f1.a
+C_SOURCES += Drivers/STM32F10x_StdPeriph_Driver/src/misc.c          \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_adc.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_bkp.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_can.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_cec.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_crc.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dac.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dbgmuc.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_dma.c   \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_exit.c  \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_flash.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_fsmc.c  \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_gpio.c  \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_i2c.c   \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_iwdg.c  \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_pwr.c   \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rcc.c   \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_rtc.c   \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_sdio.c  \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_spi.c   \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_tim.c   \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_usart.c \
+			 Drivers/STM32F10x_StdPeriph_Driver/src/stm32f10x_wwdg.c  

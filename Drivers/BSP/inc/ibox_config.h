@@ -24,9 +24,7 @@
 #include "ibox_adc.h"
 #include "ibox_dac.h"
 #include "ibox_rtc.h"
-#ifdef USE_WIFI
 #include "ibox_wifi.h"
-#endif
 #include "ibox_wdog.h"
 #include "ibox_485.h"
 
