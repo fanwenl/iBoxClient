@@ -273,8 +273,8 @@
               </OCR_RVCT3>
               <OCR_RVCT4>
                 <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <StartAddress>0x8000000</StartAddress>
+                <Size>0x80000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -298,8 +298,8 @@
               </OCR_RVCT8>
               <OCR_RVCT9>
                 <Type>0</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <StartAddress>0x20000000</StartAddress>
+                <Size>0x10000</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
                 <Type>0</Type>
@@ -614,20 +614,20 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Lib</GroupName>
+          <Files>
+            <File>
+              <FileName>lib_stdio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\lib_stdio.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>FreeRTOS</GroupName>
         </Group>
         <Group>
           <GroupName>MQTT</GroupName>
-        </Group>
-        <Group>
-          <GroupName>map</GroupName>
-          <Files>
-            <File>
-              <FileName>iBoxClient.map</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\Listings\iBoxClient.map</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>Ethernet</GroupName>
@@ -641,6 +641,16 @@
               <FileName>wizchip_conf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Middlewares\Eth\wizchip_conf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>map</GroupName>
+          <Files>
+            <File>
+              <FileName>iBoxClient.map</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Listings\iBoxClient.map</FilePath>
             </File>
           </Files>
         </Group>

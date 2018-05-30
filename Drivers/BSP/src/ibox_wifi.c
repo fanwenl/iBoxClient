@@ -193,7 +193,7 @@ uint16_t get_line_from_uart3(uint8_t *buf)
 
     if (!uart3_rx_lines) //无数据退出
     {
-        *buf = NULL;
+        buf = NULL;
         return 0;
     }
     data_len = 0;
@@ -202,7 +202,7 @@ uint16_t get_line_from_uart3(uint8_t *buf)
             data = get_char_form_uart3();
         } else {
             uart3_rx_lines = 0;
-            *buf           = NULL;
+            buf           = NULL;
             return 0;
         }
         if (data == 0x0a) //换行直接丢掉
