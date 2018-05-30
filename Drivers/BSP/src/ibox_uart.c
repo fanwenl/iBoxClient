@@ -57,13 +57,6 @@ void uart_init(uart_enum uart_num, uint32_t baud_rate)
     /* Enable the USART */
     USART_Cmd(uart[uart_num], ENABLE);
 }
-int fputc(int ch, FILE *f)
-{
-    USART_SendData(USART1, (unsigned char) ch);
-    while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET) {
-    }
-    return (ch);
-}
 
 void USART1_IRQHandler(void)
 {

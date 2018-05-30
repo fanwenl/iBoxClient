@@ -15,12 +15,19 @@ TARGET            := $(PROJECT)
 TARGET_ELF        := $(TARGET).elf
 TARGET_BIN        := $(TARGET).bin
 TARGET_HEX        := $(TARGET).hex
+TARGET_MAP	      := $(TARGET).map
 
 OBJCPFLAGS_ELF_TO_BIN   = -Obinary
 OBJCPFLAGS_ELF_TO_HEX   = -Oihex
 OBJCPFLAGS_BIN_TO_HEX   = -Ibinary -Oihex
 OBJCPFLAGS_ELF_TO_SREC  = -Osrec
 OBJCPFLAGS_ELF_TO_LIST  = -S
+
+
+# ---------------------------------------------------------------------------
+# Beautify output
+# 可以实现像Kernel一样的输出格式
+# ---------------------------------------------------------------------------
 
 #ifeq (${ARCH}, arm)
 CROSS_COMPILE := arm-none-eabi-
@@ -95,7 +102,7 @@ CFLAGS += ${DEFINES}
 CFLAGS += ${INCLUDES}
 
 LINKER_SCRIPT = ${SOURCE_ROOT}/Drivers/LinkerScript_gcc/STM32F103ZE_FLASH.ld
-LDFLAGS    +=  -T $(LINKER_SCRIPT) 
+LDFLAGS    +=  -T $(LINKER_SCRIPT)
 
 ############################################################
 ### Sub-makefiles
@@ -106,6 +113,7 @@ include ${SOURCE_ROOT}/Drivers/BSP/Makefile
 include ${SOURCE_ROOT}/Drivers/CMSIS/Makefile
 include ${SOURCE_ROOT}/Drivers/STM32F10x_StdPeriph_Driver/Makefile
 include ${SOURCE_ROOT}/Middlewares/Eth/Makefile
+include ${SOURCE_ROOT}/lib/Makefile
 
 OBJECTS += ${patsubst %.c,build/%.o,$(C_SOURCES)}
 OBJECTS += ${patsubst %.s,build/%.o,$(ASM_SOURCES)}
@@ -115,7 +123,7 @@ OBJECTS += ${patsubst %.s,build/%.o,$(ASM_SOURCES)}
 
 default: all
 
-all:build build/lib build/$(TARGET_BIN)
+all:build build/lib build/$(TARGET_BIN) build/$(TARGET_HEX)
 
 build:
 	@echo -----------------------------------------------------------------------------------
@@ -128,14 +136,17 @@ build/lib:
 	
 build/$(TARGET_BIN):build/$(TARGET_ELF)
 	$(OBJCOPY) $(OBJCPFLAGS_ELF_TO_BIN) -S $^ $@
+	
+
+build/$(TARGET_HEX):build/$(TARGET_ELF)
 	$(OBJCOPY) $(OBJCPFLAGS_ELF_TO_HEX) -S $^ $@
 	@#$(OBJDUMP) -sStD $(TARGET_ELF) > map
-	@echo 'Finished building target: $@'
+	@echo 'Finished building target: $(PROJECT)'
 	@echo -----------------------------------------------------------------------------------
 
 # link 的时候需要加参数--specs=rdimon.specs
 build/$(TARGET_ELF):$(OBJECTS) 
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -Wl,-Map,build/$(TARGET_MAP)
 
 build/%.o:%.c 
 	#$(CC) $(CFLAGS) -c  -o  $(addprefix $(dir $^), $(notdir $@))    $^

@@ -33,5 +33,9 @@ Project/*
 
 #other
 *.udb
+*.bin
+*.hex
+*.map
+
 
 
