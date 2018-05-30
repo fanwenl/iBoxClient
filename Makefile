@@ -26,8 +26,13 @@ OBJCPFLAGS_ELF_TO_LIST  = -S
 
 # ---------------------------------------------------------------------------
 # Beautify output
-# 可以实现像Kernel一样的输出格式
+# 可以实现像Kernel一样的输出格式(参考kernel、libopencm3)
 # ---------------------------------------------------------------------------
+ifneq ($(V),1)
+	Q = @
+else
+	Q =
+endif
 
 #ifeq (${ARCH}, arm)
 CROSS_COMPILE := arm-none-eabi-
@@ -129,43 +134,52 @@ build:
 	@echo -----------------------------------------------------------------------------------
 	@echo Building target: $(PROJECT)
 	@echo Invoking: $(CC) Linker
-	mkdir -p $@
+	@printf "  NEW      $@\n"
+	$(Q)mkdir -p $@
 
 build/lib:
 #	$(MAKE) -C Drivers/STM32F10x_StdPeriph_Driver
 	
 build/$(TARGET_BIN):build/$(TARGET_ELF)
-	$(OBJCOPY) $(OBJCPFLAGS_ELF_TO_BIN) -S $^ $@
+	@printf "  OBJCOPY $(TARGET_BIN)\n"
+	$(Q)$(OBJCOPY) $(OBJCPFLAGS_ELF_TO_BIN) -S $^ $@
 	
 
 build/$(TARGET_HEX):build/$(TARGET_ELF)
-	$(OBJCOPY) $(OBJCPFLAGS_ELF_TO_HEX) -S $^ $@
-	@#$(OBJDUMP) -sStD $(TARGET_ELF) > map
+	@printf "  OBJCOPY $(TARGET_HEX)\n"
+	$(Q)$(OBJCOPY) $(OBJCPFLAGS_ELF_TO_HEX) -S $^ $@
 	@echo 'Finished building target: $(PROJECT)'
 	@echo -----------------------------------------------------------------------------------
 
 # link 的时候需要加参数--specs=rdimon.specs
-build/$(TARGET_ELF):$(OBJECTS) 
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -Wl,-Map,build/$(TARGET_MAP)
+build/$(TARGET_ELF):$(OBJECTS)
+	@printf "  LD      $(TARGET_ELF)\n"
+	@printf "  LD      $(TARGET_MAP)\n"
+	$(Q)$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -Wl,-Map,build/$(TARGET_MAP)
 
 build/%.o:%.c 
-	#$(CC) $(CFLAGS) -c  -o  $(addprefix $(dir $^), $(notdir $@))    $^
-	mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c -o $@ $^
+#   $(CC) $(CFLAGS) -c  -o  $(addprefix $(dir $^), $(notdir $@))    $^
+#   @printf "  BUILD      $(dir $@)\n"
+	$(Q)mkdir -p $(dir $@)
+	@printf "  CC      $(<F)\n"
+	$(Q)$(CC) $(CFLAGS) -o $@ -c $^
 
 build/%.o:%.s
-	mkdir -p $(dir $@)
-	$(CC) $(ASFLAGS) -c -o $@ $^
+	$(Q)mkdir -p $(dir $@)
+	@printf "  CC      $(<F)\n"
+	$(Q)$(CC) $(ASFLAGS) -c -o $@ $^
 
 clean:
 	@echo -----------------------------------------------------------------------------------
 	@echo "Removing linked and compiled files......"
 #	$(MAKE) -C Drivers/STM32F10x_StdPeriph_Driver clean
-	-rm -rf build
-	find $(SOURCE_ROOT) -iname '*.o' -delete
-	find $(SOURCE_ROOT) -iname '*.bin' -delete
-	find $(SOURCE_ROOT) -iname '*.elf' -delete
-	find $(SOURCE_ROOT) -iname '*.map' -delete
+	@printf "  CLEAN      *.o *.bin *.elf *.map *.hex\n"
+	@printf "  REMOVE     ./build \n"
+	$(Q)-rm -rf build
+	$(Q)find $(SOURCE_ROOT) -iname '*.o' -delete
+	$(Q)find $(SOURCE_ROOT) -iname '*.bin' -delete
+	$(Q)find $(SOURCE_ROOT) -iname '*.elf' -delete
+	$(Q)find $(SOURCE_ROOT) -iname '*.map' -delete
 	@echo -----------------------------------------------------------------------------------
 
 
