@@ -18,8 +18,7 @@
  *
  * Last modified by Gregory Cristian on Apr 25 2013
  */
-#include "platform.h"
-
+#include "config.h"
 #include "radio.h"
 
 #if defined( USE_SX1232_RADIO )

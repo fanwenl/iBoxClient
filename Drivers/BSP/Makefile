@@ -1,3 +1,5 @@
+include ./Drivers/BSP/SX1276/Makefile
+
 DIRECTORIES += Drivers/BSP/src
 
 C_SOURCES += Drivers/BSP/src/ibox_adc.c  \

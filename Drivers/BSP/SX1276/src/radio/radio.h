@@ -21,6 +21,8 @@
 #ifndef __RADIO_H__
 #define __RADIO_H__
 
+#include "stdint.h"
+#include "stdbool.h"
 /*!
  * SX1272 and SX1276 General parameters definition
  */
