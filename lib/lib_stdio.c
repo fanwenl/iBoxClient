@@ -65,10 +65,14 @@ int _write(int fd, char *ptr, int len)
     while (*ptr && (i < len))
     {
         USART_SendData(USART1, *ptr);
+        while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET) {
+        }
 
         if (*ptr == '\n')
         {
             USART_SendData(USART1, '\r');
+            while (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET) {
+            }
         }
 
         i++;
