@@ -35,6 +35,7 @@ iBoxClient是运行在iBox产品上的固件软件包，其对应的服务器软
     编译选项：
 
     * V=1 输出全部的编译信息.(默认V=0 精简输出编译信息)
+    * DEBUG=1 输出调试信息。（默认不输出）
     * USE_WIFI 由于WIFI和GPRS共用接口，所有WIFI和GPRS只能选之一。默认使用GPRS，当USE_WIFI=1时使用WIFI。
     * USE_RTOS 是否使用RTOS.默认是`使用`。在使用本项目的驱动文件是请注意该选项。
 

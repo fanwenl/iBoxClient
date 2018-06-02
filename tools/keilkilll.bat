@@ -1,4 +1,3 @@
-
 cd ..
 del *.bak /s
 del *.ddk /s
@@ -27,4 +26,12 @@ del *.iex /s
 ::del *.htm /s
 del *.sct /s
 del *.map /s
+del *.hex /s
+del *.hex /s
+del *.dbgconf /s
+del *.scvd /s
+::rd 删除文件夹以及文件/不需要确认
+rd .\Project\DebugConfig\ /s/q
+rd .\Project\Listings\ /s/q
+rd .\Project\Objects\ /s/q
 exit

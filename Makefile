@@ -28,10 +28,10 @@ OBJCPFLAGS_ELF_TO_LIST  = -S
 # Beautify output
 # 可以实现像Kernel一样的输出格式(参考kernel、libopencm3)
 # ---------------------------------------------------------------------------
-ifneq ($(V),1)
-	Q = @
+ifeq ($(V),1)
+	Q = 
 else
-	Q =
+	Q = @
 endif
 
 #ifeq (${ARCH}, arm)
@@ -69,7 +69,13 @@ endif
 
 APPDIR ?= ${SOURCE_ROOT}/Application/src
 
-CFLAGS  = -g -O0 -Wall
+ifeq (${DEBUG}, 1)
+	CFLAGS  += -g -O0
+else
+	CFLAGS  += -O0
+endif
+
+CFLAGS += -Wall
 CFLAGS += -mlittle-endian  -mcpu=cortex-m3  -march=armv7-m -ffreestanding -mthumb -mthumb-interwork -std=gnu99 --specs=nosys.specs
 # --specs=rdimon.specs https://stackoverflow.com/questions/19419782/exit-c-text0x18-undefined-reference-to-exit-when-using-arm-none-eabi-gcc
 # 增加定义
@@ -109,7 +115,7 @@ CFLAGS += ${INCLUDES}
 LINKER_SCRIPT = ${SOURCE_ROOT}/Drivers/LinkerScript_gcc/STM32F103ZE_FLASH.ld
 LDFLAGS    +=  -T $(LINKER_SCRIPT)
 #-lm:连接数学库libm.a;-lc:连接C标准库libc.a;lgcc:连接GCC支持库libgcc.a
-LDFLAGS    +=  -lm -lc -lgcc
+LDFLAGS    +=  -lm -lc
 
 ############################################################
 ### Sub-makefiles
