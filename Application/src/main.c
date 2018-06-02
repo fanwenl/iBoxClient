@@ -2,8 +2,8 @@
 
 int main(void)
 {
-	    uint8_t buf[] = "20180419225500";
-	
+    uint8_t buf[] = "20180419225500";
+
     RCC_ClocksTypeDef RCC_ClockFreq;
     /*系统时钟初始化*/
     sys_clk_init();

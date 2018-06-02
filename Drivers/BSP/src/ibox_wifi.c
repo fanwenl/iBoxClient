@@ -65,12 +65,12 @@ static void esp8266_at_fsm(void)
     case ESP8266_STATUS_WAIT_CHECK:
         if (strstr((char *) wifi_rx_temp, "OK") != NULL) {
             wifi_status_error_count = 0;
-            wifi_timeout            = get_sys_time();
+            wifi_timeout            = get_sys_time_s();
             uart3_send_data("AT+CWMODE=3\r\n"); /*设置模式*/
             esp8266_status = ESP8266_STATUS_WAIT_SET_MODE;
         } else {
-            if (wifi_timeout - get_sys_time() > 2) {
-                wifi_timeout = get_sys_time();
+            if (wifi_timeout - get_sys_time_s() > 2) {
+                wifi_timeout = get_sys_time_s();
                 wifi_status_error_count++;
                 if (wifi_status_error_count > 5) {
                     wifi_link_error_count++;
@@ -84,12 +84,12 @@ static void esp8266_at_fsm(void)
     case ESP8266_STATUS_WAIT_SET_MODE:
         if (strstr((char *) wifi_rx_temp, "OK") != NULL) {
             wifi_status_error_count = 0;
-            wifi_timeout            = get_sys_time();
+            wifi_timeout            = get_sys_time_s();
             uart3_send_data("AT+RST\r\n"); /*重启模块*/
             esp8266_status = ESP8266_STATUS_WAIT_RESET;
         } else {
-            if (wifi_timeout - get_sys_time() > 2) {
-                wifi_timeout = get_sys_time();
+            if (wifi_timeout - get_sys_time_s() > 2) {
+                wifi_timeout = get_sys_time_s();
                 wifi_status_error_count++;
                 if (wifi_status_error_count > 5)
                 {
@@ -104,12 +104,12 @@ static void esp8266_at_fsm(void)
     case ESP8266_STATUS_WAIT_RESET:
         if (strstr((char *) wifi_rx_temp, "OK") != NULL) {
             wifi_status_error_count = 0;
-            wifi_timeout            = get_sys_time();
+            wifi_timeout            = get_sys_time_s();
             uart3_send_data("AT+CWJAP=\"WIFI_SSID\",\"WIFI_Password\"\r\n"); /*连接*/
             esp8266_status = ESP8266_STATUS_WAIT_LINK;
         } else {
-            if (wifi_timeout - get_sys_time() > 2) {
-                wifi_timeout = get_sys_time();
+            if (wifi_timeout - get_sys_time_s() > 2) {
+                wifi_timeout = get_sys_time_s();
                 wifi_status_error_count++;
                 if (wifi_status_error_count > 5)
                 {
@@ -124,12 +124,12 @@ static void esp8266_at_fsm(void)
     case ESP8266_STATUS_WAIT_LINK:
         if (strstr((char *) wifi_rx_temp, "OK") != NULL) {
             wifi_status_error_count = 0;
-            wifi_timeout            = get_sys_time();
+            wifi_timeout            = get_sys_time_s();
             uart3_send_data("AT+CIFSR\r\n"); /*查询IP*/
             esp8266_status = ESP8266_STATUS_GET_MAC;
         } else {
-            if (wifi_timeout - get_sys_time() > 2) {
-                wifi_timeout = get_sys_time();
+            if (wifi_timeout - get_sys_time_s() > 2) {
+                wifi_timeout = get_sys_time_s();
                 wifi_status_error_count++;
                 if (wifi_status_error_count > 5){
                     wifi_link_error_count++;
@@ -143,15 +143,15 @@ static void esp8266_at_fsm(void)
     case ESP8266_STATUS_GET_MAC:
         if (strstr((char *) wifi_rx_temp, "OK") != NULL) {
             wifi_status_error_count = 0;
-            wifi_timeout            = get_sys_time();
+            wifi_timeout            = get_sys_time_s();
             /*将MAC写入一个变脸,认证的时候需要*/
             /*两种连接方式,域名连接方式命令验证*/
             uart3_send_data("AT+CDNSGIP=lot.zxbike.cc\r\n");
             uart3_send_data("AT+CIPSTART=\"TCP\",\"SERVER_IP\",\"SERVER_PORT\"\r\n"); /*连接服务器*/
             esp8266_status = ESP8266_STATUS_WAIT_LINK_SERVER;
         } else {
-            if (wifi_timeout - get_sys_time() > 2) {
-                wifi_timeout = get_sys_time();
+            if (wifi_timeout - get_sys_time_s() > 2) {
+                wifi_timeout = get_sys_time_s();
                 wifi_status_error_count++;
                 if (wifi_status_error_count > 5)
                 {
@@ -166,14 +166,14 @@ static void esp8266_at_fsm(void)
     case ESP8266_STATUS_WAIT_LINK_SERVER:
         if (strstr((char *) wifi_rx_temp, "OK") != NULL) {
             wifi_status_error_count = 0;
-            wifi_timeout            = get_sys_time();
+            wifi_timeout            = get_sys_time_s();
             /*发送认证信息MAC*/
             uart3_send_data("AT+CIPSEND=6\r\n");
             uart3_send_data("AT+CIPSEND=4\r\n"); //发送MAC地址
             esp8266_status = ESP8266_STATUS_WAIT_SEND_AUTHEN;
         } else {
-            if (wifi_timeout - get_sys_time() > 2) {
-                wifi_timeout = get_sys_time();
+            if (wifi_timeout - get_sys_time_s() > 2) {
+                wifi_timeout = get_sys_time_s();
                 wifi_status_error_count++;
                 if (wifi_status_error_count > 5)
                 {
@@ -188,14 +188,14 @@ static void esp8266_at_fsm(void)
     case ESP8266_STATUS_WAIT_SEND_AUTHEN:
         if (strstr((char *) wifi_rx_temp, "OK") != NULL) {
             wifi_status_error_count = 0;
-            wifi_timeout            = get_sys_time();
+            wifi_timeout            = get_sys_time_s();
             /*发送获取RTC时间*/
             uart3_send_data("AT+CIPSEND=6\r\n");
             uart3_send_data("AT+CIPSEND=4\r\n"); //发送获取RTC，其他认证信息
             esp8266_status = ESP8266_STATUS_CHECK_AUTHEN;
         } else {
-            if (wifi_timeout - get_sys_time() > 2) {
-                wifi_timeout = get_sys_time();
+            if (wifi_timeout - get_sys_time_s() > 2) {
+                wifi_timeout = get_sys_time_s();
                 wifi_status_error_count++;
                 if (wifi_status_error_count > 5) //超过错误计数值
                 {
@@ -210,15 +210,15 @@ static void esp8266_at_fsm(void)
     case ESP8266_STATUS_CHECK_AUTHEN: //收到认证信息(RTC时间等其他的信息)
         if (strstr((char *) wifi_rx_temp, "OK") != NULL) {
             wifi_status_error_count = 0;
-            wifi_timeout            = get_sys_time();
+            wifi_timeout            = get_sys_time_s();
             /*发送获取RTC时间*/
             uart3_send_data("AT+CIPSEND=6\r\n");
             uart3_send_data("AT+CIPSEND=4\r\n"); //发送MAC地址
             // 标记已经连接的状态
             //esp8266_status = ESP8266_STATUS_WAIT_SEND_AUTHEN;
         } else {
-            if (wifi_timeout - get_sys_time() > 2) {
-                wifi_timeout = get_sys_time();
+            if (wifi_timeout - get_sys_time_s() > 2) {
+                wifi_timeout = get_sys_time_s();
                 wifi_status_error_count++;
                 if (wifi_status_error_count > 5)
                 {
@@ -253,10 +253,10 @@ void uart3_send_data(const char *data)
     uint32_t timeout = 0;
 
     while (*data) {
-        timeout = get_sys_time();
+        timeout = get_sys_time_s();
         USART_SendData(USART3, (uint8_t) *data++);
         while (USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET) {
-            if (get_sys_time() - timeout > 1)
+            if (get_sys_time_s() - timeout > 1)
                 break;
         }
     }
