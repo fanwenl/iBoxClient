@@ -324,7 +324,7 @@
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
             <uC99>1</uC99>
-            <uGnu>0</uGnu>
+            <uGnu>1</uGnu>
             <useXO>0</useXO>
             <v6Lang>3</v6Lang>
             <v6LangP>3</v6LangP>
@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD,HSE_VALUE=12000000,USE_WIFI</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\BSP\SX1276\src\radio;..\Drivers\BSP\SX1276\src\platform;..\Drivers\BSP\SX1276\src\platform\sx12xxEiger;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth</IncludePath>
+              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\BSP\SX1276\src\radio;..\Drivers\BSP\SX1276\src\config;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -470,6 +470,87 @@
               <FileName>ibox_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\src\ibox_spi.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>SX1276</GroupName>
+          <Files>
+            <File>
+              <FileName>sx1276-Hal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\src\config\sx1276-Hal.c</FilePath>
+            </File>
+            <File>
+              <FileName>fifo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\src\config\fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>radio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\src\radio\radio.c</FilePath>
+            </File>
+            <File>
+              <FileName>sx1276.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\src\radio\sx1276.c</FilePath>
+            </File>
+            <File>
+              <FileName>sx1276-LoRa.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\src\radio\sx1276-LoRa.c</FilePath>
+            </File>
+            <File>
+              <FileName>sx1276-LoRaMisc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\src\radio\sx1276-LoRaMisc.c</FilePath>
+            </File>
+            <File>
+              <FileName>sx1276-Fsk.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\src\radio\sx1276-Fsk.c</FilePath>
+            </File>
+            <File>
+              <FileName>sx1276-FskMisc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\src\radio\sx1276-FskMisc.c</FilePath>
+            </File>
+            <File>
+              <FileName>README.txt</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\doc\README.txt</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>RTOS</GroupName>
+        </Group>
+        <Group>
+          <GroupName>MQTT</GroupName>
+        </Group>
+        <Group>
+          <GroupName>Ethernet</GroupName>
+          <Files>
+            <File>
+              <FileName>socket.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\socket.c</FilePath>
+            </File>
+            <File>
+              <FileName>wizchip_conf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\wizchip_conf.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Lib</GroupName>
+          <Files>
+            <File>
+              <FileName>lib_stdio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\lib\lib_stdio.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -610,37 +691,6 @@
               <FileName>stm32f10x_wwdg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\STM32F10x_StdPeriph_Driver\src\stm32f10x_wwdg.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>Lib</GroupName>
-          <Files>
-            <File>
-              <FileName>lib_stdio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\lib\lib_stdio.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
-          <GroupName>FreeRTOS</GroupName>
-        </Group>
-        <Group>
-          <GroupName>MQTT</GroupName>
-        </Group>
-        <Group>
-          <GroupName>Ethernet</GroupName>
-          <Files>
-            <File>
-              <FileName>socket.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\Eth\socket.c</FilePath>
-            </File>
-            <File>
-              <FileName>wizchip_conf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Middlewares\Eth\wizchip_conf.c</FilePath>
             </File>
           </Files>
         </Group>

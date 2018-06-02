@@ -108,6 +108,8 @@ CFLAGS += ${INCLUDES}
 
 LINKER_SCRIPT = ${SOURCE_ROOT}/Drivers/LinkerScript_gcc/STM32F103ZE_FLASH.ld
 LDFLAGS    +=  -T $(LINKER_SCRIPT)
+#-lm:连接数学库libm.a;-lc:连接C标准库libc.a;lgcc:连接GCC支持库libgcc.a
+LDFLAGS    +=  -lm -lc -lgcc
 
 ############################################################
 ### Sub-makefiles
