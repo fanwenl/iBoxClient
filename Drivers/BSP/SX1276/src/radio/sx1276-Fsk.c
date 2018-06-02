@@ -21,7 +21,7 @@
 #include <string.h>
 #include <math.h>
 
-#include "platform.h"
+#include "config.h"
 
 #if defined( USE_SX1276_RADIO )
 

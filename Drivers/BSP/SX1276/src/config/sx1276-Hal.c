@@ -21,13 +21,12 @@
 #include <stdint.h>
 #include <stdbool.h> 
 
-#include "platform.h"
+#include "config.h"
 
 #if defined( USE_SX1276_RADIO )
 
-#include "ioe.h"
-#include "spi.h"
-#include "../../radio/sx1276-Hal.h"
+#include "ibox_spi.h"
+#include "sx1276-Hal.h"
 
 /*!
  * SX1276 RESET I/O definitions
@@ -128,50 +127,50 @@
 
 void SX1276InitIo( void )
 {
-    GPIO_InitTypeDef GPIO_InitStructure;
+//     GPIO_InitTypeDef GPIO_InitStructure;
 
-#if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
-    RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB |
-                            RCC_AHB1Periph_GPIOG, ENABLE );
-#else
-    RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB |
-                            RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE );
-#endif
+// #if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
+//     RCC_AHB1PeriphClockCmd( RCC_AHB1Periph_GPIOA | RCC_AHB1Periph_GPIOB |
+//                             RCC_AHB1Periph_GPIOG, ENABLE );
+// #else
+//     RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOB |
+//                             RCC_APB2Periph_GPIOC | RCC_APB2Periph_AFIO, ENABLE );
+// #endif
 
-#if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
-#else
-    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-#endif
+// #if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
+//     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//     GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
+// #else
+//     GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
+//     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+// #endif
     
-    // Configure NSS as output
-    GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_SET );
-    GPIO_InitStructure.GPIO_Pin = NSS_PIN;
-    GPIO_Init( NSS_IOPORT, &GPIO_InitStructure );
+//     // Configure NSS as output
+//     GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_SET );
+//     GPIO_InitStructure.GPIO_Pin = NSS_PIN;
+//     GPIO_Init( NSS_IOPORT, &GPIO_InitStructure );
 
-    // Configure radio DIO as inputs
-#if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-#else
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-#endif
+//     // Configure radio DIO as inputs
+// #if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
+//     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+//     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+// #else
+//     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+// #endif
 
-    // Configure DIO0
-    GPIO_InitStructure.GPIO_Pin =  DIO0_PIN;
-    GPIO_Init( DIO0_IOPORT, &GPIO_InitStructure );
+//     // Configure DIO0
+//     GPIO_InitStructure.GPIO_Pin =  DIO0_PIN;
+//     GPIO_Init( DIO0_IOPORT, &GPIO_InitStructure );
     
-    // Configure DIO1
-    GPIO_InitStructure.GPIO_Pin =  DIO1_PIN;
-    GPIO_Init( DIO1_IOPORT, &GPIO_InitStructure );
+//     // Configure DIO1
+//     GPIO_InitStructure.GPIO_Pin =  DIO1_PIN;
+//     GPIO_Init( DIO1_IOPORT, &GPIO_InitStructure );
     
-    // Configure DIO2
-    GPIO_InitStructure.GPIO_Pin =  DIO2_PIN;
-    GPIO_Init( DIO2_IOPORT, &GPIO_InitStructure );
+//     // Configure DIO2
+//     GPIO_InitStructure.GPIO_Pin =  DIO2_PIN;
+//     GPIO_Init( DIO2_IOPORT, &GPIO_InitStructure );
     
     // REAMARK: DIO3/4/5 configured are connected to IO expander
 
@@ -184,140 +183,140 @@ void SX1276InitIo( void )
 
 void SX1276SetReset( uint8_t state )
 {
-    GPIO_InitTypeDef GPIO_InitStructure;
+//     GPIO_InitTypeDef GPIO_InitStructure;
 
-    if( state == RADIO_RESET_ON )
-    {
-        // Set RESET pin to 0
-        GPIO_WriteBit( RESET_IOPORT, RESET_PIN, Bit_RESET );
+//     if( state == RADIO_RESET_ON )
+//     {
+//         // Set RESET pin to 0
+//         GPIO_WriteBit( RESET_IOPORT, RESET_PIN, Bit_RESET );
 
-        // Configure RESET as output
-#if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-        GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-#else
+//         // Configure RESET as output
+// #if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
+//         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//         GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+// #else
 
-        GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
-#endif        
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_InitStructure.GPIO_Pin = RESET_PIN;
-        GPIO_Init( RESET_IOPORT, &GPIO_InitStructure );
-    }
-    else
-    {
-#if FPGA == 0    
-        // Configure RESET as input
-#if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-#else
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-#endif        
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_InitStructure.GPIO_Pin =  RESET_PIN;
-        GPIO_Init( RESET_IOPORT, &GPIO_InitStructure );
-#else
-        GPIO_WriteBit( RESET_IOPORT, RESET_PIN, Bit_RESET );
-#endif
-    }
+//         GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP;
+// #endif        
+//         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//         GPIO_InitStructure.GPIO_Pin = RESET_PIN;
+//         GPIO_Init( RESET_IOPORT, &GPIO_InitStructure );
+//     }
+//     else
+//     {
+// #if FPGA == 0    
+//         // Configure RESET as input
+// #if defined( STM32F4XX ) || defined( STM32F2XX ) || defined( STM32F429_439xx )
+//         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+// #else
+//         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+// #endif        
+//         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//         GPIO_InitStructure.GPIO_Pin =  RESET_PIN;
+//         GPIO_Init( RESET_IOPORT, &GPIO_InitStructure );
+// #else
+//         GPIO_WriteBit( RESET_IOPORT, RESET_PIN, Bit_RESET );
+// #endif
+//     }
 }
 
 void SX1276Write( uint8_t addr, uint8_t data )
 {
-    SX1276WriteBuffer( addr, &data, 1 );
+//    SX1276WriteBuffer( addr, &data, 1 );
 }
 
 void SX1276Read( uint8_t addr, uint8_t *data )
 {
-    SX1276ReadBuffer( addr, data, 1 );
+//    SX1276ReadBuffer( addr, data, 1 );
 }
 
 void SX1276WriteBuffer( uint8_t addr, uint8_t *buffer, uint8_t size )
 {
-    uint8_t i;
+ //   uint8_t i;
 
-    //NSS = 0;
-    GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_RESET );
+    // //NSS = 0;
+    // GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_RESET );
 
-    SpiInOut( addr | 0x80 );
-    for( i = 0; i < size; i++ )
-    {
-        SpiInOut( buffer[i] );
-    }
+    // SpiInOut( addr | 0x80 );
+    // for( i = 0; i < size; i++ )
+    // {
+    //     SpiInOut( buffer[i] );
+    // }
 
-    //NSS = 1;
-    GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_SET );
+    // //NSS = 1;
+    // GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_SET );
 }
 
 void SX1276ReadBuffer( uint8_t addr, uint8_t *buffer, uint8_t size )
 {
-    uint8_t i;
+//    uint8_t i;
 
-    //NSS = 0;
-    GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_RESET );
+    // //NSS = 0;
+    // GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_RESET );
 
-    SpiInOut( addr & 0x7F );
+    // SpiInOut( addr & 0x7F );
 
-    for( i = 0; i < size; i++ )
-    {
-        buffer[i] = SpiInOut( 0 );
-    }
+    // for( i = 0; i < size; i++ )
+    // {
+    //     buffer[i] = SpiInOut( 0 );
+    // }
 
-    //NSS = 1;
-    GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_SET );
+    // //NSS = 1;
+    // GPIO_WriteBit( NSS_IOPORT, NSS_PIN, Bit_SET );
 }
 
 void SX1276WriteFifo( uint8_t *buffer, uint8_t size )
 {
-    SX1276WriteBuffer( 0, buffer, size );
+//    SX1276WriteBuffer( 0, buffer, size );
 }
 
 void SX1276ReadFifo( uint8_t *buffer, uint8_t size )
 {
-    SX1276ReadBuffer( 0, buffer, size );
+//    SX1276ReadBuffer( 0, buffer, size );
 }
 
-inline uint8_t SX1276ReadDio0( void )
-{
-    return GPIO_ReadInputDataBit( DIO0_IOPORT, DIO0_PIN );
-}
+// uint8_t SX1276ReadDio0( void )
+// {
+// //    return GPIO_ReadInputDataBit( DIO0_IOPORT, DIO0_PIN );
+// }
 
-inline uint8_t SX1276ReadDio1( void )
-{
-    return GPIO_ReadInputDataBit( DIO1_IOPORT, DIO1_PIN );
-}
+// uint8_t SX1276ReadDio1( void )
+// {
+//  //   return GPIO_ReadInputDataBit( DIO1_IOPORT, DIO1_PIN );
+// }
 
-inline uint8_t SX1276ReadDio2( void )
-{
-    return GPIO_ReadInputDataBit( DIO2_IOPORT, DIO2_PIN );
-}
+// uint8_t SX1276ReadDio2( void )
+// {
+//  //   return GPIO_ReadInputDataBit( DIO2_IOPORT, DIO2_PIN );
+// }
 
-inline uint8_t SX1276ReadDio3( void )
-{
-    return IoePinGet( RF_DIO3_PIN );
-}
+// uint8_t SX1276ReadDio3( void )
+// {
+// //    return IoePinGet( RF_DIO3_PIN );
+// }
 
-inline uint8_t SX1276ReadDio4( void )
-{
-    return IoePinGet( RF_DIO4_PIN );
-}
+// uint8_t SX1276ReadDio4( void )
+// {
+//  //   return IoePinGet( RF_DIO4_PIN );
+// }
 
-inline uint8_t SX1276ReadDio5( void )
-{
-    return IoePinGet( RF_DIO5_PIN );
-}
+// uint8_t SX1276ReadDio5( void )
+// {
+//  //   return IoePinGet( RF_DIO5_PIN );
+// }
 
-inline void SX1276WriteRxTx( uint8_t txEnable )
-{
-    if( txEnable != 0 )
-    {
-        IoePinOn( FEM_CTX_PIN );
-        IoePinOff( FEM_CPS_PIN );
-    }
-    else
-    {
-        IoePinOff( FEM_CTX_PIN );
-        IoePinOn( FEM_CPS_PIN );
-    }
-}
+// void SX1276WriteRxTx( uint8_t txEnable )
+// {
+//     // if( txEnable != 0 )
+//     // {
+//     //     IoePinOn( FEM_CTX_PIN );
+//     //     IoePinOff( FEM_CPS_PIN );
+//     // }
+//     // else
+//     // {
+//     //     IoePinOff( FEM_CTX_PIN );
+//     //     IoePinOn( FEM_CPS_PIN );
+//     // }
+// }
 
 #endif // USE_SX1276_RADIO

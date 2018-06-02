@@ -21,6 +21,9 @@
 #ifndef __SX1276_H__
 #define __SX1276_H__
 
+#include <stdint.h>
+#include <stdbool.h>
+
 /*!
  * \brief SX1276 registers array
  */

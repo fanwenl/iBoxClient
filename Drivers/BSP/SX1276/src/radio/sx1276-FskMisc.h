@@ -29,6 +29,9 @@
 #ifndef __SX1276_FSK_MISC_H__
 #define __SX1276_FSK_MISC_H__
 
+#include <stdint.h>
+#include <stdbool.h>
+
 /*!
  * \brief Writes the new RF frequency value
  *

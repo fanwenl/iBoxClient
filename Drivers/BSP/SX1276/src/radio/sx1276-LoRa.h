@@ -21,6 +21,9 @@
 #ifndef __SX1276_LORA_H__
 #define __SX1276_LORA_H__
 
+#include <stdint.h>
+#include <stdbool.h>
+
 /*!
  * SX1276 LoRa General parameters definition
  */

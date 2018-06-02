@@ -26,7 +26,7 @@
  *
  * Last modified by Miguel Luis on Jun 19 2013
  */
-#include "platform.h"
+#include "config.h"
 
 #if defined( USE_SX1276_RADIO )
 

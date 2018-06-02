@@ -29,6 +29,9 @@
 #ifndef __SX1276_LORA_MISC_H__
 #define __SX1276_LORA_MISC_H__
 
+#include <stdbool.h>
+#include <stdint.h>
+
 
 /*!
  * \brief Writes the new RF frequency value

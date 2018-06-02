@@ -21,7 +21,9 @@
 #ifndef __SX1276_HAL_H__
 #define __SX1276_HAL_H__
 
-#include "ioe.h"
+//#include "ioe.h"
+#include "ibox_sys.h"
+#include <stdint.h>
 
 /*!
  * DIO state read functions mapping
@@ -36,7 +38,8 @@
 // RXTX pin control see errata note
 #define RXTX( txEnable )                            SX1276WriteRxTx( txEnable );
 
-#define GET_TICK_COUNT( )                           ( TickCounter )
+
+#define GET_TICK_COUNT( )                           ( get_sys_time_ms() )
 #define TICK_RATE_MS( ms )                          ( ms )
 
 typedef enum
@@ -112,42 +115,61 @@ void SX1276ReadFifo( uint8_t *buffer, uint8_t size );
  *
  * \retval status Current hardware pin status [1, 0]
  */
-inline uint8_t SX1276ReadDio0( void );
+static inline uint8_t SX1276ReadDio0( void )
+{
+	
+	return 0;
+}
 
 /*!
  * \brief Gets the SX1276 DIO1 hardware pin status
  *
  * \retval status Current hardware pin status [1, 0]
  */
-inline uint8_t SX1276ReadDio1( void );
+static inline uint8_t SX1276ReadDio1( void )
+{
+		return 0;
+}
 
 /*!
  * \brief Gets the SX1276 DIO2 hardware pin status
  *
  * \retval status Current hardware pin status [1, 0]
  */
-inline uint8_t SX1276ReadDio2( void );
+static inline uint8_t SX1276ReadDio2( void )
+{
+		return 0;
+}
 
 /*!
  * \brief Gets the SX1276 DIO3 hardware pin status
  *
  * \retval status Current hardware pin status [1, 0]
  */
-inline uint8_t SX1276ReadDio3( void );
+static inline uint8_t SX1276ReadDio3( void )
+{
+		return 0;
+}
 
 /*!
  * \brief Gets the SX1276 DIO4 hardware pin status
  *
  * \retval status Current hardware pin status [1, 0]
  */
-inline uint8_t SX1276ReadDio4( void );
+static inline uint8_t SX1276ReadDio4( void )
+{
+		return 0;
+}
 
 /*!
  * \brief Gets the SX1276 DIO5 hardware pin status
  *
  * \retval status Current hardware pin status [1, 0]
  */
-inline uint8_t SX1276ReadDio5( void );
+static inline uint8_t SX1276ReadDio5( void )
+{
+		return 0;
+}
 
 /*!
  * \brief Writes the external RxTx pin value
@@ -156,6 +178,9 @@ inline uint8_t SX1276ReadDio5( void );
  *
  * \param [IN] txEnable [1: Tx, 0: Rx]
  */
-inline void SX1276WriteRxTx( uint8_t txEnable );
+static inline void SX1276WriteRxTx( uint8_t txEnable )
+{
+
+}
 
 #endif //__SX1276_HAL_H__
