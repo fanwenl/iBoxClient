@@ -10,7 +10,7 @@ rm $PWD/jlink.jlink
 echo "删除已有的jlink.jlink"
 fi
 echo "h" >> jlink.jlink
-echo "loadbin" $1 "0x08000000" >> jlink.jlink
+echo "loadfile" $1 "0x08000000" >> jlink.jlink
 echo "g" >> jlink.jlink
 echo "qc" >> jlink.jlink
 JLinkExe -device STM32F103ZE -Speed 4000 -IF JTAG -JTAGConf -1,-1 -CommanderScript jlink.jlink
