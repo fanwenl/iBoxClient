@@ -72,11 +72,12 @@ APPDIR ?= ${SOURCE_ROOT}/Application/src
 ifeq (${DEBUG}, 1)
 	CFLAGS  += -g -O0
 else
-	CFLAGS  += -O0
+	CFLAGS  += -O2
 endif
 
-CFLAGS += -Wall
-CFLAGS += -mlittle-endian  -mcpu=cortex-m3  -march=armv7-m -ffreestanding -mthumb -mthumb-interwork -std=gnu99 --specs=nosys.specs
+# -ffunction-sections -fdata-sections去除没有使用的函数
+CFLAGS += -Wall -ffunction-sections -fdata-sections
+CFLAGS += -mlittle-endian  -mcpu=cortex-m3  -march=armv7-m -ffreestanding -mthumb -std=gnu99 --specs=nosys.specs 
 # --specs=rdimon.specs https://stackoverflow.com/questions/19419782/exit-c-text0x18-undefined-reference-to-exit-when-using-arm-none-eabi-gcc
 # 增加定义
 DEFINES += HSE_VALUE=12000000
@@ -115,7 +116,11 @@ CFLAGS += ${INCLUDES}
 LINKER_SCRIPT = ${SOURCE_ROOT}/Drivers/LinkerScript_gcc/STM32F103ZE_FLASH.ld
 LDFLAGS    +=  -T $(LINKER_SCRIPT)
 #-lm:连接数学库libm.a;-lc:连接C标准库libc.a;lgcc:连接GCC支持库libgcc.a
-LDFLAGS    +=  -lm -lc
+# -Wl,-–gc-sections去除没有调用的函数
+# 注意连接的顺序
+LDFLAGS += ${CFLAGS}
+LDFLAGS    += -lm -lc -Wl,--gc-sections,-Map=build/$(TARGET_MAP)
+
 
 ############################################################
 ### Sub-makefiles
@@ -163,7 +168,7 @@ build/$(TARGET_HEX):build/$(TARGET_ELF)
 build/$(TARGET_ELF):$(OBJECTS)
 	@printf "  LD      $(TARGET_ELF)\n"
 	@printf "  LD      $(TARGET_MAP)\n"
-	$(Q)$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -Wl,-Map,build/$(TARGET_MAP)
+	$(Q)$(CC) $(LDFLAGS) -o $@ $^
 
 build/%.o:%.c 
 #   $(CC) $(CFLAGS) -c  -o  $(addprefix $(dir $^), $(notdir $@))    $^
