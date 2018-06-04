@@ -4,16 +4,16 @@ echo $1
 if [ -e $1 ];
 then
 echo $1 "文件存在"
-if [ -e $PWD/jlink.jlink ];
+if [ -e $PWD/jlink.jlinkconfig ];
 then
-rm $PWD/jlink.jlink
-echo "删除已有的jlink.jlink"
+rm $PWD/jlink.jlinkconfig
+echo "删除已有的jlink.jlinkconfig"
 fi
-echo "h" >> jlink.jlink
-echo "loadfile" $1 "0x08000000" >> jlink.jlink
-echo "g" >> jlink.jlink
-echo "qc" >> jlink.jlink
-JLinkExe -device STM32F103ZE -Speed 4000 -IF JTAG -JTAGConf -1,-1 -CommanderScript jlink.jlink
+echo "h" >> jlink.jlinkconfig
+echo "loadfile" $1 "0x08000000" >> jlink.jlinkconfig
+echo "g" >> jlink.jlinkconfig
+echo "qc" >> jlink.jlinkconfig
+JLinkExe -device STM32F103ZE -Speed 4000 -IF JTAG -JTAGConf -1,-1 -CommanderScript jlink.jlinkconfig
 else
 echo $1 "文件不存在"
 fi
