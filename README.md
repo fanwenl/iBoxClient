@@ -1,6 +1,18 @@
 # iBoxClient #
 
+
+
+[![GitHub release](https://img.shields.io/github/release/fanwenl/iBoxClient.svg)](https://github.com/fanwenl/iBoxClient/releases)
 [![Build Status](https://travis-ci.org/fanwenl/iBoxClient.svg?branch=master)](https://travis-ci.org/fanwenl/iBoxClient)
+[![GitHub pull-requests](https://img.shields.io/github/issues-pr/fanwenl/iBoxClient.svg)](https://github.com/fanwenl/iBoxClient)
+[![GitHub issues](https://img.shields.io/github/issues-raw/fanwenl/iBoxClient.svg)](https://github.com/fanwenl/iBoxClient/issues)
+[![GitHub top language](https://img.shields.io/github/languages/top/fanwenl/iBoxClient.svg)](https://github.com/fanwenl/iBoxClient)
+[![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/fanwenl/iBoxClient.svg)](https://github.com/fanwenl/iBoxClient)
+
+
+
+
+
 
 iBoxClient是运行在iBox产品上的固件软件包，其对应的服务器软件包为iBoxServer。本软件实现了一个简单的物联网系统。
 
