@@ -477,11 +477,6 @@
           <GroupName>SX1276</GroupName>
           <Files>
             <File>
-              <FileName>sx1276-Hal.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\BSP\SX1276\src\config\sx1276-Hal.c</FilePath>
-            </File>
-            <File>
               <FileName>fifo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\SX1276\src\config\fifo.c</FilePath>
@@ -490,6 +485,11 @@
               <FileName>radio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\SX1276\src\radio\radio.c</FilePath>
+            </File>
+            <File>
+              <FileName>sx1276-Hal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\SX1276\src\config\sx1276-Hal.c</FilePath>
             </File>
             <File>
               <FileName>sx1276.c</FileName>

@@ -39,17 +39,22 @@ int main(void)
     RTC_StrSetTime(buf);
     ibox_printf(1, ("system is runing....\r\n"));
     uart_init(UART3_GPRS_WIFI, 115200);
-    wifi_init();
     wdog_init();
+#ifdef USE_WIFI
+    wifi_init();
+#endif
     while (1) {
+    #ifdef USE_WIFI
+        esp8266_at_fsm();
+    #endif
         wdog_feed();
         led_toggle(LED_LORA);
         led_toggle(LED_NET);
         led_toggle(LED_SYS);
         sys_delay_ms(100);
 
-        ibox_printf(1, ("[CPU:%d][ADC1:%d][ADC2:%d]\r\n", get_cpu_temperature(), get_adc_voltage(0),\
-                        get_adc_voltage(1)));
-        ibox_printf(1, ("[RTC:%ld]\r\n", RTC_GetCounter()));
+//        ibox_printf(1, ("[CPU:%d][ADC1:%d][ADC2:%d]\r\n", get_cpu_temperature(), get_adc_voltage(0),
+//                        get_adc_voltage(1)));
+//        ibox_printf(1, ("[RTC:%ld]\r\n", RTC_GetCounter()));
     }
 }

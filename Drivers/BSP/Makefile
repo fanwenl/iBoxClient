@@ -15,5 +15,9 @@ C_SOURCES += Drivers/BSP/src/ibox_adc.c  \
 			 Drivers/BSP/src/ibox_sys.c   \
 			 Drivers/BSP/src/ibox_uart.c  \
 			 Drivers/BSP/src/ibox_wdog.c  \
-			 Drivers/BSP/src/ibox_wifi.c   \
+			 Drivers/BSP/src/ibox_config.c   \
 			 Drivers/BSP/src/w5500.c
+
+ifdef USE_WIFI
+C_SOURCES += Drivers/BSP/src/ibox_wifi.c
+endif

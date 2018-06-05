@@ -52,8 +52,10 @@ typedef enum {
 
 /*485 UART4串口接收变量定义*/
 #define UART3_RX_SIZE 1024
+#define UART3_TX_SIZE 2014
 
 void wifi_init(void);
+void esp8266_at_fsm(void);
 void uart3_send_data(const char *data);
 uint8_t get_char_form_uart3(void);
 uint16_t get_line_from_uart3(uint8_t *buf);
