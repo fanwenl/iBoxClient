@@ -1,8 +1,8 @@
 #include "ibox_config.h"
 
 IBOX_CONFIG ibox_config = {
-    "192.168.1.1", // server ip
-    "8000",        // port
+    "192.168.199.120", // server ip
+    "10000",        // port
     "fanwenl.top", // dsn
 #ifdef USE_WIFI
     "ziroom102",  // wifi_ssid[];
