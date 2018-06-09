@@ -1,6 +1,0 @@
-[submodule "Middlewares/CmBacktrace"]
-	path = Middlewares/CmBacktrace
-	url = https://github.com/armink-rtt-pkgs/CmBacktrace.git
-[submodule "Middlewares/SystemView"]
-	path = Middlewares/SystemView
-	url = https://github.com/ArdaFu/segger_debug.git
