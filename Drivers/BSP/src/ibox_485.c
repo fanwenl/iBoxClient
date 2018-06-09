@@ -61,6 +61,7 @@ void max485_send_data(uint8_t *data)
         }
     }
     /*发送完成之后设置为接收模式*/
+    sys_delay_ms(1);    //防止最后一个数据丢失
     MAX485_DIR_INPUT;
 }
 
@@ -72,6 +73,7 @@ void UART4_IRQHandler(void)
         data = USART_ReceiveData(UART_485);
         if (data == 0x0d) //回车符
             uart4_rx_lines++;
+        ibox_printf(ibox_wifi_debug, ("uart4 %s\r\n",data));
         uart4_rx_buf[uart4_rx_wr_index] = data;
         if (++uart4_rx_wr_index == UART4_RX_SIZE)
             uart4_rx_wr_index = 0;

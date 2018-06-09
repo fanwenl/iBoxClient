@@ -29,6 +29,9 @@
 #define UART4_TX_SIZE    1024 
 
 
+void max485_init(void);
+void max485_send_data(uint8_t *data);
+
 #ifdef __cplusplus
 }
 #endif /*__cplusplus*/

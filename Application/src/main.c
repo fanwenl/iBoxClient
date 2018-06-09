@@ -2,7 +2,7 @@
 
 int main(void)
 {
-    uint8_t buf[] = "20180419225500";
+    uint8_t buf[] = "20180419225500\r\n";
 
     RCC_ClocksTypeDef RCC_ClockFreq;
     /*系统时钟初始化*/
@@ -39,6 +39,7 @@ int main(void)
     RTC_StrSetTime(buf);
     ibox_printf(1, ("system is runing....\r\n"));
     uart_init(UART3_GPRS_WIFI, 115200);
+    max485_init();
     wdog_init();
 #ifdef USE_WIFI
     wifi_init();
@@ -52,6 +53,7 @@ int main(void)
         led_toggle(LED_NET);
         led_toggle(LED_SYS);
         sys_delay_ms(100);
+//        max485_send_data(buf);
 
 //        ibox_printf(1, ("[CPU:%d][ADC1:%d][ADC2:%d]\r\n", get_cpu_temperature(), get_adc_voltage(0),
 //                        get_adc_voltage(1)));

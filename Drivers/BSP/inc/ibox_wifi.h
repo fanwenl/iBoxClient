@@ -18,12 +18,19 @@ extern "C" {
 #include "stm32f10x.h"
 typedef enum {
     ESP8266_STATUS_CHECK = 0,        //检测模块
-    ESP8266_STATUS_WAIT_CHECK,
+    ESP8266_STATUS_CHECK_MODE,
     ESP8266_STATUS_WAIT_CHECK_MODE,
+    ESP8266_STATUS_CHECK_LINK,
+    ESP8266_STATUS_WAIT_CHECK_LINK,
+    ESP8266_STATUS_SET_MODE,
     ESP8266_STATUS_WAIT_SET_MODE,
     ESP8266_STATUS_WAIT_RESET,
     ESP8266_STATUS_WAIT_CLOSE_ECHO,
+    ESP8266_STATUS_WAIT_CONNECTED,
+    ESP8266_STATUS_WAIT_GOT_IP,
     ESP8266_STATUS_WAIT_LINK,
+    ESP8266_STATUS_LINK_OK,
+    ESP8266_STATUS_GET_IP,
     ESP8266_STATUS_GET_MAC,
     ESP8266_STATUS_WAIT_LINK_SERVER,
     ESP8266_STATUS_COMMUNICATE, //正常的通信状态communication
@@ -58,6 +65,7 @@ typedef enum {
 void wifi_init(void);
 void esp8266_at_fsm(void);
 void uart3_send_data(const char *data);
+void esp8266_send_data(void);
 uint8_t get_char_form_uart3(void);
 uint16_t get_line_from_uart3(uint8_t *buf);
 
