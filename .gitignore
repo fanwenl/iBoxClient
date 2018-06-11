@@ -37,6 +37,8 @@ Project/*
 *.hex
 *.map
 *.config
+*.zip
+*.rar
 
 
 
