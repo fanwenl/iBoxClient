@@ -1039,7 +1039,7 @@ typedef struct rt_module *rt_module_t;
 #endif
 
 /* definitions for libc */
-#include "rtlibc.h"
+//#include "rtlibc.h"
 
 #ifdef __cplusplus
 }
