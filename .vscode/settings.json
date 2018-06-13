@@ -33,5 +33,6 @@
         "typescript",
         "typescriptreact",
         "yml"
-    ]
+    ],
+    "C_Cpp.dimInactiveRegions": false
 }
