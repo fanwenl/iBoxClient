@@ -175,9 +175,10 @@ void SEGGER_SYSVIEW_RecordObject(unsigned EventID, struct rt_object *object)
 	pPayload = SEGGER_SYSVIEW_PREPARE_PACKET(aPacket);				  		// Prepare the packet for SystemView
 	pPayload = SEGGER_SYSVIEW_EncodeString(pPayload, object->name, RT_NAME_MAX);	// Add object name
 
-    if ((object->type & (~RT_Object_Class_Static)) == RT_Object_Class_Event)
+    if ((object->type & (~RT_Object_Class_Static)) == RT_Object_Class_Event) 
+    {
         pPayload = SEGGER_SYSVIEW_EncodeU32(pPayload, ((rt_event_t)object)->set);
-    
+    }
 	SEGGER_SYSVIEW_SendPacket(&aPacket[0], pPayload, EventID);			  	// Send the packet
 }
 
