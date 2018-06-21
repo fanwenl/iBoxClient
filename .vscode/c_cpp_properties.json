@@ -60,7 +60,9 @@
                 "${workspaceRoot}/Middlewares/cJSON",
                 "${workspaceRoot}/Middlewares/CmBacktrace",
                 "${workspaceRoot}/Middlewares/SystemView/SystemView_Src/Config",
-                "${workspaceRoot}/Middlewares/SystemView/SystemView_Src/SEGGER"
+                "${workspaceRoot}/Middlewares/SystemView/SystemView_Src/SEGGER",
+                "${workspaceRoot}/Middlewares/MQTT/MQTTPacket",
+                "${workspaceRoot}/Middlewares/MQTT/MQTTClient-C"
             ],
             "defines": [
                 "_DEBUG",
