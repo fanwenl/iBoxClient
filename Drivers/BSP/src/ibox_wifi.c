@@ -12,7 +12,7 @@
 #include "ibox_sys.h"
 #include "ibox_uart.h"
 #include "string.h"
-#include "ibox_config.h"
+#include "ibox_board.h"
 #include "stdio.h"
 
 static uint8_t uart3_rx_buf[UART3_RX_SIZE];

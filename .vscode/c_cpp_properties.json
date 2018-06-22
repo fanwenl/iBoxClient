@@ -71,7 +71,8 @@
                 "STM32F10X_HD",
                 "USE_STDPERIPH_DRIVER",
                 "HSE_VALUE=12000000",
-                "USE_WIFI"
+                "USE_WIFI",
+                "USE_RTOS"
             ],
             "intelliSenseMode": "msvc-x64",
             "browse": {

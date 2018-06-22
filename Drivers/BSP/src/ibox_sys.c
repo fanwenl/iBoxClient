@@ -102,7 +102,7 @@ void sys_nvic_init(void)
 }
 void sys_delay_ms(uint32_t delay)
 {
-#ifdef USING_RTOS
+#ifdef USE_RTOS
     
 #else
     delay_ms(delay);
@@ -120,7 +120,7 @@ static void delay_ms(uint32_t delay)
 }
 void sys_delay_us(uint32_t delay)
 {
-#ifdef USING_RTOS
+#ifdef USE_RTOS
     
 #else
     delay_us(delay);
@@ -135,19 +135,19 @@ static void delay_us(uint32_t delay)
 }
 uint32_t get_sys_time_ms(void)
 {
-#ifdef USING_RTOS
+//#ifdef USE_RTOS
     /*添加实时系统的systick，单位是s*/
-    return os_tick();
-#else
+//    return os_tick();
+//#else
     return RTC_GetCounter(); 
-#endif
+//#endif
 }
 uint32_t get_sys_time_s(void)
 {
-#ifdef USING_RTOS
+//#ifdef USE_RTOS
     /*添加实时系统的systick，单位是s*/
-    return os_tick();
-#else
+//    return os_tick();
+//#else
     return RTC_GetCounter(); 
-#endif
+//#endif
 }

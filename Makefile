@@ -86,9 +86,9 @@ DEFINES += USE_STDPERIPH_DRIVER
 # If a parent Makefile has passed us DEFINES, assume they will be missing -D.
 DEFINES := ${DEFINES:%=-D%}
 
-ifeq (${USE_RTOS}, 1)
+#ifeq (${USE_RTOS}, 1)
 DEFINES += -DUSE_RTOS
-endif
+#endif
 ifeq (${USE_WIFI}, 1)
 DEFINES += -DUSE_WIFI
 endif

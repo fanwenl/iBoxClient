@@ -18,9 +18,15 @@
 #include "stdint.h"
 #include "stdio.h"
 
+#include <rtthread.h>
+
 /*设置打印信息使用的函数*/
-#ifdef USING_RTOS
-#define ibox_printf 
+#ifdef USE_RTOS
+#define ibox_printf(flag, message) \
+do{ \
+    if(flag) \
+        rt_kprintf message; \
+}while(0) 
 #else
 #define ibox_printf(flag, message) \
 do{ \

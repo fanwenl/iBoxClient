@@ -7,3 +7,9 @@
 *描述：GPRS接口驱动，SIM800L。
 * ************************************************************************************************
 */
+
+//Rst WIFI_RTT_B
+//URXD_B WIFI_RXB
+//TXD_WIFI_TXB
+//RING WIFI_GPIOB
+//DTR WIFI_CH_PD_B
