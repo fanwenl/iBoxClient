@@ -9,6 +9,10 @@ uint32_t uart_gpio_rcc[3]  = {UART_DEBUG_GPIO_RCC_CLK,UART_GPRS_WIFI_GPIO_RCC_CL
 USART_TypeDef *uart[3]     = {USART1, USART3, UART4};
 uint8_t uart_irqn[3] = {USART1_IRQn,USART3_IRQn, UART4_IRQn};
 
+static uint8_t uart1_rx_buf[UART1_RX_SIZE];
+static uint16_t uart1_rx_wr_index = 0;
+static uint16_t uart1_rx_re_index = 0;
+
 
 void uart_init(uart_enum uart_num, uint32_t baud_rate)
 {
@@ -57,30 +61,50 @@ void uart_init(uart_enum uart_num, uint32_t baud_rate)
     /* Enable the USART */
     USART_Cmd(uart[uart_num], ENABLE);
 }
-
+/**
+ * UART1中断服务函数
+ */ 
 void USART1_IRQHandler(void)
 {
-    uint8_t data;
+    uint8_t data = 0;
+
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     { 
         /* Read one byte from the receive data register */
         data = USART_ReceiveData(USART1);
-        printf("%c",data);
-//        if (data == 0x0d) recvlines++;  
-//        rx_buffer2[rx_wr_index2]=data;
-//        if (++rx_wr_index2 == RX_BUFFER_SIZE2) rx_wr_index2=0;
-//        if (++rx_counter2 == RX_BUFFER_SIZE2)
-//        {
-//	     printf("usart2 overflow\r\n");
-//            rx_counter2=0;
-//            rx_buffer_overflow2=1;
-//		clearevbuf2();
-//        }
+        uart1_rx_buf[uart1_rx_wr_index] = data;
+        uart1_rx_wr_index += 1;
+        if (uart1_rx_wr_index >= UART1_RX_SIZE) 
+            uart1_rx_wr_index = 0;
+        if(uart1_rx_wr_index == uart1_rx_re_index) {
+            uart1_rx_re_index += 1;  
+            if(uart1_rx_re_index >= UART1_RX_SIZE)
+                uart1_rx_re_index = 0;
+        }
     }
     if(USART_GetFlagStatus(USART1,USART_FLAG_ORE) == SET)
     {
         USART_ClearFlag(USART1,USART_FLAG_ORE);
         USART_ReceiveData(USART1);
         ibox_printf(1, ("usart1 USART_FLAG_ORE is set\r\n"));
+    }
+}
+
+char get_char_form_uart1(char *ch)
+{
+    char data = 0;
+
+    if(uart1_rx_re_index != uart1_rx_wr_index){
+        data = uart1_rx_buf[uart1_rx_re_index];
+        uart1_rx_re_index += 1;
+        if(uart1_rx_re_index >= UART1_RX_SIZE)
+            uart1_rx_re_index = 0;
+
+        *ch = data & 0xff;
+        return 1;   
+    }
+    else
+    {
+        return -1;
     }
 }

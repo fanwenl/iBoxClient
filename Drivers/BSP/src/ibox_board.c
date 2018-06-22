@@ -115,3 +115,14 @@ void rt_hw_console_output(const char *str)
     }
 }
 #endif
+
+/**
+  *finsh组件中从串口读取一个字符
+  *在不使用RTT的设备驱动的情况下使用。
+ */
+#if !defined(RT_USING_DEVICE) && defined(RT_USING_FINSH)
+char rt_hw_console_getchar(char *ch)
+{
+    return get_char_form_uart1(ch);
+}
+#endif

@@ -48,7 +48,10 @@ typedef enum {
 #define UART_DEBUG_GPIO_RCC_CLK        RCC_APB2Periph_GPIOA
 #define UART_GPRS_WIFI_GPIO_RCC_CLK    RCC_APB2Periph_GPIOB
 
+#define UART1_RX_SIZE               256
+
 void uart_init(uart_enum uart_num, uint32_t baud_rate);
+char get_char_form_uart1(char *ch);
 
 #ifdef __cplusplus
 }

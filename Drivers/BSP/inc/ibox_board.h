@@ -23,6 +23,7 @@ extern "C" {
 #include "ibox_uart.h"
 #include "ibox_wdog.h"
 #include "ibox_wifi.h"
+#include "ibox_key.h"
 #include "main.h"
 #include "stdio.h"
 #include "stm32f10x_conf.h"
