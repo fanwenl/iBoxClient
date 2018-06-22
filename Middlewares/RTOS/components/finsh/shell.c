@@ -84,7 +84,12 @@ const char *finsh_get_prompt()
 }
 #endif
 
-RT_WEAK char rt_hw_console_getchar()
+/**
+ * rt_hw_console_getchar()
+ * 从硬件接口读取一个字符
+ * ch 读取到的字符，返回-1没有读到,1读到一个字符。
+ */ 
+RT_WEAK char rt_hw_console_getchar(char *ch)
 {
     /* empty console getchar */
     return -1;
@@ -104,7 +109,13 @@ static char finsh_getchar(void)
 
     return ch;
 #else
-    return rt_hw_console_getchar();
+    char ch;
+
+    RT_ASSERT(shell != RT_NULL);
+    while (rt_hw_console_getchar(&ch) != 1)
+        rt_sem_take(&shell->rx_sem, RT_WAITING_FOREVER);
+
+    return ch;
 #endif
 }
 
