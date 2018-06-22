@@ -135,6 +135,7 @@ include ${SOURCE_ROOT}/Middlewares/cJSON/Makefile
 include ${SOURCE_ROOT}/Middlewares/CmBacktrace/Makefile
 include ${SOURCE_ROOT}/Middlewares/RTOS/Makefile
 include ${SOURCE_ROOT}/Middlewares/SystemView/Makefile
+include ${SOURCE_ROOT}/Middlewares/MQTT/Makefile
 include ${SOURCE_ROOT}/lib/Makefile
 
 OBJECTS += ${patsubst %.c,build/%.o,$(C_SOURCES)}
