@@ -513,7 +513,8 @@ void rt_components_board_init(void);
  * general kernel service
  */
 #ifndef RT_USING_CONSOLE
-#define rt_kprintf(...)
+#include "stdio.h"
+#define rt_kprintf(format,...)  printf(format,##__VA_ARGS__)
 #define rt_kputs(str)
 #else
 void rt_kprintf(const char *fmt, ...);

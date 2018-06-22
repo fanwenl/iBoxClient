@@ -84,11 +84,18 @@ const char *finsh_get_prompt()
 }
 #endif
 
+RT_WEAK char rt_hw_console_getchar()
+{
+    /* empty console getchar */
+    return -1;
+}
+RTM_EXPORT(rt_hw_console_output);
+
 static char finsh_getchar(void)
 {
-#ifdef RT_USING_POSIX
+#if defined(RT_USING_POSIX)
     return getchar();
-#else
+#elif defined(RT_USING_DEVICE)
     char ch;
 
     RT_ASSERT(shell != RT_NULL);
@@ -96,10 +103,12 @@ static char finsh_getchar(void)
         rt_sem_take(&shell->rx_sem, RT_WAITING_FOREVER);
 
     return ch;
+#else
+    return rt_hw_console_getchar();
 #endif
 }
 
-#ifndef RT_USING_POSIX
+#if !defined(RT_USING_POSIX) && defined(RT_USING_DEVICE)
 static rt_err_t finsh_rx_ind(rt_device_t dev, rt_size_t size)
 {
     RT_ASSERT(shell != RT_NULL);
@@ -426,7 +435,7 @@ void finsh_thread_entry(void *parameter)
     finsh_init(&shell->parser);
 #endif
 
-#ifndef RT_USING_POSIX
+#if !defined(RT_USING_POSIX) && defined(RT_USING_DEVICE)
     /* set console device as shell device */
     if (shell->device == RT_NULL)
     {
