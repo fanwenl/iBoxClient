@@ -18,7 +18,7 @@
  */
 /*@{*/
 
-//#include <board.h>
+#include "ibox_board.h"
 #include <rtthread.h>
 
 #ifdef RT_USING_DFS
@@ -38,50 +38,34 @@
 
 //#include "led.h"
 
-ALIGN(RT_ALIGN_SIZE)
-static rt_uint8_t led_stack[ 512 ];
-static struct rt_thread led_thread;
-static void led_thread_entry(void* parameter)
+// ALIGN(RT_ALIGN_SIZE)
+// static rt_uint8_t led_stack[ 512 ];
+// static struct rt_thread led_thread;
+static void network_thread_entry(void* parameter)
 {
-    unsigned int count=0;
+//    unsigned int count=0;
 
 //    rt_hw_led_init();
 
     while (1)
     {
-        /* led1 on */
-#ifndef RT_USING_FINSH
-        rt_kprintf("led on, count : %d\r\n",count);
-#endif
-        count++;
-//        rt_hw_led_on(0);
-        rt_thread_delay( RT_TICK_PER_SECOND/2 ); /* sleep 0.5 second and switch to other thread */
+        wdog_feed();
+        led_toggle(LED_LORA);
+        led_toggle(LED_NET);
+        led_toggle(LED_SYS);
+        sys_delay_ms(100);
+//        max485_send_data(buf);
 
-        /* led1 off */
-#ifndef RT_USING_FINSH
-        rt_kprintf("led off\r\n");
-#endif
-//        rt_hw_led_off(0);
+        ibox_printf(1, ("[CPU:%d][ADC1:%d][ADC2:%d]\r\n", get_cpu_temperature(), get_adc_voltage(0),
+                        get_adc_voltage(1)));
+        ibox_printf(1, ("[RTC:%ld]\r\n", RTC_GetCounter()));
+        
+        ibox_printf(1, ("%f\r\n", 3.1415926));
+        
         rt_thread_delay( RT_TICK_PER_SECOND/2 );
     }
 }
 
-#ifdef RT_USING_RTGUI
-rt_bool_t cali_setup(void)
-{
-    rt_kprintf("cali setup entered\n");
-    return RT_FALSE;
-}
-
-void cali_store(struct calibration_data *data)
-{
-    rt_kprintf("cali finished (%d, %d), (%d, %d)\n",
-               data->min_x,
-               data->max_x,
-               data->min_y,
-               data->max_y);
-}
-#endif /* RT_USING_RTGUI */
 
 void rt_init_thread_entry(void* parameter)
 {
@@ -90,70 +74,26 @@ void rt_init_thread_entry(void* parameter)
     rt_components_init();
 #endif
 
-    /* Filesystem Initialization */
-#if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
-    /* mount sd card fat partition 1 as root directory */
-    if (dfs_mount("sd0", "/", "elm", 0, 0) == 0)
-    {
-        rt_kprintf("File System initialized!\n");
-    }
-    else
-        rt_kprintf("File System initialzation failed!\n");
-#endif  /* RT_USING_DFS */
-
-#ifdef RT_USING_RTGUI
-    {
-        extern void rt_hw_lcd_init();
-        extern void rtgui_touch_hw_init(void);
-
-        rt_device_t lcd;
-
-        /* init lcd */
-        rt_hw_lcd_init();
-
-        /* init touch panel */
-        rtgui_touch_hw_init();
-
-        /* find lcd device */
-        lcd = rt_device_find("lcd");
-
-        /* set lcd device as rtgui graphic driver */
-        rtgui_graphic_set_device(lcd);
-
-#ifndef RT_USING_COMPONENTS_INIT
-        /* init rtgui system server */
-        rtgui_system_server_init();
-#endif
-
-        calibration_set_restore(cali_setup);
-        calibration_set_after(cali_store);
-        calibration_init();
-    }
-#endif /* #ifdef RT_USING_RTGUI */
 }
 
 int rt_application_init(void)
 {
-    rt_thread_t init_thread;
+    rt_thread_t thread;
 
-    rt_err_t result;
+//    rt_err_t result;
 
     /* init led thread */
-    result = rt_thread_init(&led_thread,
-                            "led",
-                            led_thread_entry,
+    thread = rt_thread_create("network_thread",
+                            network_thread_entry,
                             RT_NULL,
-                            (rt_uint8_t*)&led_stack[0],
-                            sizeof(led_stack),
-                            20,
-                            5);
-    if (result == RT_EOK)
+                            4096, 4, 20);
+    if (thread != RT_NULL)
     {
-        rt_thread_startup(&led_thread);
+        rt_thread_startup(thread);
     }
 
 #if (RT_THREAD_PRIORITY_MAX == 32)
-    init_thread = rt_thread_create("init",
+    thread = rt_thread_create("init",
                                    rt_init_thread_entry, RT_NULL,
                                    2048, 8, 20);
 #else
@@ -162,8 +102,8 @@ int rt_application_init(void)
                                    2048, 80, 20);
 #endif
 
-    if (init_thread != RT_NULL)
-        rt_thread_startup(init_thread);
+    if (thread != RT_NULL)
+        rt_thread_startup(thread);
 
     return 0;
 }

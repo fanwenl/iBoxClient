@@ -16,7 +16,7 @@
 #include <rtthread.h>
 
 
-#include "ibox_config.h"
+#include "ibox_board.h"
 
 /**
  * @addtogroup STM32
@@ -31,7 +31,7 @@ extern int Image$$RW_IRAM1$$ZI$$Limit;
 #elif __ICCARM__
 #pragma section="HEAP"
 #else
-extern int __bss_end;
+extern int __bss_end__;
 #endif
 
 /*******************************************************************************
@@ -73,7 +73,7 @@ void rtthread_startup(void)
     rt_system_heap_init(__segment_end("HEAP"), (void*)STM32_SRAM_END);
 #else
     /* init memory system */
-    rt_system_heap_init((void*)&__bss_end, (void*)STM32_SRAM_END);
+    rt_system_heap_init((void*)&__bss_end__, (void*)STM32_SRAM_END);
 #endif
 #endif  /* STM32_EXT_SRAM */
 #endif /* RT_USING_HEAP */
@@ -100,16 +100,16 @@ void rtthread_startup(void)
     return ;
 }
 
-//int main(void)
-//{
-//    /* disable interrupt first */
-//    rt_hw_interrupt_disable();
+int main(void)
+{
+    /* disable interrupt first */
+    rt_hw_interrupt_disable();
 
-//    /* startup RT-Thread RTOS */
-//    rtthread_startup();
+    /* startup RT-Thread RTOS */
+    rtthread_startup();
 
-//    return 0;
-//}
+    return 0;
+}
 
 
 /*@}*/

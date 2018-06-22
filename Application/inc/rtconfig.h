@@ -36,10 +36,10 @@
 
 /* Kernel Device Object */
 
-#define RT_USING_DEVICE
-#define RT_USING_CONSOLE
-#define RT_CONSOLEBUF_SIZE 128
-#define RT_CONSOLE_DEVICE_NAME "uart1"
+//#define RT_USING_DEVICE
+//#define RT_USING_CONSOLE                 //console定义了rt_kprintf相关的函数
+#define RT_CONSOLEBUF_SIZE 128             //finsh中有使用
+//#define RT_CONSOLE_DEVICE_NAME "uart1"
 #define ARCH_ARM
 #define ARCH_ARM_CORTEX_M
 #define ARCH_ARM_CORTEX_M3
