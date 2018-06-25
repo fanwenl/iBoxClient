@@ -69,14 +69,15 @@ endif
 
 APPDIR ?= ${SOURCE_ROOT}/Application/src
 
+# -Wall 使能所有警告
 ifeq (${DEBUG}, 1)
-	CFLAGS  += -g -O0
+	CFLAGS  += -g -O0 -Wall
 else
 	CFLAGS  += -O2
 endif
 
 # -ffunction-sections -fdata-sections去除没有使用的函数
-CFLAGS += -Wall -ffunction-sections -fdata-sections
+CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -mlittle-endian  -mcpu=cortex-m3  -march=armv7-m -ffreestanding -mthumb -std=gnu99 --specs=nosys.specs 
 # --specs=rdimon.specs https://stackoverflow.com/questions/19419782/exit-c-text0x18-undefined-reference-to-exit-when-using-arm-none-eabi-gcc
 # 增加定义
