@@ -23,6 +23,7 @@ C_SOURCES += Middlewares/RTOS/components/finsh/cmd.c				\
              Middlewares/RTOS/components/finsh/msh_file.c           \
              Middlewares/RTOS/components/finsh/msh.c                \
              Middlewares/RTOS/components/finsh/shell.c              \
+             Middlewares/RTOS/components/finsh/symbol.c             \
              Middlewares/RTOS/libcpu/arm/common/backtrace.c         \
              Middlewares/RTOS/libcpu/arm/common/div0.c              \
              Middlewares/RTOS/libcpu/arm/common/showmem.c           \
