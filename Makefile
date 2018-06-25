@@ -171,7 +171,7 @@ build/$(TARGET_HEX):build/$(TARGET_ELF)
 	@printf "  OBJCOPY $(TARGET_HEX)\n"
 	$(Q)$(OBJCOPY) $(OBJCPFLAGS_ELF_TO_HEX) -S $^ $@
 	@echo 'Finished building target: $(PROJECT)'
-	$(Q)$(SIZE) $^
+	$(Q)$(SIZE) $@
 	@echo -----------------------------------------------------------------------------------
 
 
