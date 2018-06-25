@@ -514,7 +514,8 @@ void rt_components_board_init(void);
  */
 #ifndef RT_USING_CONSOLE
 #include "stdio.h"
-#define rt_kprintf(format,...)  printf(format,##__VA_ARGS__)
+#define rt_kprintf  printf
+//#define rt_kprintf(format,...)  printf(format,##__VA_ARGS__)
 #define rt_kputs(str)
 #else
 void rt_kprintf(const char *fmt, ...);

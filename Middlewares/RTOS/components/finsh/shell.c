@@ -87,14 +87,14 @@ const char *finsh_get_prompt()
 /**
  * rt_hw_console_getchar()
  * 从硬件接口读取一个字符
- * ch 读取到的字符，返回-1没有读到,1读到一个字符。
+ * ch 读取到的字符，返回0没有读到,1读到一个字符。
  */ 
-RT_WEAK char rt_hw_console_getchar(char *ch)
+RT_WEAK rt_size_t rt_hw_console_getchar(char *ch)
 {
     /* empty console getchar */
-    return -1;
+    return 0;
 }
-RTM_EXPORT(rt_hw_console_output);
+RTM_EXPORT(rt_hw_console_getchar);
 
 static char finsh_getchar(void)
 {
@@ -183,6 +183,13 @@ const char *finsh_get_device()
     RT_ASSERT(shell != RT_NULL);
     return shell->device->parent.name;
 }
+#else
+void rt_hw_console_getchar_callback(void)
+{
+    /* release semaphore to let finsh thread rx data */
+    rt_sem_release(&shell->rx_sem);
+}
+RTM_EXPORT(rt_hw_console_getchar_callback);
 #endif
 
 /**
