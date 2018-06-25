@@ -60,6 +60,7 @@ OBJCOPY		= $(CROSS_COMPILE)objcopy
 OBJDUMP		= $(CROSS_COMPILE)objdump
 GDB		= $(CROSS_COMPILE)gdb
 READELF		= $(CROSS_COMPILE)readelf
+SIZE	=$(CROSS_COMPILE)size
 
 ifndef SOURCE_ROOT
     # Assume we're in the source directory if not specified.
@@ -114,11 +115,13 @@ INCLUDES += ${INCLUDE_DIRS:%=-I%}
 CFLAGS += ${DEFINES}
 CFLAGS += ${INCLUDES}
 
-LINKER_SCRIPT = ${SOURCE_ROOT}/Drivers/LinkerScript_gcc/STM32F103ZE_FLASH.ld
+#STM32F103ZE_FLASH.ld
+LINKER_SCRIPT = ${SOURCE_ROOT}/Drivers/LinkerScript_gcc/stm32_rom.ld
 LDFLAGS    +=  -T $(LINKER_SCRIPT)
 #-lm:连接数学库libm.a;-lc:连接C标准库libc.a;lgcc:连接GCC支持库libgcc.a
 # -Wl,-–gc-sections去除没有调用的函数
 # 注意连接的顺序
+# 使用修改的ld文件保留finish和rtt initial代码
 LDFLAGS += ${CFLAGS}
 LDFLAGS    += -lm -lc -Wl,--gc-sections,-Map=build/$(TARGET_MAP)
 
@@ -168,7 +171,9 @@ build/$(TARGET_HEX):build/$(TARGET_ELF)
 	@printf "  OBJCOPY $(TARGET_HEX)\n"
 	$(Q)$(OBJCOPY) $(OBJCPFLAGS_ELF_TO_HEX) -S $^ $@
 	@echo 'Finished building target: $(PROJECT)'
+	$(Q)$(SIZE) $^
 	@echo -----------------------------------------------------------------------------------
+
 
 # link 的时候需要加参数--specs=rdimon.specs
 build/$(TARGET_ELF):$(OBJECTS)

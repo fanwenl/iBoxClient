@@ -102,11 +102,12 @@ void sys_nvic_init(void)
 }
 void sys_delay_ms(uint32_t delay)
 {
-#ifdef USE_RTOS
-    
-#else
+//#ifdef USE_RTOS
+    /*判断系统是否运行*/
+//    rt_thread_delay( 10 );
+//#else
     delay_ms(delay);
-#endif    
+//#endif    
 }
 static void delay_ms(uint32_t delay)
 {

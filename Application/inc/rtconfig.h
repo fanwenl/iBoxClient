@@ -13,12 +13,10 @@
 #define RT_TICK_PER_SECOND 100
 #define RT_DEBUG
 #define RT_USING_OVERFLOW_CHECK
-#define RT_DEBUG_INIT 0
+#define RT_DEBUG_INIT 1
 #define RT_DEBUG_THREAD 0
 #define RT_USING_HOOK
-#define IDLE_THREAD_STACK_SIZE 256
-
-#define RT_USING_COMPONENTS_INIT
+#define IDLE_THREAD_STACK_SIZE 512
 
 /* Inter-Thread communication */
 
@@ -46,6 +44,7 @@
 
 /* RT-Thread Components */
 
+#define RT_USING_COMPONENTS_INIT
 
 /* C++ features */
 
@@ -222,7 +221,8 @@
 #define PKG_SEGGER_SYSVIEW_RTT_BUFFER_SIZE 1024
 #define PKG_SEGGER_SYSVIEW_RTT_CHANNEL 1
 #define PKG_SEGGER_SYSVIEW_USE_STATIC_BUFFER
-#define PKG_SEGGER_SYSVIEW_POST_MORTEM_MODE
+//关闭事后分析模式
+//#define PKG_SEGGER_SYSVIEW_POST_MORTEM_MODE
 
 /* SystemView Id configuration */
 
@@ -234,6 +234,6 @@
 
 /* example package: hello */
 
-#define SOC_STM32F1
+//#define SOC_STM32F1
 
 #endif

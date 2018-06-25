@@ -25,7 +25,8 @@ void reset_key_init(void)
     /*PE15 复位按键*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
 
-    GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IN_FLOATING;
+    /*采用浮空输入中断出发比较灵敏，改为上拉输入*/
+    GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IPU;
     GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
     GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_15;
     GPIO_Init(GPIOE, &GPIO_InitStruct);

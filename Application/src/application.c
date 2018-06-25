@@ -53,29 +53,41 @@ static void network_thread_entry(void* parameter)
         led_toggle(LED_LORA);
         led_toggle(LED_NET);
         led_toggle(LED_SYS);
-        sys_delay_ms(100);
+//        sys_delay_ms(100);
 //        max485_send_data(buf);
 
-        ibox_printf(1, ("[CPU:%d][ADC1:%d][ADC2:%d]\r\n", get_cpu_temperature(), get_adc_voltage(0),
-                        get_adc_voltage(1)));
-        ibox_printf(1, ("[RTC:%ld]\r\n", RTC_GetCounter()));
-        
-        ibox_printf(1, ("%f\r\n", 3.1415926));
+//        ibox_printf(1, ("[CPU:%d][ADC1:%d][ADC2:%d]\r\n", get_cpu_temperature(), get_adc_voltage(0),
+//                        get_adc_voltage(1)));
+//        ibox_printf(1, ("[RTC:%ld]\r\n", RTC_GetCounter()));
+//        
+//        ibox_printf(1, ("%f\r\n", 3.1415926));
         
         rt_thread_delay( RT_TICK_PER_SECOND/2 );
     }
 }
 
-
+extern int finsh_system_init(void);
+extern int rt_trace_init(void);
 void rt_init_thread_entry(void* parameter)
 {
 #ifdef RT_USING_COMPONENTS_INIT
     /* initialization RT-Thread Components */
     rt_components_init();
 #endif
+    finsh_system_init();
+    rt_trace_init();
 
 }
 
+void watchdog_thread_entry(void *parameter)
+{
+    while(1)
+    {
+        wdog_feed();
+        rt_thread_delay(RT_TICK_PER_SECOND);
+    }
+    
+}
 int rt_application_init(void)
 {
     rt_thread_t thread;
@@ -87,6 +99,15 @@ int rt_application_init(void)
                             network_thread_entry,
                             RT_NULL,
                             4096, 4, 20);
+    if (thread != RT_NULL)
+    {
+        rt_thread_startup(thread);
+    }
+    
+    thread = rt_thread_create("watchdog_thread",
+                            watchdog_thread_entry,
+                            RT_NULL,
+                            256, 1, 20);
     if (thread != RT_NULL)
     {
         rt_thread_startup(thread);

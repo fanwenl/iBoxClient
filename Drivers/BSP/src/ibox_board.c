@@ -25,7 +25,6 @@ void SysTick_Handler(void)
     /* leave interrupt */
     rt_interrupt_leave();
 }
-
 /**
  * This function will initial STM32 board.
  */
@@ -70,14 +69,14 @@ void rt_hw_board_init(void)
 
     RTC_alarm_init();
     RTC_StrSetTime(buf);
-    ibox_printf(1, ("system is runing....\r\n"));
+//    ibox_printf(1, ("system is runing....\r\n"));
     uart_init(UART3_GPRS_WIFI, 115200);
     max485_init();
     wdog_init();
-    reset_key_init();
+//    reset_key_init();
     
 #ifdef USE_WIFI
-    wifi_init();
+//    wifi_init();
 #endif
 
     
@@ -121,7 +120,7 @@ void rt_hw_console_output(const char *str)
   *在不使用RTT的设备驱动的情况下使用。
  */
 #if !defined(RT_USING_DEVICE) && defined(RT_USING_FINSH)
-char rt_hw_console_getchar(char *ch)
+uint16_t rt_hw_console_getchar(char *ch)
 {
     return get_char_form_uart1(ch);
 }

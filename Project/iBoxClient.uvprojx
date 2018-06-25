@@ -371,7 +371,7 @@
             <ScatterFile></ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc></Misc>
+            <Misc>--keep *.o(.rti_fn.*) --keep *.o(FSymTab)</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -381,11 +381,6 @@
         <Group>
           <GroupName>Application</GroupName>
           <Files>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Application\src\main.c</FilePath>
-            </File>
             <File>
               <FileName>stm32f10x_it.c</FileName>
               <FileType>1</FileType>
@@ -482,14 +477,14 @@
               <FilePath>..\Drivers\BSP\src\ibox_spi.c</FilePath>
             </File>
             <File>
-              <FileName>ibox_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\BSP\src\ibox_config.c</FilePath>
-            </File>
-            <File>
               <FileName>w5500.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\src\w5500.c</FilePath>
+            </File>
+            <File>
+              <FileName>ibox_board.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\src\ibox_board.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -544,7 +539,62 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>MQTT</GroupName>
+          <GroupName>MQTT\Client</GroupName>
+        </Group>
+        <Group>
+          <GroupName>MQTT\Packet</GroupName>
+          <Files>
+            <File>
+              <FileName>MQTTConnectClient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTConnectClient.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTConnectServer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTConnectServer.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTDeserializePublish.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTDeserializePublish.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTFormat.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTFormat.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTPacket.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTPacket.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTSerializePublish.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTSerializePublish.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTSubscribeClient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTSubscribeClient.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTSubscribeServer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTSubscribeServer.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTUnsubscribeClient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTUnsubscribeClient.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTUnsubscribeServer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTUnsubscribeServer.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Ethernet</GroupName>
@@ -593,11 +643,6 @@
               <FileName>readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\Doc\readme.txt</FilePath>
-            </File>
-            <File>
-              <FileName>SYSVIEW_RT-Thread.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Middlewares\SystemView\SystemView_Description\SYSVIEW_RT-Thread.txt</FilePath>
             </File>
           </Files>
         </Group>
@@ -1307,7 +1352,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD,HSE_VALUE=12000000,USE_WIFI,DEBUG</Define>
+              <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD,HSE_VALUE=12000000,USE_WIFI,DEBUG,USE_RTOS</Define>
               <Undefine></Undefine>
               <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\BSP\SX1276\src\radio;..\Drivers\BSP\SX1276\src\config;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth;..\Middlewares\CmBacktrace;..\Middlewares\SystemView\SystemView_Description;..\Middlewares\SystemView\SystemView_Src\Config;..\Middlewares\SystemView\SystemView_Src\SEGGER;..\Middlewares\RTOS\include;..\Middlewares\RTOS\include\libc;..\Middlewares\RTOS\components\finsh</IncludePath>
             </VariousControls>
@@ -1343,7 +1388,7 @@
             <ScatterFile></ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
-            <Misc></Misc>
+            <Misc>--keep *.o(.rti_fn.*) --keep *.o(FSymTab)</Misc>
             <LinkerInputFile></LinkerInputFile>
             <DisabledWarnings></DisabledWarnings>
           </LDads>
@@ -1353,11 +1398,6 @@
         <Group>
           <GroupName>Application</GroupName>
           <Files>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Application\src\main.c</FilePath>
-            </File>
             <File>
               <FileName>stm32f10x_it.c</FileName>
               <FileType>1</FileType>
@@ -1454,14 +1494,14 @@
               <FilePath>..\Drivers\BSP\src\ibox_spi.c</FilePath>
             </File>
             <File>
-              <FileName>ibox_config.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\Drivers\BSP\src\ibox_config.c</FilePath>
-            </File>
-            <File>
               <FileName>w5500.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\BSP\src\w5500.c</FilePath>
+            </File>
+            <File>
+              <FileName>ibox_board.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\src\ibox_board.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1516,7 +1556,62 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>MQTT</GroupName>
+          <GroupName>MQTT\Client</GroupName>
+        </Group>
+        <Group>
+          <GroupName>MQTT\Packet</GroupName>
+          <Files>
+            <File>
+              <FileName>MQTTConnectClient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTConnectClient.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTConnectServer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTConnectServer.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTDeserializePublish.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTDeserializePublish.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTFormat.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTFormat.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTPacket.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTPacket.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTSerializePublish.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTSerializePublish.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTSubscribeClient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTSubscribeClient.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTSubscribeServer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTSubscribeServer.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTUnsubscribeClient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTUnsubscribeClient.c</FilePath>
+            </File>
+            <File>
+              <FileName>MQTTUnsubscribeServer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTPacket\MQTTUnsubscribeServer.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>Ethernet</GroupName>
@@ -1565,11 +1660,6 @@
               <FileName>readme.txt</FileName>
               <FileType>5</FileType>
               <FilePath>..\Doc\readme.txt</FilePath>
-            </File>
-            <File>
-              <FileName>SYSVIEW_RT-Thread.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\Middlewares\SystemView\SystemView_Description\SYSVIEW_RT-Thread.txt</FilePath>
             </File>
           </Files>
         </Group>

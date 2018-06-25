@@ -255,7 +255,7 @@ const SEGGER_SYSVIEW_OS_API SYSVIEW_X_OS_TraceAPI = {
 };
 
 // RT-Thread init trace component
-static int rt_trace_init(void)
+int rt_trace_init(void)
 {
     tidle = rt_thread_idle_gethandler();
     
