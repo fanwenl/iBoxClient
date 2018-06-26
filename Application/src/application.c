@@ -74,8 +74,8 @@ void rt_init_thread_entry(void* parameter)
     /* initialization RT-Thread Components */
     rt_components_init();
 #endif
-    finsh_system_init();
-    rt_trace_init();
+//    finsh_system_init();
+//    rt_trace_init();
 
 }
 

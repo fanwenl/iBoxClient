@@ -21,7 +21,7 @@ if exist %1 (
     echo loadfile %1 0x8000000 >> jlink.jlinkconfig
     echo g >> jlink.jlinkconfig
     echo qc >> jlink.jlinkconfig
-    jLink.exe -device STM32F103ZE -Speed auto -si JTAG -Config -1,-1 -CommanderScript jlink.jlinkconfig
+    jLink.exe -device STM32F103ZE -Speed auto -si JTAG -JTAGConf -1,-1 -CommanderScript jlink.jlinkconfig
 )else (
     echo %1 file not found
 )

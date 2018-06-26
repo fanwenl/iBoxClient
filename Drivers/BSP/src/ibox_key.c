@@ -24,10 +24,11 @@ void reset_key_init(void)
 
     /*PE15 复位按键*/
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOE, ENABLE);
+    /*使能复用时钟*/
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
     /*采用浮空输入中断出发比较灵敏，改为上拉输入*/
     GPIO_InitStruct.GPIO_Mode  = GPIO_Mode_IPU;
-    GPIO_InitStruct.GPIO_Speed = GPIO_Speed_2MHz;
     GPIO_InitStruct.GPIO_Pin   = GPIO_Pin_15;
     GPIO_Init(GPIOE, &GPIO_InitStruct);
 
@@ -55,10 +56,11 @@ void EXTI15_10_IRQHandler(void)
     if (EXTI_GetITStatus(EXTI_Line15) != RESET) {
 
         //关闭中断防止多次触发?
-        sys_delay_ms(10);
+        sys_delay_ms(20);
         if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15) == 0)
         {
-            NVIC_SystemReset();
+            printf("system reset...\r\n");
+            __NVIC_SystemReset();
         }
         EXTI_ClearITPendingBit(EXTI_Line15); //清除中断标志位
     }

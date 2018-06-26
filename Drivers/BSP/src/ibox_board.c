@@ -69,11 +69,11 @@ void rt_hw_board_init(void)
 
     RTC_alarm_init();
     RTC_StrSetTime(buf);
-//    ibox_printf(1, ("system is runing....\r\n"));
+    ibox_printf(1, ("system is runing....\r\n"));
     uart_init(UART3_GPRS_WIFI, 115200);
     max485_init();
     wdog_init();
-//    reset_key_init();
+    reset_key_init();
     
 #ifdef USE_WIFI
 //    wifi_init();

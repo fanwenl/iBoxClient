@@ -14,6 +14,11 @@
 extern "C" {
 #endif
 
+#define FIRMWARE_VER_MAIN       0L                                                                                                  
+#define FIRMWARE_VER_SUB        3L
+#define FIRMWARE_VER_REV        0L
+#define FIRMWARE_VER            (FIRMWARE_VER_MAIN*10000+FIRMWARE_VER_SUB*100+FIRMWARE_VER_REV)
+
 #include "ibox_485.h"
 #include "ibox_adc.h"
 #include "ibox_dac.h"
@@ -24,7 +29,6 @@ extern "C" {
 #include "ibox_wdog.h"
 #include "ibox_wifi.h"
 #include "ibox_key.h"
-#include "main.h"
 #include "stdio.h"
 #include "stm32f10x_conf.h"
 #include "stm32f10x_it.h"

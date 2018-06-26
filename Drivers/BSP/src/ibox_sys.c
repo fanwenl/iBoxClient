@@ -100,14 +100,24 @@ void sys_nvic_init(void)
     NVIC_Init(&NVIC_InitStructure);
         
 }
+/**ms级别函数,使用RTOS后精度是RTOS的TICK
+ * 本项目中RTOS的TICK为10ms
+ */ 
 void sys_delay_ms(uint32_t delay)
 {
-//#ifdef USE_RTOS
+#ifdef USE_RTOS
+    if(delay < 10)
+        delay = 1;
+    else
+        delay = delay / (1000 / RT_TICK_PER_SECOND);
     /*判断系统是否运行*/
-//    rt_thread_delay( 10 );
-//#else
+    if(rt_critical_level())
+        rt_thread_delay(delay);
+    else
+        delay_ms(delay);
+#else
     delay_ms(delay);
-//#endif    
+#endif    
 }
 static void delay_ms(uint32_t delay)
 {
@@ -119,13 +129,17 @@ static void delay_ms(uint32_t delay)
    }   
     
 }
+/**
+ * delay_us直接采用硬延时
+ * 一般不使用该延时，如果有需求后续实现
+ */ 
 void sys_delay_us(uint32_t delay)
 {
-#ifdef USE_RTOS
+//#ifdef USE_RTOS
     
-#else
+//#else
     delay_us(delay);
-#endif    
+//#endif    
 }
 static void delay_us(uint32_t delay)
 {  
@@ -134,21 +148,18 @@ static void delay_us(uint32_t delay)
    }   
     
 }
+/**
+ * 返回单位为RTOS TICK单位的数
+ * 本项目中返回的单位为10ms
+ */ 
 uint32_t get_sys_time_ms(void)
 {
-//#ifdef USE_RTOS
-    /*添加实时系统的systick，单位是s*/
-//    return os_tick();
-//#else
-    return RTC_GetCounter(); 
-//#endif
+    return rt_tick_get();
 }
+/**
+ * 返回单位为s数
+ */ 
 uint32_t get_sys_time_s(void)
 {
-//#ifdef USE_RTOS
-    /*添加实时系统的systick，单位是s*/
-//    return os_tick();
-//#else
     return RTC_GetCounter(); 
-//#endif
 }

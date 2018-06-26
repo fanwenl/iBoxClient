@@ -29,6 +29,7 @@
 #include <rthw.h>
 #include <cm_backtrace.h>
 #include <string.h>
+#include "ibox_board.h"
 
 #ifndef CMB_LR_WORD_OFFSET
 #define CMB_LR_WORD_OFFSET   6
@@ -61,7 +62,10 @@ RT_WEAK rt_err_t exception_hook(void *context) {
 }
 
 int rt_cm_backtrace_init(void) {
-    cm_backtrace_init("rtthread","1.0","1.0");
+    char temp_buf[10];
+
+    sprintf(temp_buf,"%d.%d.%d", FIRMWARE_VER_MAIN, FIRMWARE_VER_SUB, FIRMWARE_VER_REV);
+    cm_backtrace_init("iBoxClient","1.0",(const char *)temp_buf);
     
     rt_hw_exception_install(exception_hook);
     
