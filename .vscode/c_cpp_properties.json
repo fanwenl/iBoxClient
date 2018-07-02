@@ -62,7 +62,12 @@
                 "${workspaceRoot}/Middlewares/SystemView/SystemView_Src/Config",
                 "${workspaceRoot}/Middlewares/SystemView/SystemView_Src/SEGGER",
                 "${workspaceRoot}/Middlewares/MQTT/MQTTPacket",
-                "${workspaceRoot}/Middlewares/MQTT/MQTTClient-C"
+                "${workspaceRoot}/Middlewares/MQTT/MQTTClient-C",
+                "${workspaceRoot}/tests/Unity/src",
+                "${workspaceRoot}/tests/Unity/extras/fixture/src",
+                "${workspaceRoot}/tests/iBoxClient/Application",
+                "${workspaceRoot}/tests/iBoxClient/Drivers"
+
             ],
             "defines": [
                 "_DEBUG",

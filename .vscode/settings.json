@@ -7,7 +7,9 @@
         "ibox_board.h": "c",
         "stm32f10x_conf.h": "c",
         "ibox_485.h": "c",
-        "ibox_uart.h": "c"
+        "ibox_uart.h": "c",
+        "unity.h": "c",
+        "unity_fixture.h": "c"
     },
     "cSpell.enabledLanguageIds": [
         "cpp",

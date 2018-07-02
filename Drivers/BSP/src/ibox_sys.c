@@ -163,3 +163,9 @@ uint32_t get_sys_time_s(void)
 {
     return RTC_GetCounter(); 
 }
+
+
+uint32_t num_add_function(uint32_t a, uint32_t b)
+{
+    return(a+b);
+}
