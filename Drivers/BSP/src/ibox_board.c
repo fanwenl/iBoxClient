@@ -74,6 +74,7 @@ void rt_hw_board_init(void)
     max485_init();
     wdog_init();
     reset_key_init();
+//    w5500_init();
     
 #ifdef USE_WIFI
 //    wifi_init();

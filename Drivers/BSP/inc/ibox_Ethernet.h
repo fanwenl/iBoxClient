@@ -17,6 +17,8 @@
 #include "stm32f10x.h"
 #include "stdint.h"
 
+void w5500_init(void);
+
 #ifdef __cplusplus
     }
 #endif /*__cplusplus*/

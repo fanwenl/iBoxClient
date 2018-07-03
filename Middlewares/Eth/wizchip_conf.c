@@ -53,26 +53,44 @@
 //
 
 #include "wizchip_conf.h"
+#include "ibox_board.h"
 
 /////////////
 //M20150401 : Remove ; in the default callback function such as wizchip_cris_enter(), wizchip_cs_select() and etc.
 /////////////
 
 /**
+ * @brief Default function to diable interrupt.
+ * @note This function help not to access wrong address. If you do not describe this function or register any functions,
+ * null function is called.
+ * In non-OS environment, It can be just implemented by disabling whole interrupt.\n
+ * In OS environment, You can replace it to critical section api supported by OS.
+ */
+
+//void 	  wizchip_cris_enter(void)           {};
+void wizchip_cris_enter(void)           
+{
+#ifdef USE_RTOS
+       rt_enter_critical();
+#else
+       __set_PRIMASK(1);            //关闭总中断
+#endif
+}
+
+/**
  * @brief Default function to enable interrupt.
  * @note This function help not to access wrong address. If you do not describe this function or register any functions,
  * null function is called.
  */
-//void 	  wizchip_cris_enter(void)           {};
-void 	  wizchip_cris_enter(void)           {}
-
-/**
- * @brief Default function to disable interrupt.
- * @note This function help not to access wrong address. If you do not describe this function or register any functions,
- * null function is called.
- */
 //void 	  wizchip_cris_exit(void)          {};
-void 	  wizchip_cris_exit(void)          {}
+void wizchip_cris_exit(void)  
+{
+#ifdef USE_RTOS
+       rt_exit_critical();
+#else
+       __set_PRIMASK(0);            //打开中断
+#endif
+}
 
 /**
  * @brief Default function to select chip.
@@ -80,7 +98,10 @@ void 	  wizchip_cris_exit(void)          {}
  * null function is called.
  */
 //void 	wizchip_cs_select(void)            {};
-void 	wizchip_cs_select(void)            {}
+void wizchip_cs_select(void)
+{
+      w5500_cs_select();
+}
 
 /**
  * @brief Default function to deselect chip.
@@ -88,8 +109,10 @@ void 	wizchip_cs_select(void)            {}
  * null function is called.
  */
 //void 	wizchip_cs_deselect(void)          {};
-void 	wizchip_cs_deselect(void)          {}
-
+void 	wizchip_cs_deselect(void)
+{
+      w5500_cs_deselect();
+}
 /**
  * @brief Default function to read in direct or indirect interface.
  * @note This function help not to access wrong address. If you do not describe this function or register any functions,
@@ -114,7 +137,10 @@ void 	wizchip_bus_writedata(uint32_t AddrSel, iodata_t wb)  { *((volatile iodata
  * null function is called.
  */
 //uint8_t wizchip_spi_readbyte(void)        {return 0;};
-uint8_t wizchip_spi_readbyte(void)        {return 0;}
+uint8_t wizchip_spi_readbyte(void)
+{
+      return w5500_spi_readbyte();
+}
 
 /**
  * @brief Default function to write in SPI interface.
@@ -122,7 +148,10 @@ uint8_t wizchip_spi_readbyte(void)        {return 0;}
  * null function is called.
  */
 //void 	wizchip_spi_writebyte(uint8_t wb) {};
-void 	wizchip_spi_writebyte(uint8_t wb) {}
+void 	wizchip_spi_writebyte(uint8_t wb)
+{
+      w5500_spi_writebyte(wb);
+}
 
 /**
  * @brief Default function to burst read in SPI interface.
@@ -130,7 +159,10 @@ void 	wizchip_spi_writebyte(uint8_t wb) {}
  * null function is called.
  */
 //void 	wizchip_spi_readburst(uint8_t* pBuf, uint16_t len) 	{}; 
-void 	wizchip_spi_readburst(uint8_t* pBuf, uint16_t len) 	{}
+void 	wizchip_spi_readburst(uint8_t* pBuf, uint16_t len) 	
+{
+      w5500_spi_readburst(pBuf, len);
+}
 
 /**
  * @brief Default function to burst write in SPI interface.
@@ -138,16 +170,19 @@ void 	wizchip_spi_readburst(uint8_t* pBuf, uint16_t len) 	{}
  * null function is called.
  */
 //void 	wizchip_spi_writeburst(uint8_t* pBuf, uint16_t len) {};
-void 	wizchip_spi_writeburst(uint8_t* pBuf, uint16_t len) {}
+void 	wizchip_spi_writeburst(uint8_t* pBuf, uint16_t len)
+{
+      w5500_spi_writeburst(pBuf, len);
+}
 
 /**
  * @\ref _WIZCHIP instance
  */
 //
-//M20150401 : For a compiler didnot support a member of structure
+//M20150401 : For a compiler did not support a member of structure
 //            Replace the assignment of struct members with the assingment of array
 //
-/*
+
 _WIZCHIP  WIZCHIP =
       {
       .id                  = _WIZCHIP_ID_,
@@ -156,12 +191,12 @@ _WIZCHIP  WIZCHIP =
       .CRIS._exit          = wizchip_cris_exit,
       .CS._select          = wizchip_cs_select,
       .CS._deselect        = wizchip_cs_deselect,
-      .IF.BUS._read_byte   = wizchip_bus_readbyte,
-      .IF.BUS._write_byte  = wizchip_bus_writebyte
-//    .IF.SPI._read_byte   = wizchip_spi_readbyte,
-//    .IF.SPI._write_byte  = wizchip_spi_writebyte
+      .IF.SPI._read_byte   = wizchip_spi_readbyte,
+      .IF.SPI._write_byte  = wizchip_spi_writebyte,
+      .IF.SPI._read_burst  = wizchip_spi_readburst,
+      .IF.SPI._write_burst = wizchip_spi_writeburst
       };
-*/      
+/*
 _WIZCHIP  WIZCHIP =
 {
       _WIZCHIP_IO_MODE_,
@@ -180,17 +215,19 @@ _WIZCHIP  WIZCHIP =
                   //wizchip_bus_readbyte,
                   //wizchip_bus_writebyte
             //},
-            {
-                   wizchip_bus_readdata,
-                   wizchip_bus_writedata,
-            },
-           // {
-                  //wizchip_spi_readbyte,
-                  //wizchip_spi_writebyte
-           // },
+            //{
+            //       wizchip_bus_readdata,
+            //       wizchip_bus_writedata,
+            //},
+           {
+                  wizchip_spi_readbyte,
+                  wizchip_spi_writebyte,
+                  wizchip_spi_readburst,
+                  wizchip_spi_writeburst,
+           },
       },
 };
-
+*/
 
 static uint8_t    _DNS_[4];      // DNS server ip address
 static dhcp_mode  _DHCP_;        // DHCP mode

@@ -18,7 +18,7 @@
 #include "stdint.h"
 
 typedef enum {
-    W5500 = 0,
+    ETHERNRT = 0,
     LOAR,
 }SPI_typedef;
 
@@ -27,6 +27,13 @@ typedef enum {
 #define LORA_CS_L GPIO_ResetBits(GPIOA, GPIO_Pin_8)
 
 void spi_init(SPI_typedef module);
+
+void w5500_cs_select(void);
+void w5500_cs_deselect(void);
+uint8_t w5500_spi_readbyte(void);
+void w5500_spi_writebyte(uint8_t wb);
+void w5500_spi_readburst(uint8_t* pBuf, uint16_t len);
+void w5500_spi_writeburst(uint8_t* pBuf, uint16_t len);
 
 #ifdef __cplusplus
     }

@@ -29,9 +29,14 @@ extern "C" {
 #include "ibox_wdog.h"
 #include "ibox_wifi.h"
 #include "ibox_key.h"
-#include "stdio.h"
+#include "ibox_spi.h"
 #include "stm32f10x_conf.h"
 #include "stm32f10x_it.h"
+#include "ibox_Ethernet.h"
+
+#include <stdio.h>
+#include <stdint.h>
+#include "wizchip_conf.h"
 
 /*下面的这些长度需要多定义一位存放'/0',否则和后面数据连起来*/
 #define MAX_IP_LEN       16

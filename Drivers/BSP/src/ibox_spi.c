@@ -50,7 +50,7 @@ void spi_init(SPI_typedef module)
         SPI_Init(SPI1, &SPI_InitStructure); //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
         SPI_Cmd(SPI1, ENABLE);              //使能SPI外设
     } break;
-    case W5500: {
+    case ETHERNRT: {
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
@@ -79,5 +79,44 @@ void spi_init(SPI_typedef module)
     } break;
 		default:
 			break;
+    }
+}
+
+void w5500_cs_select(void)
+{
+      SPI_SSOutputCmd(SPI2, ENABLE);
+}
+
+void w5500_cs_deselect(void)
+{
+      SPI_SSOutputCmd(SPI2, DISABLE);
+}
+uint8_t w5500_spi_readbyte(void)
+{
+    while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET);
+
+    return SPI_I2S_ReceiveData(SPI2);
+}
+
+void w5500_spi_writebyte(uint8_t wb) 
+{
+    while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET);
+    SPI_I2S_SendData(SPI2, wb);
+}
+void w5500_spi_readburst(uint8_t* pBuf, uint16_t len)
+{
+    while(len)
+    {
+        *pBuf++ = w5500_spi_readbyte();
+        len--;
+    }
+}
+
+void w5500_spi_writeburst(uint8_t* pBuf, uint16_t len)
+{
+    while(len)
+    {
+        w5500_spi_writebyte(*(pBuf++));
+        len--;
     }
 }
