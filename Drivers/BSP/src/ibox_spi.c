@@ -21,9 +21,14 @@ void spi_init(SPI_typedef module)
     case LOAR: {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_GPIOA, ENABLE);
 
-        GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7; // MOSI MISO SCK复用
+        GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_5 | GPIO_Pin_7;              // MOSI SCK复用
         GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;                      //复用推挽输出
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+        /*MISO PA6*/
+        GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_6;
+        GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING; //浮空输入
         GPIO_Init(GPIOA, &GPIO_InitStructure);
 
         GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_8;       // SPI_CS
@@ -54,10 +59,23 @@ void spi_init(SPI_typedef module)
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
-        GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+        /*clk PB12、MOSI PB15*/
+        GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_12 | GPIO_Pin_15;
         GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF_PP; //复用推挽输出
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+        /*MISO PB14*/
+        GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_14;
+        GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_IN_FLOATING; //浮空输入
+        GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+        /*CS PB12 IO软件自己控制*/
+        GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_12;
+        GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP; //复用推挽输出
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOB, &GPIO_InitStructure);
+
 
         //设置SPI单向或者双向的数据模式:SPI设置为双线双向全双工
         SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
@@ -67,7 +85,7 @@ void spi_init(SPI_typedef module)
         SPI_InitStructure.SPI_CPOL      = SPI_CPOL_Low;
         SPI_InitStructure.SPI_CPHA      = SPI_CPHA_1Edge;
         // SPI_NSS_Soft;//NSS信号由硬件（NSS管脚）还是软件（使用SSI位）管理:内部NSS信号有SSI位控制
-        SPI_InitStructure.SPI_NSS       = SPI_NSS_Hard;
+        SPI_InitStructure.SPI_NSS       = SPI_NSS_Soft;
         //定义波特率预分频的值:波特率预分频值为2.(36MHz)
         SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;
         //指定数据传输从MSB位还是LSB位开始:数据传输从MSB位开始
@@ -77,32 +95,39 @@ void spi_init(SPI_typedef module)
         SPI_Init(SPI2, &SPI_InitStructure); //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
         SPI_Cmd(SPI2, ENABLE);              //使能SPI外设
     } break;
-		default:
-			break;
+        default:
+            break;
     }
+}
+uint8_t spi2_readwritebyte(uint8_t byte)
+{
+    while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET);
+    SPI_I2S_SendData(SPI2, byte);
+    /*读的时候需要提供clk*/
+    while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET);
+    return SPI_I2S_ReceiveData(SPI2);
 }
 
 void w5500_cs_select(void)
 {
-      SPI_SSOutputCmd(SPI2, ENABLE);
+    GPIO_ResetBits(GPIOB, GPIO_Pin_12);
 }
 
 void w5500_cs_deselect(void)
 {
-      SPI_SSOutputCmd(SPI2, DISABLE);
+    GPIO_SetBits(GPIOB, GPIO_Pin_12);
 }
+
 uint8_t w5500_spi_readbyte(void)
 {
-    while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET);
-
-    return SPI_I2S_ReceiveData(SPI2);
+    return spi2_readwritebyte(0x00);
 }
 
 void w5500_spi_writebyte(uint8_t wb) 
 {
-    while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET);
-    SPI_I2S_SendData(SPI2, wb);
+    spi2_readwritebyte(wb);
 }
+
 void w5500_spi_readburst(uint8_t* pBuf, uint16_t len)
 {
     while(len)
