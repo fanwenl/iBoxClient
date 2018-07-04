@@ -49,8 +49,9 @@ extern "C" {
 #pragma pack(1)
 typedef struct __IBOX_CONFIG {
     uint8_t server_ip[MAX_IP_LEN];
-    uint8_t server_port[MAX_PORT_LEN];
     uint8_t server_dsn[MAX_DSN_LEN];
+    uint16_t server_port;
+    uint16_t local_port;
 #ifdef USE_WIFI
     uint8_t wifi_ssid[MAX_WIFI_SSID_LEN];
     uint8_t wifi_password[MAX_WIFI_PASS_LEN];

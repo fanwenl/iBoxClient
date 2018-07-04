@@ -73,7 +73,7 @@ void wizchip_cris_enter(void)
 #ifdef USE_RTOS
        rt_enter_critical();
 #else
-       __set_PRIMASK(1);            //关闭总中断
+      __disable_irq();            //关闭总中断
 #endif
 }
 
@@ -88,7 +88,7 @@ void wizchip_cris_exit(void)
 #ifdef USE_RTOS
        rt_exit_critical();
 #else
-       __set_PRIMASK(0);            //打开中断
+      __enable_irq();            //打开中断
 #endif
 }
 
@@ -488,7 +488,7 @@ int8_t wizchip_init(uint8_t* txsize, uint8_t* rxsize)
 
 		for(i = 0 ; i < _WIZCHIP_SOCK_NUM_; i++)
 		{
-		#if __WIZCHIP_ < W5200	//2016.10.28 peter add condition for w5100 and w5100s
+		#if _WIZCHIP_ < W5200	//2016.10.28 peter add condition for w5100 and w5100s
 			j = 0;
 			while(txsize[i] >> j != 1){j++;}
 			setSn_TXBUF_SIZE(i, j);
@@ -522,7 +522,7 @@ int8_t wizchip_init(uint8_t* txsize, uint8_t* rxsize)
 
 		for(i = 0 ; i < _WIZCHIP_SOCK_NUM_; i++)
 		{
-		#if __WIZCHIP_ < W5200	//2016.10.28 peter add condition for w5100 and w5100s
+		#if _WIZCHIP_ < W5200	//2016.10.28 peter add condition for w5100 and w5100s
 			j = 0;
 			while(rxsize[i] >> j != 1){j++;}
 			setSn_RXBUF_SIZE(i, j);
