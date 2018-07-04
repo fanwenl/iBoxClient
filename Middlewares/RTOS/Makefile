@@ -47,4 +47,4 @@ C_SOURCES += Middlewares/RTOS/components/finsh/cmd.c				\
              Middlewares/RTOS/src/timer.c
 
 
-ASM_SOURCES += Middlewares/RTOS/libcpu/arm/cortex-m3/context_gcc.S
+ASM_SOURCES += Middlewares/RTOS/libcpu/arm/cortex-m3/context_gcc.s
