@@ -100,7 +100,10 @@ void wizchip_cris_exit(void)
  * functions, null function is called.
  */
 // void 	wizchip_cs_select(void)            {};
-void wizchip_cs_select(void) { w5500_cs_select(); }
+void wizchip_cs_select(void)
+{
+    w5500_cs_select();
+}
 
 /**
  * @brief Default function to deselect chip.
@@ -108,7 +111,10 @@ void wizchip_cs_select(void) { w5500_cs_select(); }
  * functions, null function is called.
  */
 // void 	wizchip_cs_deselect(void)          {};
-void wizchip_cs_deselect(void) { w5500_cs_deselect(); }
+void wizchip_cs_deselect(void)
+{
+    w5500_cs_deselect();
+}
 /**
  * @brief Default function to read in direct or indirect interface.
  * @note This function help not to access wrong address. If you do not describe this function or register any
@@ -116,7 +122,10 @@ void wizchip_cs_deselect(void) { w5500_cs_deselect(); }
  */
 // M20150601 : Rename the function for integrating with W5300
 // uint8_t wizchip_bus_readbyte(uint32_t AddrSel) { return * ((volatile uint8_t *)((ptrdiff_t) AddrSel)); }
-iodata_t wizchip_bus_readdata(uint32_t AddrSel) { return *((volatile iodata_t *) ((ptrdiff_t) AddrSel)); }
+iodata_t wizchip_bus_readdata(uint32_t AddrSel)
+{
+    return *((volatile iodata_t *) ((ptrdiff_t) AddrSel));
+}
 
 /**
  * @brief Default function to write in direct or indirect interface.
@@ -124,8 +133,8 @@ iodata_t wizchip_bus_readdata(uint32_t AddrSel) { return *((volatile iodata_t *)
  * functions, null function is called.
  */
 // M20150601 : Rename the function for integrating with W5300
-// void 	wizchip_bus_writebyte(uint32_t AddrSel, uint8_t wb)  { *((volatile uint8_t*)((ptrdiff_t)AddrSel))
-// = wb; }
+// void 	wizchip_bus_writebyte(uint32_t AddrSel, uint8_t wb)  { *((volatile
+// uint8_t*)((ptrdiff_t)AddrSel)) = wb; }
 void wizchip_bus_writedata(uint32_t AddrSel, iodata_t wb)
 {
     *((volatile iodata_t *) ((ptrdiff_t) AddrSel)) = wb;
@@ -137,7 +146,10 @@ void wizchip_bus_writedata(uint32_t AddrSel, iodata_t wb)
  * functions, null function is called.
  */
 // uint8_t wizchip_spi_readbyte(void)        {return 0;};
-uint8_t wizchip_spi_readbyte(void) { return w5500_spi_readbyte(); }
+uint8_t wizchip_spi_readbyte(void)
+{
+    return w5500_spi_readbyte();
+}
 
 /**
  * @brief Default function to write in SPI interface.
@@ -145,7 +157,10 @@ uint8_t wizchip_spi_readbyte(void) { return w5500_spi_readbyte(); }
  * functions, null function is called.
  */
 // void 	wizchip_spi_writebyte(uint8_t wb) {};
-void wizchip_spi_writebyte(uint8_t wb) { w5500_spi_writebyte(wb); }
+void wizchip_spi_writebyte(uint8_t wb)
+{
+    w5500_spi_writebyte(wb);
+}
 
 /**
  * @brief Default function to burst read in SPI interface.
@@ -153,7 +168,10 @@ void wizchip_spi_writebyte(uint8_t wb) { w5500_spi_writebyte(wb); }
  * functions, null function is called.
  */
 // void 	wizchip_spi_readburst(uint8_t* pBuf, uint16_t len) 	{};
-void wizchip_spi_readburst(uint8_t *pBuf, uint16_t len) { w5500_spi_readburst(pBuf, len); }
+void wizchip_spi_readburst(uint8_t *pBuf, uint16_t len)
+{
+    w5500_spi_readburst(pBuf, len);
+}
 
 /**
  * @brief Default function to burst write in SPI interface.
@@ -161,7 +179,10 @@ void wizchip_spi_readburst(uint8_t *pBuf, uint16_t len) { w5500_spi_readburst(pB
  * functions, null function is called.
  */
 // void 	wizchip_spi_writeburst(uint8_t* pBuf, uint16_t len) {};
-void wizchip_spi_writeburst(uint8_t *pBuf, uint16_t len) { w5500_spi_writeburst(pBuf, len); }
+void wizchip_spi_writeburst(uint8_t *pBuf, uint16_t len)
+{
+    w5500_spi_writeburst(pBuf, len);
+}
 
 /**
  * @\ref _WIZCHIP instance
@@ -887,7 +908,10 @@ int8_t wizchip_setnetmode(netmode_type netmode)
     return 0;
 }
 
-netmode_type wizchip_getnetmode(void) { return (netmode_type) getMR(); }
+netmode_type wizchip_getnetmode(void)
+{
+    return (netmode_type) getMR();
+}
 
 void wizchip_settimeout(wiz_NetTimeout *nettime)
 {

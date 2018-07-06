@@ -2,10 +2,8 @@
 //
 //! \file dhcp.c
 //! \brief DHCP APIs implement file.
-//! \details Processig DHCP protocol as DISCOVER, OFFER, REQUEST, ACK, NACK and DECLINE.
-//! \version 1.1.0
-//! \date 2013/11/18
-//! \par  Revision history
+//! \details Processig DHCP protocol as DISCOVER, OFFER, REQUEST, ACK, NACK and
+//! DECLINE. \version 1.1.0 \date 2013/11/18 \par  Revision history
 //!       <2013/11/18> 1st Release
 //!       <2012/12/20> V1.1.0
 //!         1. Optimize code
@@ -15,7 +13,8 @@
 //!         5. Don't care system endian
 //!         6. Add comments
 //!       <2012/12/26> V1.1.1
-//!         1. Modify variable declaration: dhcp_tick_1s is declared volatile for code optimization
+//!         1. Modify variable declaration: dhcp_tick_1s is declared volatile
+//!         for code optimization
 //! \author Eric Jung & MidnightCow
 //! \copyright
 //!
@@ -100,12 +99,12 @@ void default_ip_update(void);
 void default_ip_conflict(void);
 
 /* Callback handler */
-void (*dhcp_ip_assign)(void) =
-    default_ip_assign; /* handler to be called when the IP address from DHCP server is first assigned */
-void (*dhcp_ip_update)(void) =
-    default_ip_update; /* handler to be called when the IP address from DHCP server is updated */
-void (*dhcp_ip_conflict)(void) =
-    default_ip_conflict; /* handler to be called when the IP address from DHCP server is conflict */
+void (*dhcp_ip_assign)(void) = default_ip_assign;     /* handler to be called when the IP address from DHCP
+                                                         server is first assigned */
+void (*dhcp_ip_update)(void) = default_ip_update;     /* handler to be called when the IP address from DHCP
+                                                         server is updated */
+void (*dhcp_ip_conflict)(void) = default_ip_conflict; /* handler to be called when the IP address from DHCP
+                                                         server is conflict */
 
 void reg_dhcp_cbfunc(void (*ip_assign)(void), void (*ip_update)(void), void (*ip_conflict)(void));
 
@@ -118,7 +117,8 @@ void send_DHCP_REQUEST(void);
 /* send DECLINE message to DHCP server */
 void send_DHCP_DECLINE(void);
 
-/* IP conflict check by sending ARP-request to leased IP and wait ARP-response. */
+/* IP conflict check by sending ARP-request to leased IP and wait ARP-response.
+ */
 int8_t check_DHCP_leasedIP(void);
 
 /* check the timeout in DHCP process */
@@ -342,7 +342,8 @@ void send_DHCP_REQUEST(void)
     pDHCPMSG->OPT[k++] = DHCP_CHADDR[4];
     pDHCPMSG->OPT[k++] = DHCP_CHADDR[5];
 
-    if (ip[3] == 255) // if(dchp_state == STATE_DHCP_LEASED || dchp_state == DHCP_REREQUEST_STATE)
+    if (ip[3] == 255) // if(dchp_state == STATE_DHCP_LEASED || dchp_state ==
+                      // DHCP_REREQUEST_STATE)
     {
         pDHCPMSG->OPT[k++] = dhcpRequestedIPaddr;
         pDHCPMSG->OPT[k++] = 0x04;
@@ -467,21 +468,22 @@ int8_t parseDHCPMSG(void)
     if ((len = getSn_RX_RSR(DHCP_SOCKET)) > 0) {
         len = recvfrom(DHCP_SOCKET, (uint8_t *) pDHCPMSG, len, svr_addr, &svr_port);
 #ifdef _DHCP_DEBUG_
-        printf("DHCP message : %d.%d.%d.%d(%d) %d received. \r\n", svr_addr[0], svr_addr[1], svr_addr[2],
-               svr_addr[3], svr_port, len);
+        printf("DHCP message : %d.%d.%d.%d(%d) %d received. \r\n", svr_addr[0], svr_addr[1], svr_addr[2], svr_addr[3],
+               svr_port, len);
 #endif
     } else
         return 0;
     if (svr_port == DHCP_SERVER_PORT) {
         // compare mac address
-        if ((pDHCPMSG->chaddr[0] != DHCP_CHADDR[0]) || (pDHCPMSG->chaddr[1] != DHCP_CHADDR[1]) ||
-            (pDHCPMSG->chaddr[2] != DHCP_CHADDR[2]) || (pDHCPMSG->chaddr[3] != DHCP_CHADDR[3]) ||
-            (pDHCPMSG->chaddr[4] != DHCP_CHADDR[4]) || (pDHCPMSG->chaddr[5] != DHCP_CHADDR[5]))
+        if ((pDHCPMSG->chaddr[0] != DHCP_CHADDR[0]) || (pDHCPMSG->chaddr[1] != DHCP_CHADDR[1])
+            || (pDHCPMSG->chaddr[2] != DHCP_CHADDR[2]) || (pDHCPMSG->chaddr[3] != DHCP_CHADDR[3])
+            || (pDHCPMSG->chaddr[4] != DHCP_CHADDR[4]) || (pDHCPMSG->chaddr[5] != DHCP_CHADDR[5]))
             return 0;
         type = 0;
         p    = (uint8_t *) (&pDHCPMSG->op);
-        p    = p + 240; // 240 = sizeof(RIP_MSG) + MAGIC_COOKIE size in RIP_MSG.opt - sizeof(RIP_MSG.opt)
-        e    = p + (len - 240);
+        p    = p + 240; // 240 = sizeof(RIP_MSG) + MAGIC_COOKIE size in RIP_MSG.opt
+                        // - sizeof(RIP_MSG.opt)
+        e = p + (len - 240);
 
         while (p < e) {
 
@@ -652,8 +654,8 @@ uint8_t DHCP_run(void)
         ret = DHCP_IP_LEASED;
         if (type == DHCP_ACK) {
             dhcp_retry_count = 0;
-            if (OLD_allocated_ip[0] != DHCP_allocated_ip[0] || OLD_allocated_ip[1] != DHCP_allocated_ip[1] ||
-                OLD_allocated_ip[2] != DHCP_allocated_ip[2] || OLD_allocated_ip[3] != DHCP_allocated_ip[3]) {
+            if (OLD_allocated_ip[0] != DHCP_allocated_ip[0] || OLD_allocated_ip[1] != DHCP_allocated_ip[1]
+                || OLD_allocated_ip[2] != DHCP_allocated_ip[2] || OLD_allocated_ip[3] != DHCP_allocated_ip[3]) {
                 ret = DHCP_IP_CHANGED;
                 dhcp_ip_update();
 #ifdef _DHCP_DEBUG_
@@ -701,12 +703,14 @@ uint8_t check_DHCP_timeout(void)
 
             switch (dhcp_state) {
             case STATE_DHCP_DISCOVER:
-                //					printf("<<timeout>> state : STATE_DHCP_DISCOVER\r\n");
+                //					printf("<<timeout>> state :
+                // STATE_DHCP_DISCOVER\r\n");
                 send_DHCP_DISCOVER();
                 break;
 
             case STATE_DHCP_REQUEST:
-                //					printf("<<timeout>> state : STATE_DHCP_REQUEST\r\n");
+                //					printf("<<timeout>> state :
+                // STATE_DHCP_REQUEST\r\n");
 
                 send_DHCP_REQUEST();
                 break;
@@ -756,14 +760,16 @@ int8_t check_DHCP_leasedIP(void)
     setRCR(0x03);
 
     // IP conflict detection : ARP request - ARP reply
-    // Broadcasting ARP Request for check the IP conflict using UDP sendto() function
+    // Broadcasting ARP Request for check the IP conflict using UDP sendto()
+    // function
     ret = sendto(DHCP_SOCKET, (uint8_t *) "CHECK_IP_CONFLICT", 17, DHCP_allocated_ip, 5000);
 
     // RCR value restore
     setRCR(tmp);
 
     if (ret == SOCKERR_TIMEOUT) {
-        // UDP send Timeout occurred : allocated IP address is unique, DHCP Success
+        // UDP send Timeout occurred : allocated IP address is unique, DHCP
+        // Success
 
 #ifdef _DHCP_DEBUG_
         printf("\r\n> Check leased IP - OK\r\n");
@@ -786,9 +792,9 @@ void DHCP_init(uint8_t s, uint8_t *buf)
 {
     uint8_t zeroip[4] = {0, 0, 0, 0};
     getSHAR(DHCP_CHADDR);
-    if ((DHCP_CHADDR[0] | DHCP_CHADDR[1] | DHCP_CHADDR[2] | DHCP_CHADDR[3] | DHCP_CHADDR[4] |
-         DHCP_CHADDR[5]) == 0x00) {
-        // assing temporary mac address, you should be set SHAR before call this function.
+    if ((DHCP_CHADDR[0] | DHCP_CHADDR[1] | DHCP_CHADDR[2] | DHCP_CHADDR[3] | DHCP_CHADDR[4] | DHCP_CHADDR[5]) == 0x00) {
+        // assing temporary mac address, you should be set SHAR before call this
+        // function.
         DHCP_CHADDR[0] = 0x00;
         DHCP_CHADDR[1] = 0x08;
         DHCP_CHADDR[2] = 0xdc;
@@ -819,7 +825,10 @@ void reset_DHCP_timeout(void)
     dhcp_retry_count = 0;
 }
 
-void DHCP_time_handler(void) { dhcp_tick_1s++; }
+void DHCP_time_handler(void)
+{
+    dhcp_tick_1s++;
+}
 
 void getIPfromDHCP(uint8_t *ip)
 {
@@ -853,4 +862,7 @@ void getDNSfromDHCP(uint8_t *ip)
     ip[3] = DHCP_allocated_dns[3];
 }
 
-uint32_t getDHCPLeasetime(void) { return dhcp_lease_time; }
+uint32_t getDHCPLeasetime(void)
+{
+    return dhcp_lease_time;
+}
