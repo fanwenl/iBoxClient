@@ -12,4 +12,7 @@ before_script:
 
 
 script:
-  - make
+  - ./autobuild.sh
+
+after_script:
+  - npm run coveralls

@@ -8,6 +8,7 @@
 [![GitHub issues](https://img.shields.io/github/issues-raw/fanwenl/iBoxClient.svg)](https://github.com/fanwenl/iBoxClient/issues)
 [![GitHub top language](https://img.shields.io/github/languages/top/fanwenl/iBoxClient.svg)](https://github.com/fanwenl/iBoxClient)
 [![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/fanwenl/iBoxClient.svg)](https://github.com/fanwenl/iBoxClient)
+[![Coverage Status](https://coveralls.io/repos/github/fanwenl/iBoxClient/badge.svg?branch=master)](https://coveralls.io/github/fanwenl/iBoxClient?branch=master)
 
 
 
