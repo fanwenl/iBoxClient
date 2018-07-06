@@ -12,6 +12,7 @@ before_script:
 
 
 script:
+  - sudo chmod +x ./autobuild.sh
   - sudo ./autobuild.sh
 
 after_script:
