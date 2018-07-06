@@ -123,7 +123,7 @@ LDFLAGS    +=  -T $(LINKER_SCRIPT)
 # 注意连接的顺序
 # 使用修改的ld文件保留finish和rtt initial代码
 LDFLAGS += ${CFLAGS}
-LDFLAGS    += -lm -lc -Wl,--gc-sections,-Map=build/$(TARGET_MAP)
+LDFLAGS    += -lm -lc -Wl,--gc-sections,-Map=build/$(TARGET_MAP),-cref,-u,Reset_Handler
 
 
 ############################################################

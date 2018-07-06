@@ -41,13 +41,26 @@
 // ALIGN(RT_ALIGN_SIZE)
 // static rt_uint8_t led_stack[ 512 ];
 // static struct rt_thread led_thread;
-static void network_thread_entry(void* parameter)
+extern void network_thread_entry(void* parameter);
+
+
+static void timer_1s_timeout(void *parameter);
+
+void rt_init_thread_entry(void* parameter)
 {
-//    unsigned int count=0;
+#ifdef RT_USING_COMPONENTS_INIT
+    /* initialization RT-Thread Components */
+    rt_components_init();
+#endif
+//    finsh_system_init();
+//    rt_trace_init();
+    ethernet_init();
 
-//    rt_hw_led_init();
+}
 
-    while (1)
+void watchdog_thread_entry(void *parameter)
+{
+    while(1)
     {
         wdog_feed();
         led_toggle(LED_LORA);
@@ -61,29 +74,6 @@ static void network_thread_entry(void* parameter)
 //        ibox_printf(1, ("[RTC:%ld]\r\n", RTC_GetCounter()));
 //        
 //        ibox_printf(1, ("%f\r\n", 3.1415926));
-        
-        rt_thread_delay( RT_TICK_PER_SECOND/2 );
-    }
-}
-
-extern int finsh_system_init(void);
-extern int rt_trace_init(void);
-void rt_init_thread_entry(void* parameter)
-{
-#ifdef RT_USING_COMPONENTS_INIT
-    /* initialization RT-Thread Components */
-    rt_components_init();
-#endif
-//    finsh_system_init();
-//    rt_trace_init();
-
-}
-
-void watchdog_thread_entry(void *parameter)
-{
-    while(1)
-    {
-        wdog_feed();
         rt_thread_delay(RT_TICK_PER_SECOND);
     }
     
@@ -91,10 +81,22 @@ void watchdog_thread_entry(void *parameter)
 int rt_application_init(void)
 {
     rt_thread_t thread;
+    rt_timer_t timer_1s;
 
 //    rt_err_t result;
 
-    /* init led thread */
+    /*创建一个软件timer 时间1S*/
+    timer_1s = rt_timer_create("timer_1s",
+                           timer_1s_timeout,
+                           RT_NULL,
+                           100,
+                           RT_TIMER_FLAG_PERIODIC);
+    if(timer_1s != RT_NULL)
+    {
+        rt_timer_start(timer_1s);
+    }
+    
+    /* init network thread */
     thread = rt_thread_create("network_thread",
                             network_thread_entry,
                             RT_NULL,
@@ -103,6 +105,14 @@ int rt_application_init(void)
     {
         rt_thread_startup(thread);
     }
+    // thread = rt_thread_create("dhcp_thread",
+    //                         dhcp_thread_entry,
+    //                         RT_NULL,
+    //                         4096, 4, 20);
+    // if (thread != RT_NULL)
+    // {
+    //     rt_thread_startup(thread);
+    // }
     
     thread = rt_thread_create("watchdog_thread",
                             watchdog_thread_entry,
@@ -116,7 +126,7 @@ int rt_application_init(void)
 #if (RT_THREAD_PRIORITY_MAX == 32)
     thread = rt_thread_create("init",
                                    rt_init_thread_entry, RT_NULL,
-                                   2048, 8, 20);
+                                   2048, 2, 20);
 #else
     init_thread = rt_thread_create("init",
                                    rt_init_thread_entry, RT_NULL,
@@ -127,6 +137,11 @@ int rt_application_init(void)
         rt_thread_startup(thread);
 
     return 0;
+}
+static void timer_1s_timeout(void *parameter)
+{
+    DHCP_time_handler();
+    printf("timer runing\r\n");
 }
 
 /*@}*/

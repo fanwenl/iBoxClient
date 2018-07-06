@@ -55,12 +55,12 @@ void spi_init(SPI_typedef module)
         SPI_Init(SPI1, &SPI_InitStructure); //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
         SPI_Cmd(SPI1, ENABLE);              //使能SPI外设
     } break;
-    case ETHERNRT: {
+    case ETHERNET: {
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
-        /*clk PB12、MOSI PB15*/
-        GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_12 | GPIO_Pin_15;
+        /*clk PB13、MOSI PB15*/
+        GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_13 | GPIO_Pin_15;
         GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF_PP; //复用推挽输出
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOB, &GPIO_InitStructure);

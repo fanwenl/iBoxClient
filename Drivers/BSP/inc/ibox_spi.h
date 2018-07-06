@@ -18,7 +18,7 @@
 #include "stdint.h"
 
 typedef enum {
-    ETHERNRT = 0,
+    ETHERNET = 0,
     LOAR,
 }SPI_typedef;
 

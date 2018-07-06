@@ -3,10 +3,11 @@
 #include <rtthread.h>
 
 IBOX_CONFIG ibox_config = {
-    "192.168.199.120", // server ip
-    "fanwenl.top", // dsn
-    5000,           //server ip
-    8000,           //local ip
+    "192.168.199.120",  // server ip
+    "fanwenl.top",      // dsn
+    5000,               //server ip
+    8000,               //local ip
+    {0x00,0x7B,0x44,0xAA,0x55,0x66},     //eth mac
 #ifdef USE_WIFI
     "ziroom102",  // wifi_ssid[];
     "4001001101", // wifi_password[];
@@ -75,7 +76,7 @@ void rt_hw_board_init(void)
     max485_init();
     wdog_init();
     reset_key_init();
-//    w5500_init();
+    w5500_hw_init();
     
 #ifdef USE_WIFI
 //    wifi_init();

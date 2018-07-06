@@ -17,7 +17,18 @@
 #include "stm32f10x.h"
 #include "stdint.h"
 
-void w5500_init(void);
+typedef struct{
+    uint8_t mac[6];             //本地以太网MAC
+    uint8_t ip[4];              //本地以太网IP
+    uint8_t sub[4];             //本地以太网掩码
+    uint8_t gw[4];              //本地以太网网关
+    uint8_t dns[4];             //本地以太网DNS
+
+    uint8_t dns_sip[4];         //DNS解析到的server的ip
+}ETH_MSG;
+
+void w5500_hw_init(void);
+void ethernet_init(void);
 
 #ifdef __cplusplus
     }

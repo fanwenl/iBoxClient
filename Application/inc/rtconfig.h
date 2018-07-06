@@ -17,6 +17,7 @@
 #define RT_DEBUG_THREAD 0
 #define RT_USING_HOOK
 #define IDLE_THREAD_STACK_SIZE 512
+#define RT_USING_TIMER_SOFT
 
 /* Inter-Thread communication */
 

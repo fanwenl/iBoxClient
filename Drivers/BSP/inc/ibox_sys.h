@@ -42,6 +42,7 @@ extern uint8_t ibox_wifi_debug;
 void sys_clk_init(void);
 void sys_nvic_init(void);
 void sys_delay_ms(uint32_t delay);
+void sys_delay_us(uint32_t delay);
 uint32_t get_sys_time_ms(void);
 uint32_t get_sys_time_s(void);
 

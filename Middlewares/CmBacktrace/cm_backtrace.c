@@ -665,7 +665,7 @@ void cm_backtrace_fault(uint32_t fault_handler_lr, uint32_t fault_handler_sp) {
         cmb_println("  %s: %08x  %s: %08x  %s: %08x  %s: %08x", regs_name[4], regs.saved.r12,
                                                                 regs_name[5], regs.saved.lr,
                                                                 regs_name[6], regs.saved.pc,
-                                                                regs_name[7], regs.saved.psr.value);
+                                                                 regs_name[7], regs.saved.psr.value);
         cmb_println("==============================================================");
     }
 

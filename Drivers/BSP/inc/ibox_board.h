@@ -37,11 +37,13 @@ extern "C" {
 #include <stdio.h>
 #include <stdint.h>
 #include "wizchip_conf.h"
+#include "dhcp.h"
+#include "dns.h"
 
 /*下面的这些长度需要多定义一位存放'/0',否则和后面数据连起来*/
-#define MAX_IP_LEN       16
-#define MAX_PORT_LEN     6
-#define MAX_DSN_LEN      12
+#define MAX_IP_LEN              16
+#define MAX_ETH_MAC_LEN         13
+#define MAX_DSN_LEN             12
 #define MAX_WIFI_SSID_LEN       10
 #define MAX_WIFI_PASS_LEN       11
 #define MAX_WIFI_MAC_LEN        18
@@ -52,6 +54,7 @@ typedef struct __IBOX_CONFIG {
     uint8_t server_dsn[MAX_DSN_LEN];
     uint16_t server_port;
     uint16_t local_port;
+    uint8_t eth_mac[MAX_ETH_MAC_LEN];
 #ifdef USE_WIFI
     uint8_t wifi_ssid[MAX_WIFI_SSID_LEN];
     uint8_t wifi_password[MAX_WIFI_PASS_LEN];
@@ -90,6 +93,9 @@ typedef struct __IBOX_CONFIG {
 // #define RT_USING_UART2
 // #define RT_USING_UART3
 // #define USING_BXCAN1
+
+#define IBOX_ASSERT(expr) ((expr) ? (void)0 : \
+ibox_printf(1,("(%s) assertion failed at function:%s, line number:%d \n", expr, __FUNCTION__, __LINE__)))
 
 void rt_hw_board_init(void);
 

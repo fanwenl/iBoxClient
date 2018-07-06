@@ -609,6 +609,21 @@
               <FileType>1</FileType>
               <FilePath>..\Middlewares\Eth\wizchip_conf.c</FilePath>
             </File>
+            <File>
+              <FileName>dhcp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\dhcp.c</FilePath>
+            </File>
+            <File>
+              <FileName>dns.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\dns.c</FilePath>
+            </File>
+            <File>
+              <FileName>network.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\network.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1625,6 +1640,21 @@
               <FileName>wizchip_conf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Middlewares\Eth\wizchip_conf.c</FilePath>
+            </File>
+            <File>
+              <FileName>dhcp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\dhcp.c</FilePath>
+            </File>
+            <File>
+              <FileName>dns.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\dns.c</FilePath>
+            </File>
+            <File>
+              <FileName>network.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Eth\network.c</FilePath>
             </File>
           </Files>
         </Group>
