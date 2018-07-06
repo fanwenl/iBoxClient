@@ -51,6 +51,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "dns.h"
 #include "socket.h"
@@ -88,25 +89,27 @@
 #define DGAIN               4 /* Mean deviation gain = 1/4 */
 #define LDGAIN              2 /* log2(DGAIN) */
 
-/* Header for all domain messages */
-struct dhdr {
-    uint16_t id; /* Identification */
-    uint8_t qr;  /* Query/Response */
 #define QUERY               0
 #define RESPONSE            1
-    uint8_t opcode;
+
 #define IQUERY              1
-    uint8_t aa;    /* Authoratative answer */
-    uint8_t tc;    /* Truncation */
-    uint8_t rd;    /* Recursion desired */
-    uint8_t ra;    /* Recursion available */
-    uint8_t rcode; /* Response code */
+
 #define NO_ERROR            0
 #define FORMAT_ERROR        1
 #define SERVER_FAIL         2
 #define NAME_ERROR          3
 #define NOT_IMPL            4
 #define REFUSED             5
+/* Header for all domain messages */
+struct dhdr {
+    uint16_t id; /* Identification */
+    uint8_t qr;  /* Query/Response */
+    uint8_t opcode;
+    uint8_t aa;    /* Authoratative answer */
+    uint8_t tc;    /* Truncation */
+    uint8_t rd;    /* Recursion desired */
+    uint8_t ra;    /* Recursion available */
+    uint8_t rcode; /* Response code */
     uint16_t qdcount; /* Question count */
     uint16_t ancount; /* Answer count */
     uint16_t nscount; /* Authority (name server) count */
@@ -552,4 +555,7 @@ int8_t DNS_run(uint8_t *dns_ip, uint8_t *name, uint8_t *ip_from_dns)
 }
 
 /* DNS TIMER HANDLER */
-void DNS_time_handler(void) { dns_1s_tick++; }
+void DNS_time_handler(void)
+{
+    dns_1s_tick++;
+}

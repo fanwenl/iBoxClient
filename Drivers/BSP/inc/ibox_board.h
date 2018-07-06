@@ -35,7 +35,10 @@ extern "C" {
 #include "ibox_Ethernet.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
+
 #include "wizchip_conf.h"
 #include "dhcp.h"
 #include "dns.h"
@@ -55,6 +58,8 @@ typedef struct __IBOX_CONFIG {
     uint16_t server_port;
     uint16_t local_port;
     uint8_t eth_mac[MAX_ETH_MAC_LEN];
+    uint8_t dns_ip[4];                      //DNS 服务器IP地址
+    uint8_t use_dns;                        //1:使用dns,0:使用ip地址
 #ifdef USE_WIFI
     uint8_t wifi_ssid[MAX_WIFI_SSID_LEN];
     uint8_t wifi_password[MAX_WIFI_PASS_LEN];
@@ -63,12 +68,15 @@ typedef struct __IBOX_CONFIG {
 #else
     uint64_t gprs_imei;
 #endif
-
 } IBOX_CONFIG;
 #pragma pack()
 
-/* board configuration */
+/*socket 定义，一共8个socket*/
+#define DHCP_SOCKET     0
+#define DNS_SOCKET      1
+#define COMM_SOCKET     2           //正常业务的socket
 
+/* board configuration */
 /* whether use board external SRAM memory */
 // <e>Use external SRAM memory on the board
 // 	<i>Enable External SRAM memory
@@ -85,14 +93,6 @@ typedef struct __IBOX_CONFIG {
 //	<i>Default: 64
 #define STM32_SRAM_SIZE         64
 #define STM32_SRAM_END          (0x20000000 + STM32_SRAM_SIZE * 1024)
-
-// <<< Use Configuration Wizard in Context Menu >>>
-
-/* USART driver select. */
-// #define RT_USING_UART1
-// #define RT_USING_UART2
-// #define RT_USING_UART3
-// #define USING_BXCAN1
 
 #define IBOX_ASSERT(expr) ((expr) ? (void)0 : \
 ibox_printf(1,("(%s) assertion failed at function:%s, line number:%d \n", expr, __FUNCTION__, __LINE__)))

@@ -18,7 +18,7 @@
 
 static uint8_t rx_socket_size[_WIZCHIP_SOCK_NUM_] = {2,2,2,2,2,2,2,2};
 static uint8_t tx_socket_size[_WIZCHIP_SOCK_NUM_] = {2,2,2,2,2,2,2,2};
-uint8_t dhcp_buf[RIP_MSG_SIZE];
+uint8_t dhcp_dns_buf[RIP_MSG_SIZE];
 
 ETH_MSG eth_msg_get;
 
@@ -119,7 +119,10 @@ void ethernet_init(void)
     /*设置socket的大小*/
     wizchip_init(tx_socket_size, rx_socket_size);
     
-    DHCP_init(0, dhcp_buf);
+    DHCP_init(DHCP_SOCKET, dhcp_dns_buf);
+
+    /*dns 解析和dhcp共用一个buf*/
+    DNS_init(DNS_SOCKET,dhcp_dns_buf);
     
     set_network();
     

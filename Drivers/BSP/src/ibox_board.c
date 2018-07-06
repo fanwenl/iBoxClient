@@ -4,10 +4,12 @@
 
 IBOX_CONFIG ibox_config = {
     "192.168.199.120",  // server ip
-    "fanwenl.top",      // dsn
+    "fanwenl.top",      // server dsn
     5000,               //server ip
     8000,               //local ip
     {0x00,0x7B,0x44,0xAA,0x55,0x66},     //eth mac
+    {119, 29, 29, 29},
+    1,
 #ifdef USE_WIFI
     "ziroom102",  // wifi_ssid[];
     "4001001101", // wifi_password[];

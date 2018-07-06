@@ -17,6 +17,7 @@ extern uint8_t DHCP_allocated_ip[];
 void network_thread_entry(void *parameter)
 {
     uint8_t dhcp_status = 0;
+    int8_t dns_status = 0;
     while (1) {
         //     DHCP_FAILED = 0,  ///< Procssing Fail
         //   DHCP_RUNNING,     ///< Procssing DHCP proctocol
@@ -33,6 +34,8 @@ void network_thread_entry(void *parameter)
         } else if (dhcp_status == DHCP_IP_LEASED) {
             printf("dhcp is leased\r\n");
         }
+        /*DNS解析服务需要在DHCP之后运行吗？*/
+        dns_status = DNS_run(ibox_config.dns_ip, ibox_config.server_dsn, eth_msg_get.dns_sip);
         rt_thread_delay(RT_TICK_PER_SECOND / 2);
     }
 }

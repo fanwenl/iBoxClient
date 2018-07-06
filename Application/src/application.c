@@ -141,7 +141,7 @@ int rt_application_init(void)
 static void timer_1s_timeout(void *parameter)
 {
     DHCP_time_handler();
-    printf("timer runing\r\n");
+    DNS_time_handler();
 }
 
 /*@}*/

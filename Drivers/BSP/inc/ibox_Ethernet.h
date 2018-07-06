@@ -27,6 +27,8 @@ typedef struct{
     uint8_t dns_sip[4];         //DNS解析到的server的ip
 }ETH_MSG;
 
+extern ETH_MSG eth_msg_get;
+
 void w5500_hw_init(void);
 void ethernet_init(void);
 

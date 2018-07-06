@@ -9,7 +9,8 @@
         "ibox_485.h": "c",
         "ibox_uart.h": "c",
         "unity.h": "c",
-        "unity_fixture.h": "c"
+        "unity_fixture.h": "c",
+        "stdint.h": "c"
     },
     "cSpell.enabledLanguageIds": [
         "cpp",
