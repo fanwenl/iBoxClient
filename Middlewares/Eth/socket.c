@@ -118,11 +118,11 @@ int8_t socket(uint8_t sn, uint8_t protocol, uint16_t port, uint8_t flag)
     CHECK_SOCKNUM();
     switch (protocol) {
     case Sn_MR_TCP: {
-        // M20150601 : Fixed the warning - taddr will never be NULL
+    // M20150601 : Fixed the warning - taddr will never be NULL
         /*
-uint8_t taddr[4];
-getSIPR(taddr);
-*/
+        uint8_t taddr[4];
+        getSIPR(taddr);
+        */
         uint32_t taddr;
         getSIPR((uint8_t *) &taddr);
         if (taddr == 0)
@@ -159,7 +159,6 @@ getSIPR(taddr);
             if ((flag & (SF_TCP_NODELAY | SF_IO_NONBLOCK)) == 0)
                 return SOCKERR_SOCKFLAG;
 #endif
-
             break;
         case Sn_MR_UDP:
             if (flag & SF_IGMP_VER2) {
@@ -195,16 +194,14 @@ getSIPR(taddr);
         ;
     // A20150401 : For release the previous sock_io_mode
     sock_io_mode &= ~(1 << sn);
-    //
     sock_io_mode |= ((flag & SF_IO_NONBLOCK) << sn);
     sock_is_sending &= ~(1 << sn);
     sock_remained_size[sn] = 0;
     // M20150601 : repalce 0 with PACK_COMPLETED
     // sock_pack_info[sn] = 0;
     sock_pack_info[sn] = PACK_COMPLETED;
-    //
-    while (getSn_SR(sn) == SOCK_CLOSED)
-        ;
+
+    while (getSn_SR(sn) == SOCK_CLOSED);
     return (int8_t) sn;
 }
 

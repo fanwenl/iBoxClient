@@ -12,30 +12,6 @@
         "unity_fixture.h": "c",
         "stdint.h": "c"
     },
-    "cSpell.enabledLanguageIds": [
-        "cpp",
-        "csharp",
-        "css",
-        "go",
-        "handlebars",
-        "html",
-        "jade",
-        "javascript",
-        "javascriptreact",
-        "json",
-        "latex",
-        "less",
-        "markdown",
-        "php",
-        "plaintext",
-        "pub",
-        "restructuredtext",
-        "rust",
-        "scss",
-        "text",
-        "typescript",
-        "typescriptreact",
-        "yml"
-    ],
-    "C_Cpp.dimInactiveRegions": true
+    "C_Cpp.dimInactiveRegions": true,
+    "gitlens.codeLens.enabled": false,
 }
