@@ -30,6 +30,7 @@ extern "C" {
 #include "ibox_wifi.h"
 #include "ibox_key.h"
 #include "ibox_spi.h"
+#include "ibox_gprs.h"
 #include "stm32f10x_conf.h"
 #include "stm32f10x_it.h"
 #include "ibox_Ethernet.h"
@@ -46,13 +47,14 @@ extern "C" {
 /*下面的这些长度需要多定义一位存放'/0',否则和后面数据连起来*/
 #define MAX_IP_LEN              16
 #define MAX_ETH_MAC_LEN         13
-#define MAX_DSN_LEN             12
+#define MAX_DSN_LEN             20
 #define MAX_WIFI_SSID_LEN       10
 #define MAX_WIFI_PASS_LEN       11
 #define MAX_WIFI_MAC_LEN        18
 
 #pragma pack(1)
 typedef struct __IBOX_CONFIG {
+    uint32_t device_sn;
     uint8_t server_ip[MAX_IP_LEN];
     uint8_t server_dsn[MAX_DSN_LEN];
     uint16_t server_port;

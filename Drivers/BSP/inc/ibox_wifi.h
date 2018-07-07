@@ -58,16 +58,12 @@ typedef enum {
 #define WIFI_CH_PD_L GPIO_ResetBits(WIFI_CH_PD_PORT, WIFI_CH_PD_PIN)
 #define WIFI_CH_PD_H GPIO_SetBits(WIFI_CH_PD_PORT, WIFI_CH_PD_PIN)
 
-/*485 UART4串口接收变量定义*/
-#define UART3_RX_SIZE 1024
-#define UART3_TX_SIZE 2014
-
 void wifi_init(void);
 void esp8266_at_fsm(void);
-void uart3_send_data(const char *data);
+
 void esp8266_send_data(void);
-uint8_t get_char_form_uart3(void);
-uint16_t get_line_from_uart3(uint8_t *buf);
+ESP8266_STATUS_ENUM get_esp8266_status(void);
+
 
 #ifdef __cplusplus
 }

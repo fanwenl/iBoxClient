@@ -113,8 +113,12 @@ void set_network(void)
  * 以太网相关的初始化
  * 包括DNS解析、HDCP动态获取...
  */ 
+uint8_t buffer[2048];
 void ethernet_init(void)
 {
+    uint8_t buf[]="hello!" ;
+    uint16_t remote_port=6000;
+    uint32_t len = 0;
     set_w5500_mac();
     /*设置socket的大小*/
     wizchip_init(tx_socket_size, rx_socket_size);
@@ -124,27 +128,34 @@ void ethernet_init(void)
     /*dns 解析和dhcp共用一个buf*/
     DNS_init(DNS_SOCKET,dhcp_dns_buf);
     
-    set_network();
+//    set_network();
     
-    uint8_t server_ip[4] = {192,168,123,94}; 
-    while(1)
-    {
-    		switch(getSn_SR(0))														// 获取socket0的状态
-		{
-			case SOCK_INIT:															// Socket处于初始化完成(打开)状态
-                connect(0, server_ip,9000);
-			break;
-			case SOCK_ESTABLISHED:											// Socket处于连接建立状态
-
-			break;
-			case SOCK_CLOSE_WAIT:												// Socket处于等待关闭状态
-					close(0);																// 关闭Socket0
-			break;
-			case SOCK_CLOSED:														// Socket处于关闭状态
-					socket(0,Sn_MR_TCP,6000,Sn_MR_ND);		// 打开Socket0，并配置为TCP无延时模式，打开一个本地端口
-			break;
-		}
-    }
+//    uint8_t server_ip[4] = {192,168,123,94}; 
+//    while(1)
+//    {
+//		switch(getSn_SR(0))																						// ��ȡsocket0��״̬
+//		{
+//			case SOCK_UDP:																							// Socket���ڳ�ʼ�����(��)״̬
+//					sys_delay_ms(100);
+//					if(getSn_IR(0) & Sn_IR_RECV)
+//					{
+//						setSn_IR(0, Sn_IR_RECV);															// Sn_IR��RECVλ��1
+//					}
+//					// ���ݻػ����Գ������ݴ�Զ����λ������W5500��W5500���յ����ݺ��ٻظ�Զ����λ��
+//					if((len=getSn_RX_RSR(0))>0)
+//					{ 
+//                        getSn_RX_RSR(0);
+//						memset(buffer,0,len+1);
+//						len = recvfrom(0,buffer, len, server_ip,&remote_port);			// W5500��������Զ����λ�������ݣ���ͨ��SPI���͸�MCU
+//						printf("%d:%s\r\n",len,buffer);															// ���ڴ�ӡ���յ�������
+//						sendto(0,buffer,len, server_ip, 9000);		  		// ���յ����ݺ��ٻظ�Զ����λ����������ݻػ�
+//					}
+//			break;
+//			case SOCK_CLOSED:																						// Socket���ڹر�״̬
+//					socket(0,Sn_MR_UDP,6000,0);												// ��Socket0��������ΪUDPģʽ����һ�����ض˿�
+//			break;
+//		}
+//    }
 }
 
 void EXTI9_5_IRQHandler(void)

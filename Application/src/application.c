@@ -65,7 +65,6 @@ void watchdog_thread_entry(void *parameter)
         wdog_feed();
         led_toggle(LED_LORA);
         led_toggle(LED_NET);
-        led_toggle(LED_SYS);
 //        sys_delay_ms(100);
 //        max485_send_data(buf);
 
@@ -142,6 +141,7 @@ static void timer_1s_timeout(void *parameter)
 {
     DHCP_time_handler();
     DNS_time_handler();
+    led_toggle(LED_SYS);
 }
 
 /*@}*/

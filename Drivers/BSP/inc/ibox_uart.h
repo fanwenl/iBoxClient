@@ -50,8 +50,21 @@ typedef enum {
 
 #define UART1_RX_SIZE               256
 
+/*GPRS/WIFI UART3串口接收变量定义*/
+#define UART3_RX_SIZE 1024
+#define UART3_TX_SIZE 2014
+
+extern uint8_t uart3_rx_buf[];
+extern uint8_t uart3_tx_buf[];
+
 void uart_init(uart_enum uart_num, uint32_t baud_rate);
 uint8_t get_char_form_uart1(char *ch);
+
+void uart3_send_str(const char *data);
+void uart3_send_data(uint8_t*data, uint16_t len);
+uint8_t get_char_form_uart3(void);
+uint16_t get_line_from_uart3(uint8_t *buf);
+void uart3_rx_buf_clear(void);
 
 #ifdef __cplusplus
 }
