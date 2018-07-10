@@ -123,10 +123,10 @@ void ethernet_init(void)
     /*设置socket的大小*/
     wizchip_init(tx_socket_size, rx_socket_size);
     
-    DHCP_init(DHCP_SOCKET, dhcp_dns_buf);
+    DHCP_init(CUS_DHCP_SOCKET, dhcp_dns_buf);
 
     /*dns 解析和dhcp共用一个buf*/
-    DNS_init(DNS_SOCKET,dhcp_dns_buf);
+    DNS_init(CUS_DNS_SOCKET,dhcp_dns_buf);
     
 //    set_network();
     
@@ -158,12 +158,12 @@ void ethernet_init(void)
 //    }
 }
 
-void EXTI9_5_IRQHandler(void)
-{
-    if (EXTI_GetITStatus(EXTI_Line9) != RESET) {
+// void EXTI9_5_IRQHandler(void)
+// {
+//     if (EXTI_GetITStatus(EXTI_Line9) != RESET) {
 
-        EXTI_ClearITPendingBit(EXTI_Line9); //清除中断标志位
-    }
+//         EXTI_ClearITPendingBit(EXTI_Line9); //清除中断标志位
+//     }
 
-    EXTI_ClearITPendingBit(EXTI_Line9);
-}
+//     EXTI_ClearITPendingBit(EXTI_Line9);
+// }

@@ -99,7 +99,8 @@ int rt_application_init(void)
     thread = rt_thread_create("network_thread",
                             network_thread_entry,
                             RT_NULL,
-                            4096, 4, 20);
+                            NETWORK_THREAD_STACK_SIZE,
+                            NETWORK_THREAD_PRIINIT, 20);
     if (thread != RT_NULL)
     {
         rt_thread_startup(thread);
@@ -116,21 +117,17 @@ int rt_application_init(void)
     thread = rt_thread_create("watchdog_thread",
                             watchdog_thread_entry,
                             RT_NULL,
-                            256, 1, 20);
+                            WATCHDOG_THREAD_STACK_SIZE,
+                            WATCHDOG_THREAD_PRIINIT, 20);
     if (thread != RT_NULL)
     {
         rt_thread_startup(thread);
     }
 
-#if (RT_THREAD_PRIORITY_MAX == 32)
     thread = rt_thread_create("init",
                                    rt_init_thread_entry, RT_NULL,
-                                   2048, 2, 20);
-#else
-    init_thread = rt_thread_create("init",
-                                   rt_init_thread_entry, RT_NULL,
-                                   2048, 80, 20);
-#endif
+                                   INIT_THREAD_STACK_SIZE,
+                                   INIT_THREAD_PRIINIT, 20);
 
     if (thread != RT_NULL)
         rt_thread_startup(thread);

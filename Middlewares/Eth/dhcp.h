@@ -45,7 +45,8 @@
 #ifndef _DHCP_H_
 #define _DHCP_H_
 
-#include "stdint.h"
+#include <stdint.h>
+//#include "ibox_board.h"
 
 /*
  * @brief 
@@ -65,9 +66,9 @@
 #define DHCP_CLIENT_PORT         68	      ///< DHCP client port number
 
 
-#define MAGIC_COOKIE             0x63827663  ///< Any number. You can be modifyed it any number
+#define MAGIC_COOKIE             0x63825363  ///<!!!!don't modifyed this number>
 
-#define DCHP_HOST_NAME           "iBoxClient\0"
+#define DCHP_HOST_NAME          DEVICE_NAME(ibox_config.device_sn)  //can modifyed
 
 /* DHCP state machine. */
 #define STATE_DHCP_INIT          0        ///< Initialize

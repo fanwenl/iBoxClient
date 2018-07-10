@@ -50,6 +50,7 @@
 
 #include "dhcp.h"
 #include "socket.h"
+#include "ibox_board.h"
 
 /* If you want to display debug & procssing message, Define _DHCP_DEBUG_ in dhcp.h */
 
@@ -265,10 +266,10 @@ void send_DHCP_DISCOVER(void)
     pDHCPMSG->OPT[k++] = 0; // fill zero length of hostname
     for (i = 0; HOST_NAME[i] != 0; i++)
         pDHCPMSG->OPT[k++] = HOST_NAME[i];
-    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[3];
-    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[4];
-    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[5];
-    pDHCPMSG->OPT[k - (i + 3 + 1)] = i + 3; // length of hostname
+//    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[3];
+//    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[4];
+//    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[5];
+    pDHCPMSG->OPT[k - (i + 1)] = i; // length of hostname
 
     pDHCPMSG->OPT[k++] = dhcpParamRequest;
     pDHCPMSG->OPT[k++] = 0x06; // length of request
@@ -365,10 +366,10 @@ void send_DHCP_REQUEST(void)
     pDHCPMSG->OPT[k++] = 0; // length of hostname
     for (i = 0; HOST_NAME[i] != 0; i++)
         pDHCPMSG->OPT[k++] = HOST_NAME[i];
-    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[3];
-    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[4];
-    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[5];
-    pDHCPMSG->OPT[k - (i + 3 + 1)] = i + 3; // length of hostname
+//    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[3];
+//    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[4];
+//    pDHCPMSG->OPT[k++]             = DHCP_CHADDR[5];
+    pDHCPMSG->OPT[k - (i + 1)] = i; // length of hostname
 
     pDHCPMSG->OPT[k++] = dhcpParamRequest;
     pDHCPMSG->OPT[k++] = 0x08;
@@ -565,8 +566,17 @@ uint8_t DHCP_run(void)
         return DHCP_STOPPED;
 
     if (getSn_SR(DHCP_SOCKET) != SOCK_UDP)
-        socket(DHCP_SOCKET, Sn_MR_UDP, DHCP_CLIENT_PORT, 0x00);
-
+    {
+        ret = 255;
+        ret = socket(DHCP_SOCKET, Sn_MR_UDP, DHCP_CLIENT_PORT, 0x00);
+        #ifdef _DHCP_DEBUG_
+        if(ret == DHCP_SOCKET)
+            printf("> DHCP socket creat success\r\n");
+        else
+            printf("> DHCP socket creat Fail\r\n");
+        #endif
+        ret = 0;
+    }
     ret  = DHCP_RUNNING;
     type = parseDHCPMSG();
 
@@ -806,7 +816,7 @@ void DHCP_init(uint8_t s, uint8_t *buf)
 
     DHCP_SOCKET = s; // SOCK_DHCP
     pDHCPMSG    = (RIP_MSG *) buf;
-    DHCP_XID    = 0x12345678;
+    DHCP_XID    = 0x1;// Any number
 
     // WIZchip Netinfo Clear
     setSIPR(zeroip);
