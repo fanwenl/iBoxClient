@@ -59,7 +59,7 @@ void EXTI15_10_IRQHandler(void)
         sys_delay_ms(20);
         if(GPIO_ReadInputDataBit(GPIOE, GPIO_Pin_15) == 0)
         {
-            printf("system reset...\r\n");
+            ibox_printf(1,("system reset...\r\n"));
             __NVIC_SystemReset();
         }
         EXTI_ClearITPendingBit(EXTI_Line15); //清除中断标志位

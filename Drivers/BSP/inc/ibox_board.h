@@ -19,6 +19,9 @@ extern "C" {
 #define FIRMWARE_VER_REV        0L
 #define FIRMWARE_VER            (FIRMWARE_VER_MAIN*10000+FIRMWARE_VER_SUB*100+FIRMWARE_VER_REV)
 
+#define DEVICE_NAME(sn)     "iBoxClient-"#sn""
+
+#include "application.h"
 #include "ibox_485.h"
 #include "ibox_adc.h"
 #include "ibox_dac.h"
@@ -31,6 +34,7 @@ extern "C" {
 #include "ibox_key.h"
 #include "ibox_spi.h"
 #include "ibox_gprs.h"
+#include "ibox_lora.h"
 #include "stm32f10x_conf.h"
 #include "stm32f10x_it.h"
 #include "ibox_Ethernet.h"
@@ -74,9 +78,9 @@ typedef struct __IBOX_CONFIG {
 #pragma pack()
 
 /*socket 定义，一共8个socket*/
-#define DHCP_SOCKET     0
-#define DNS_SOCKET      1
-#define COMM_SOCKET     2           //正常业务的socket
+#define CUS_DHCP_SOCKET     0
+#define CUS_DNS_SOCKET      1
+#define CUS_COMM_SOCKET     2           //正常业务的socket
 
 /* board configuration */
 /* whether use board external SRAM memory */
