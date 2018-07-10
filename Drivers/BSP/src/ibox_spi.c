@@ -18,7 +18,7 @@ void spi_init(SPI_typedef module)
     GPIO_InitTypeDef GPIO_InitStructure;
 
     switch (module) {
-    case LOAR: {
+    case LOAR_SPI: {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1 | RCC_APB2Periph_GPIOA, ENABLE);
 
         GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_5 | GPIO_Pin_7;              // MOSI SCK复用
@@ -35,7 +35,7 @@ void spi_init(SPI_typedef module)
         GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_Out_PP; //推挽输出
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOA, &GPIO_InitStructure);
-        LOAR_CS_H; //置为高位,失能flash器件
+        LOAR_CS_H;
 
         //设置SPI单向或者双向的数据模式:SPI设置为双线双向全双工
         SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
@@ -46,8 +46,7 @@ void spi_init(SPI_typedef module)
         SPI_InitStructure.SPI_CPHA      = SPI_CPHA_1Edge;
         // SPI_NSS_Soft;//NSS信号由硬件（NSS管脚）还是软件（使用SSI位）管理:内部NSS信号有SSI位控制
         SPI_InitStructure.SPI_NSS       = SPI_NSS_Soft;
-        //经过测试，最小可以为8，预分频值为16
-        SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;
+        SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;
         //指定数据传输从MSB位还是LSB位开始:数据传输从MSB位开始
         SPI_InitStructure.SPI_FirstBit          = SPI_FirstBit_MSB;
         SPI_InitStructure.SPI_CRCPolynomial     = 10; // CRC值计算的多项式
@@ -99,15 +98,43 @@ void spi_init(SPI_typedef module)
             break;
     }
 }
-uint8_t spi2_readwritebyte(uint8_t byte)
+uint8_t spi1_readwritebyte(uint8_t byte)
 {
-    while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET);
-    SPI_I2S_SendData(SPI2, byte);
+    uint8_t timeout = 200;
+    while ((timeout) && (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET))
+    {
+        timeout--;
+    }
+    SPI_I2S_SendData(SPI1, byte);
+    timeout = 200;
     /*读的时候需要提供clk*/
-    while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET);
-    return SPI_I2S_ReceiveData(SPI2);
+    while ((timeout) && (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET))
+    {
+        timeout--;
+    }
+    return SPI_I2S_ReceiveData(SPI1);
 }
 
+
+
+
+
+uint8_t spi2_readwritebyte(uint8_t byte)
+{
+    uint8_t timeout = 200;
+    while ((timeout) && (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == RESET))
+    {
+        timeout--;
+    }
+    SPI_I2S_SendData(SPI2, byte);
+    timeout = 200;
+    /*读的时候需要提供clk*/
+    while ((timeout) && (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET))
+    {
+        timeout--;
+    }
+    return SPI_I2S_ReceiveData(SPI2);
+}
 void w5500_cs_select(void)
 {
     GPIO_ResetBits(GPIOB, GPIO_Pin_12);

@@ -27,9 +27,21 @@ extern "C" {
 #define GPRS_RESET_H        GPIO_SetBits(GPRS_RESET_PORT, GPRS_RESET_PIN)
 
 typedef enum{
-    GPRS_STATUS_INIT = 0,
-    
-    
+    GPRS_STATUS_CHECK,       //模块检测关闭回显
+    GPRS_STATUS_INIT,        //检查sim卡
+    GPRS_STATUS_SET_MISC,    //设置一些参数
+    GPRS_STATUS_CHECK_CSQ,   //检测当前信号强度
+    GPRS_STATUS_CHECK_REG,   //检测当前网络注册状态
+    GPRS_STATUS_CHECK_CGATT, //GPRS附着状态
+    GPRS_STATUS_SET_APN,     //设定APN GPRS -> IP START 
+    GPRS_STATUS_SET_CIICR,   //建立无线链路
+    GPRS_STATUS_GET_IP,      //获取ip
+    GPRS_STATUS_RESTART_TCP, //重新开始tcp连接
+    GPRS_STATUS_START_TCP,   //开始建立tcp连接
+    GPRS_STATUS_TCP_CONNECT, //tcp成功连接
+    GPRS_STATUS_COMMUNICATE, //GPRS正常通信
+    GPRS_STATUS_RX_PROC,     //接收处理
+    GPRS_STATUS_FRAME_PROC,  //帧处理   
 }GPRS_STATUS_ENUM;
 
 
