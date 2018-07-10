@@ -66,8 +66,10 @@
                 "${workspaceRoot}/tests/Unity/src",
                 "${workspaceRoot}/tests/Unity/extras/fixture/src",
                 "${workspaceRoot}/tests/iBoxClient/Application",
-                "${workspaceRoot}/tests/iBoxClient/Drivers"
-
+                "${workspaceRoot}/tests/iBoxClient/Drivers",
+                "C:/Program Files (x86)/GNU Tools ARM Embedded/7 2017-q4-major/arm-none-eabi/include/c++/7.2.1/tr1",
+                "C:/Program Files (x86)/GNU Tools ARM Embedded/7 2017-q4-major/arm-none-eabi/include/c++/7.2.1",
+                "C:/Program Files (x86)/GNU Tools ARM Embedded/7 2017-q4-major/arm-none-eabi/include/c++/7.2.1/arm-none-eabi/thumb/v8-m.main"
             ],
             "defines": [
                 "_DEBUG",
