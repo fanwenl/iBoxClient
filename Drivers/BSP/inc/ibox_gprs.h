@@ -26,6 +26,8 @@ extern "C" {
 #define GPRS_RESET_L        GPIO_ResetBits(GPRS_RESET_PORT, GPRS_RESET_PIN)
 #define GPRS_RESET_H        GPIO_SetBits(GPRS_RESET_PORT, GPRS_RESET_PIN)
 
+#define GPRS_SEND_STR_SIZE      64
+
 typedef enum{
     GPRS_STATUS_CHECK,       //模块检测关闭回显
     GPRS_STATUS_INIT,        //检查sim卡
@@ -47,6 +49,7 @@ typedef enum{
 
 void gprs_init(void);
 void gprs_at_fsm(void);
+void gprs_get_imei(void);
 
 
 #ifdef __cplusplus

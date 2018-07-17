@@ -55,14 +55,16 @@ extern "C" {
 #define MAX_WIFI_SSID_LEN       10
 #define MAX_WIFI_PASS_LEN       11
 #define MAX_WIFI_MAC_LEN        18
+#define MAX_APN_LEN             8
 
 #pragma pack(1)
 typedef struct __IBOX_CONFIG {
     uint32_t device_sn;
-    uint8_t server_ip[MAX_IP_LEN];
-    uint8_t server_dsn[MAX_DSN_LEN];
+    char server_ip[MAX_IP_LEN];
+    char server_dsn[MAX_DSN_LEN];
     uint16_t server_port;
     uint16_t local_port;
+    uint8_t gsm_apn[MAX_APN_LEN];
     uint8_t eth_mac[MAX_ETH_MAC_LEN];
     uint8_t dns_ip[4];                      //DNS 服务器IP地址
     uint8_t use_dns;                        //1:使用dns,0:使用ip地址

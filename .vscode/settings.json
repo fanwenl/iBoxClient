@@ -10,8 +10,11 @@
         "ibox_uart.h": "c",
         "unity.h": "c",
         "unity_fixture.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "ibox_sys.h": "c"
     },
     "C_Cpp.dimInactiveRegions": true,
     "gitlens.codeLens.enabled": false,
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 120
 }

@@ -187,7 +187,7 @@
 
 /* multimedia packages */
 
-
+#ifdef IBOX_DEBUG
 /* tools packages */
 
 #define PKG_USING_CMBACKTRACE
@@ -229,7 +229,7 @@
 
 #define PKG_SEGGER_SYSVIEW_ID_BASE 0x10000000
 #define PKG_SEGGER_SYSVIEW_ID_SHIFT 2
-
+#endif
 /* miscellaneous packages */
 
 

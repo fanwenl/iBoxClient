@@ -8,6 +8,7 @@ IBOX_CONFIG ibox_config = {
     "lot.zxbike.cc",      // server dsn
     10002,               //server ip
     8000,               //local ip
+    "CMNET",
     {0x00,0x7B,0x04,0xAA,0x58,0x69},     //eth mac
     {114, 114, 114, 114},
     1,
@@ -75,7 +76,7 @@ void rt_hw_board_init(void)
     RTC_alarm_init();
     RTC_StrSetTime(buf);
 //    ibox_printf(1, ("system is runing....\r\n"));
-    uart_init(UART3_GPRS_WIFI, 115200);
+//    uart_init(UART3_GPRS_WIFI, 115200);
     max485_init();
     wdog_init();
     reset_key_init();

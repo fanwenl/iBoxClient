@@ -10,3 +10,9 @@
 
 #include <stdint.h>
 #include <stdio.h>
+
+#define NET_TX_BUF_SIZE 1024
+#define NET_RX_BUF_SIZE 1024
+
+
+extern uint8_t net_rx_bottom_buf[];

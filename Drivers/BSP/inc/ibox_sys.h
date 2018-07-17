@@ -38,6 +38,10 @@ do{ \
 extern uint8_t ibox_debug_all;
 extern uint8_t ibox_sys_debug;
 extern uint8_t ibox_wifi_debug;
+extern uint8_t ibox_gprs_debug;
+extern uint8_t ibox_net_debug;
+extern uint8_t ibox_lora_debug;
+extern uint8_t ibox_mqtt_debug; 
        
 void sys_clk_init(void);
 void sys_nvic_init(void);

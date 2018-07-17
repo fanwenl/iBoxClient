@@ -50,9 +50,9 @@ typedef enum {
 
 #define UART1_RX_SIZE               256
 
-/*GPRS/WIFI UART3串口接收变量定义*/
-#define UART3_RX_SIZE 1024
-#define UART3_TX_SIZE 2014
+/*GPRS/WIFI UART3串口接收变量定义,1460 GPRS介绍发送最大长度ASCII*/
+#define UART3_RX_SIZE 1460
+#define UART3_TX_SIZE 1460
 
 extern uint8_t uart3_rx_buf[];
 extern uint8_t uart3_tx_buf[];

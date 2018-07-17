@@ -13,6 +13,10 @@
 uint8_t ibox_debug_all = 0;
 uint8_t ibox_sys_debug = 1;
 uint8_t ibox_wifi_debug = 1;
+uint8_t ibox_gprs_debug = 1;
+uint8_t ibox_net_debug = 1;
+uint8_t ibox_lora_debug = 1;
+uint8_t ibox_mqtt_debug = 1;
 
 static void delay_ms(uint32_t delay);
 static void delay_us(uint32_t delay);
@@ -106,13 +110,15 @@ void sys_nvic_init(void)
 void sys_delay_ms(uint32_t delay)
 {
 #ifdef USE_RTOS
+    uint32_t delay_tick = 0;
+    
     if(delay < 10)
-        delay = 1;
+        delay_tick = 1;
     else
-        delay = delay / (1000 / RT_TICK_PER_SECOND);
+        delay_tick = delay / (1000 / RT_TICK_PER_SECOND);
     /*判断系统是否运行*/
     if(rt_critical_level())
-        rt_thread_delay(delay);
+        rt_thread_delay(delay_tick);
     else
         delay_ms(delay);
 #else

@@ -13,6 +13,12 @@
 #include <string.h>
 
 uint16_t net_tx_len = 0; //网络发送的数据长度
+uint16_t net_rx_len = 0;
+uint8_t net_tx_buf[NET_TX_BUF_SIZE];   
+uint8_t net_tx_buf[NET_RX_BUF_SIZE];
+uint8_t net_rx_bottom_buf[NET_RX_BUF_SIZE];
+
+
 extern uint8_t DHCP_allocated_ip[];
 extern uint16_t wifi_tx_len;
 extern uint8_t uart3_tx_buf[];
@@ -71,7 +77,7 @@ void network_thread_entry(void *parameter)
             
         }
    #else
-        gprs_at_fsm();
+//        gprs_at_fsm();
    #endif
         rt_thread_delay(RT_TICK_PER_SECOND / 2);
     }

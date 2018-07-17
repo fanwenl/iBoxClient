@@ -74,6 +74,7 @@ void uart_init(uart_enum uart_num, uint32_t baud_rate)
  * UART1中断服务函数
  */
 extern void rt_hw_console_getchar_callback(void);
+void uart3_send_data(uint8_t*data, uint16_t len);
 void USART1_IRQHandler(void)
 {
     uint8_t data = 0;
@@ -82,7 +83,8 @@ void USART1_IRQHandler(void)
     { 
         /* Read one byte from the receive data register */
         data = USART_ReceiveData(USART1);
-        printf("%c",data);
+        //printf("%c",data);
+        while (USART_GetFlagStatus(USART3, USART_FLAG_TXE) == RESET);
         uart1_rx_buf[uart1_rx_wr_index] = data;
         uart1_rx_wr_index += 1;
         if (uart1_rx_wr_index >= UART1_RX_SIZE) 

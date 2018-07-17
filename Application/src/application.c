@@ -36,12 +36,9 @@
 #include <rtgui/calibration.h>
 #endif
 
-//#include "led.h"
-
-// ALIGN(RT_ALIGN_SIZE)
-// static rt_uint8_t led_stack[ 512 ];
-// static struct rt_thread led_thread;
 extern void network_thread_entry(void* parameter);
+extern void wired_thread_entry(void *parameter);
+extern void wireless_thread_entry(void *parameter);
 
 
 static void timer_1s_timeout(void *parameter);
@@ -105,14 +102,24 @@ int rt_application_init(void)
     {
         rt_thread_startup(thread);
     }
-    // thread = rt_thread_create("dhcp_thread",
-    //                         dhcp_thread_entry,
-    //                         RT_NULL,
-    //                         4096, 4, 20);
-    // if (thread != RT_NULL)
-    // {
-    //     rt_thread_startup(thread);
-    // }
+    thread = rt_thread_create("wireless",
+                             wireless_thread_entry,
+                             RT_NULL,
+                             WIRELESS_THREAD_STACK_SIZE,
+                             WIRELESS_THREAD_PRIINIT, 20);
+     if (thread != RT_NULL)
+     {
+         rt_thread_startup(thread);
+     }
+         thread = rt_thread_create("wired",
+                             wired_thread_entry,
+                             RT_NULL,
+                             WIRED_THREAD_STACK_SIZE, 
+                             WIRED_THREAD_PRIINIT, 20);
+     if (thread != RT_NULL)
+     {
+         rt_thread_startup(thread);
+     }
     
     thread = rt_thread_create("watchdog_thread",
                             watchdog_thread_entry,
