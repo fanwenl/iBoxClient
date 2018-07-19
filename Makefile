@@ -73,6 +73,7 @@ APPDIR ?= ${SOURCE_ROOT}/Application/src
 # -Wall 使能所有警告
 ifeq (${DEBUG}, 1)
 	CFLAGS  += -g -O0 -Wall
+	DEFINES += IBOX_DEBUG
 else
 	CFLAGS  += -O2
 endif
