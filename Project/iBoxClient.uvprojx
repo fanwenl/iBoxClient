@@ -411,6 +411,16 @@
               <FileType>1</FileType>
               <FilePath>..\Application\src\wired_net.c</FilePath>
             </File>
+            <File>
+              <FileName>lora_thread.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\src\lora_thread.c</FilePath>
+            </File>
+            <File>
+              <FileName>main_thread.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\src\main_thread.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1229,7 +1239,7 @@
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>1</useUlib>
+            <useUlib>0</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -1377,9 +1387,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD,HSE_VALUE=12000000,xUSE_WIFI,IBOX_DEBUG,USE_RTOS</Define>
+              <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD,HSE_VALUE=12000000,USE_WIFI,IBOX_DEBUG,USE_RTOS</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\BSP\SX1276\src\radio;..\Drivers\BSP\SX1276\src\config;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth;..\Middlewares\CmBacktrace;..\Middlewares\SystemView\SystemView_Description;..\Middlewares\SystemView\SystemView_Src\Config;..\Middlewares\SystemView\SystemView_Src\SEGGER;..\Middlewares\RTOS\include;..\Middlewares\RTOS\include\libc;..\Middlewares\RTOS\components\finsh</IncludePath>
+              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\BSP\SX1276\src\radio;..\Drivers\BSP\SX1276\src\config;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth;..\Middlewares\CmBacktrace;..\Middlewares\SystemView\SystemView_Description;..\Middlewares\SystemView\SystemView_Src\Config;..\Middlewares\SystemView\SystemView_Src\SEGGER;..\Middlewares\RTOS\include;..\Middlewares\RTOS\include\libc;..\Middlewares\RTOS\components\finsh;..\Middlewares\cJSON</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1452,6 +1462,16 @@
               <FileName>wired_net.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Application\src\wired_net.c</FilePath>
+            </File>
+            <File>
+              <FileName>lora_thread.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\src\lora_thread.c</FilePath>
+            </File>
+            <File>
+              <FileName>main_thread.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Application\src\main_thread.c</FilePath>
             </File>
           </Files>
         </Group>

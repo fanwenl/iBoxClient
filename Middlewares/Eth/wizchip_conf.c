@@ -455,7 +455,10 @@ void wizchip_sw_reset(void)
 
 int8_t wizchip_init(uint8_t *txsize, uint8_t *rxsize)
 {
-    int8_t i, j;
+#if _WIZCHIP_ < W5200
+    uint8_t j = 0;
+#endif
+    int8_t i;
     int8_t tmp = 0;
     wizchip_sw_reset();
     if (txsize) {

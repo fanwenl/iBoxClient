@@ -448,7 +448,9 @@ void gprs_get_imei(void)
         memset(imei_buf, 0, 20);
         i = get_line_from_uart3(imei_buf);
         if ( i== 15) {
+            #ifndef USE_WIFI
             ibox_config.gprs_imei = atoll((const char *) imei_buf);
+            #endif
             break;
         }
     }while(i);

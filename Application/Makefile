@@ -5,4 +5,6 @@ C_SOURCES += Application/src/stm32f10x_it.c \
              Application/src/application.c	\
 			 Application/src/network.c      \
              Application/src/wired_net.c    \
-             Application/src/wireless_net.c 
+             Application/src/wireless_net.c \
+             Application/src/lora_thread.c  \
+             Application/src/main_thread.c

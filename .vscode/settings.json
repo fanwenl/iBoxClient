@@ -11,7 +11,8 @@
         "unity.h": "c",
         "unity_fixture.h": "c",
         "stdint.h": "c",
-        "ibox_sys.h": "c"
+        "ibox_sys.h": "c",
+        "cmath": "c"
     },
     "C_Cpp.dimInactiveRegions": true,
     "gitlens.codeLens.enabled": false,

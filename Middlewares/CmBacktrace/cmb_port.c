@@ -64,15 +64,16 @@ RT_WEAK rt_err_t exception_hook(void *context) {
 int rt_cm_backtrace_init(void) {
     char temp_buf[10];
 
-    sprintf(temp_buf,"%d.%d.%d", FIRMWARE_VER_MAIN, FIRMWARE_VER_SUB, FIRMWARE_VER_REV);
+    sprintf(temp_buf,"%ld.%ld.%ld", FIRMWARE_VER_MAIN, FIRMWARE_VER_SUB, FIRMWARE_VER_REV);
     cm_backtrace_init("iBoxClient","1.0",(const char *)temp_buf);
     
     rt_hw_exception_install(exception_hook);
     
     return 0;
 }
+#ifdef PKG_USING_CMBACKTRACE
 INIT_DEVICE_EXPORT(rt_cm_backtrace_init);
-
+#endif
 long cmb_test(int argc, char **argv) {
     volatile int * SCB_CCR = (volatile int *) 0xE000ED14; // SCB->CCR
     int x, y, z;
@@ -115,4 +116,6 @@ long cmb_test(int argc, char **argv) {
     }
     return 0;
 }
+#ifdef PKG_USING_CMBACKTRACE
 MSH_CMD_EXPORT(cmb_test, cm_backtrace_test: cmb_test <DIVBYZERO|UNALIGNED> );
+#endif

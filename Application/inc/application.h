@@ -4,7 +4,7 @@
 *作者：fanwenl_
 *版本：V0.0.1
 *日期：2017-11-18
-*描述：main头文件。
+*描述：application头文件。
 * ************************************************************************************************
 */
 #ifndef __APPLICATION_H
@@ -21,7 +21,9 @@
 #define WATCHDOG_THREAD_PRIINIT     RT_CUS_THREAD_PRIORITY + 1
 #define WIRED_THREAD_PRIINIT        RT_CUS_THREAD_PRIORITY + 3
 #define WIRELESS_THREAD_PRIINIT     RT_CUS_THREAD_PRIORITY + 3
-#define NETWORK_THREAD_PRIINIT      RT_CUS_THREAD_PRIORITY + 4
+#define LORA_THREAD_PRIINIT         RT_CUS_THREAD_PRIORITY + 4
+#define NETWORK_THREAD_PRIINIT      RT_CUS_THREAD_PRIORITY + 5
+#define MAIN_THREAD_PRIINIT         RT_CUS_THREAD_PRIORITY + 6
 
 
 /*任务堆栈大小*/
@@ -29,7 +31,9 @@
 #define WATCHDOG_THREAD_STACK_SIZE     256
 #define WIRED_THREAD_STACK_SIZE        4096
 #define WIRELESS_THREAD_STACK_SIZE     4096
+#define LORA_THREAD_STACK_SIZE         4096
 #define NETWORK_THREAD_STACK_SIZE      4096
+#define MAIN_THREAD_STACK_SIZE         4096
 
 
 #ifdef __cplusplus

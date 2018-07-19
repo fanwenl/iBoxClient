@@ -36,7 +36,7 @@
 /* Kernel Device Object */
 
 //#define RT_USING_DEVICE
-//#define RT_USING_CONSOLE                 //console定义了rt_kprintf相关的函数
+#define RT_USING_CONSOLE                 //console定义了rt_kprintf相关的函数
 #define RT_CONSOLEBUF_SIZE 128             //finsh中有使用
 //#define RT_CONSOLE_DEVICE_NAME "uart1"
 #define ARCH_ARM
@@ -187,48 +187,49 @@
 
 /* multimedia packages */
 
-#ifdef IBOX_DEBUG
-/* tools packages */
 
-#define PKG_USING_CMBACKTRACE
+/* tools packages */
 #define PKG_USING_CMBACKTRACE_LATEST_VERSION
 #define PKG_CMBACKTRACE_PLATFORM_M3
 #define PKG_CMBACKTRACE_DUMP_STACK
 #define PKG_CMBACKTRACE_PRINT_ENGLISH
-#define PKG_USING_SYSTEMVIEW
-#define PKG_SYSVIEW_APP_NAME "RT-Thread Trace"
-#define PKG_SYSVIEW_DEVICE_NAME "Cortex-M3"
-#define PKG_SYSVIEW_TIMESTAMP_FREQ 0
-#define PKG_SYSVIEW_CPU_FREQ 0
-#define PKG_SYSVIEW_RAM_BASE 0x20000000
-#define PKG_SYSVIEW_EVENTID_OFFSET 32
-#define PKG_SYSVIEW_USE_CYCCNT_TIMESTAMP
-#define PKG_SYSVIEW_SYSDESC0 "I#15=SysTick"
-#define PKG_SYSVIEW_SYSDESC1 ""
-#define PKG_SYSVIEW_SYSDESC2 ""
 
-/* Segger RTT configuration */
+#ifdef IBOX_DEBUG
+    #define PKG_USING_CMBACKTRACE
+    #define PKG_USING_SYSTEMVIEW
+    #define PKG_SYSVIEW_APP_NAME "RT-Thread Trace"
+    #define PKG_SYSVIEW_DEVICE_NAME "Cortex-M3"
+    #define PKG_SYSVIEW_TIMESTAMP_FREQ 0
+    #define PKG_SYSVIEW_CPU_FREQ 0
+    #define PKG_SYSVIEW_RAM_BASE 0x20000000
+    #define PKG_SYSVIEW_EVENTID_OFFSET 32
+    #define PKG_SYSVIEW_USE_CYCCNT_TIMESTAMP
+    #define PKG_SYSVIEW_SYSDESC0 "I#15=SysTick"
+    #define PKG_SYSVIEW_SYSDESC1 ""
+    #define PKG_SYSVIEW_SYSDESC2 ""
 
-#define PKG_SEGGER_RTT_MAX_NUM_UP_BUFFERS 3
-#define PKG_SEGGER_RTT_MAX_NUM_DOWN_BUFFERS 3
-#define PKG_SEGGER_RTT_BUFFER_SIZE_UP 1024
-#define PKG_SEGGER_RTT_BUFFER_SIZE_DOWN 16
-#define PKG_SEGGER_RTT_PRINTF_BUFFER_SIZE 64
-#define PKG_SEGGER_RTT_MODE_ENABLE_NO_BLOCK_SKIP
-#define PKG_SEGGER_RTT_MAX_INTERRUPT_PRIORITY 0x20
+    /* Segger RTT configuration */
 
-/* SystemView buffer configuration */
+    #define PKG_SEGGER_RTT_MAX_NUM_UP_BUFFERS 3
+    #define PKG_SEGGER_RTT_MAX_NUM_DOWN_BUFFERS 3
+    #define PKG_SEGGER_RTT_BUFFER_SIZE_UP 1024
+    #define PKG_SEGGER_RTT_BUFFER_SIZE_DOWN 16
+    #define PKG_SEGGER_RTT_PRINTF_BUFFER_SIZE 64
+    #define PKG_SEGGER_RTT_MODE_ENABLE_NO_BLOCK_SKIP
+    #define PKG_SEGGER_RTT_MAX_INTERRUPT_PRIORITY 0x20
 
-#define PKG_SEGGER_SYSVIEW_RTT_BUFFER_SIZE 1024
-#define PKG_SEGGER_SYSVIEW_RTT_CHANNEL 1
-#define PKG_SEGGER_SYSVIEW_USE_STATIC_BUFFER
-//关闭事后分析模式
-//#define PKG_SEGGER_SYSVIEW_POST_MORTEM_MODE
+    /* SystemView buffer configuration */
 
-/* SystemView Id configuration */
+    #define PKG_SEGGER_SYSVIEW_RTT_BUFFER_SIZE 1024
+    #define PKG_SEGGER_SYSVIEW_RTT_CHANNEL 1
+    #define PKG_SEGGER_SYSVIEW_USE_STATIC_BUFFER
+    //关闭事后分析模式
+    //#define PKG_SEGGER_SYSVIEW_POST_MORTEM_MODE
 
-#define PKG_SEGGER_SYSVIEW_ID_BASE 0x10000000
-#define PKG_SEGGER_SYSVIEW_ID_SHIFT 2
+    /* SystemView Id configuration */
+
+    #define PKG_SEGGER_SYSVIEW_ID_BASE 0x10000000
+    #define PKG_SEGGER_SYSVIEW_ID_SHIFT 2
 #endif
 /* miscellaneous packages */
 

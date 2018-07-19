@@ -31,7 +31,11 @@ FILE __stdout;
 void _sys_exit(int x)  
 {  
     x = x;  
-}  
+} 
+void _ttywrch(int ch)
+{
+    ch = ch;
+}
 
 //重映射fputc函数，此函数为多个输出函数的基础函数
 int fputc(int ch, FILE *f)

@@ -1,24 +1,14 @@
 /*
- * File      : application.c
- * This file is part of RT-Thread RTOS
- * COPYRIGHT (C) 2006, RT-Thread Development Team
- *
- * The license and distribution terms for this file may be
- * found in the file LICENSE in this distribution or at
- * http://www.rt-thread.org/license/LICENSE
- *
- * Change Logs:
- * Date           Author       Notes
- * 2009-01-05     Bernard      the first version
- * 2013-07-12     aozima       update for auto initial.
- */
-
-/**
- * @addtogroup STM32
- */
-/*@{*/
-
+**************************************************************************************************
+*文件：application.c
+*作者：fanwenl_
+*版本：V0.0.1
+*日期：2018-07-18
+*描述：ibox任务创建文件。
+* ************************************************************************************************
+*/
 #include "ibox_board.h"
+#include "cJSON.h"
 #include <rtthread.h>
 
 #ifdef RT_USING_DFS
@@ -39,19 +29,26 @@
 extern void network_thread_entry(void* parameter);
 extern void wired_thread_entry(void *parameter);
 extern void wireless_thread_entry(void *parameter);
+extern void lora_thread_entry(void *parameter);
+extern void main_thread_entry(void *parameter);
 
 
 static void timer_1s_timeout(void *parameter);
 
 void rt_init_thread_entry(void* parameter)
 {
+    cJSON_Hooks cjson_hook_temp;
 #ifdef RT_USING_COMPONENTS_INIT
     /* initialization RT-Thread Components */
     rt_components_init();
 #endif
-//    finsh_system_init();
-//    rt_trace_init();
+    /*初始化ETH网络*/
     ethernet_init();
+
+    /*配置cJSON的hook*/
+    cjson_hook_temp.malloc_fn = (void *(*)(size_t))rt_malloc;
+    cjson_hook_temp.free_fn = rt_free;
+    cJSON_InitHooks(&cjson_hook_temp);
 
 }
 
@@ -120,6 +117,24 @@ int rt_application_init(void)
      {
          rt_thread_startup(thread);
      }
+    thread = rt_thread_create("loRa",
+                             lora_thread_entry,
+                             RT_NULL,
+                             LORA_THREAD_STACK_SIZE, 
+                             LORA_THREAD_PRIINIT, 20);
+     if (thread != RT_NULL)
+     {
+         rt_thread_startup(thread);
+     }
+    thread = rt_thread_create("main",
+                             main_thread_entry,
+                             RT_NULL,
+                             MAIN_THREAD_STACK_SIZE, 
+                             MAIN_THREAD_PRIINIT, 20);
+     if (thread != RT_NULL)
+     {
+         rt_thread_startup(thread);
+     }
     
     thread = rt_thread_create("watchdog_thread",
                             watchdog_thread_entry,
@@ -147,5 +162,3 @@ static void timer_1s_timeout(void *parameter)
     DNS_time_handler();
     led_toggle(LED_SYS);
 }
-
-/*@}*/

@@ -15,72 +15,116 @@
 uint16_t net_tx_len = 0; //网络发送的数据长度
 uint16_t net_rx_len = 0;
 uint8_t net_tx_buf[NET_TX_BUF_SIZE];   
-uint8_t net_tx_buf[NET_RX_BUF_SIZE];
+uint8_t net_rx_buf[NET_RX_BUF_SIZE];
 uint8_t net_rx_bottom_buf[NET_RX_BUF_SIZE];
 
+/*创建net相关的信号量*/
+rt_sem_t net_rx_sem = RT_NULL;
+rt_sem_t net_tx_sem = RT_NULL;
+
+/*创建network的事件*/
+rt_event_t network_thread_event = RT_NULL;
 
 extern uint8_t DHCP_allocated_ip[];
 extern uint16_t wifi_tx_len;
 extern uint8_t uart3_tx_buf[];
 uint32_t temp_timeout = 0;
+
 void network_thread_entry(void *parameter)
 {
-    uint8_t dhcp_status = 0;
-    int8_t dns_status = 10;
-    static uint8_t temp_buf[128] = "hello esp8266!\r\n";
-    uint16_t temp_len=0;
+    rt_uint32_t opt = 0;
 
     while (1) {
-        //     DHCP_FAILED = 0,  ///< Procssing Fail
-        //   DHCP_RUNNING,     ///< Procssing DHCP proctocol
-        //   DHCP_IP_ASSIGN,   ///< First Occupy IP from DHPC server      (if cbfunc == null, act as default
-        //   default_ip_assign) DHCP_IP_CHANGED,  ///< Change IP address by new ip from DHCP (if cbfunc ==
-        //   null, act as default default_ip_update) DHCP_IP_LEASED,   ///< Stand by DHCP_STOPPED
-//         dhcp_status = DHCP_run();
-        if (dhcp_status == DHCP_IP_ASSIGN) {
-            printf("dhcp is assign\r\n");
-            printf("ip:%d.%d.%d.%d\r\n", DHCP_allocated_ip[0], DHCP_allocated_ip[1], DHCP_allocated_ip[2],
-                   DHCP_allocated_ip[3]);
-        } else if (dhcp_status == DHCP_RUNNING) {
-            printf("dhcp is runing\r\n");
-        } else if (dhcp_status == DHCP_IP_LEASED) {
-            printf("dhcp is leased\r\n");
-        }
-        /*DNS解析服务需要在DHCP之后运行吗？*/
-//        dns_status = DNS_run(ibox_config.dns_ip, ibox_config.server_dsn, eth_msg_get.dns_sip);
-        if(dns_status == -1)
+        if(rt_event_recv(network_thread_event, NETWORK_THREAD_EVENT_ALL, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,RT_TICK_PER_SECOND * 10, &opt) == RT_EOK)
         {
-            printf("dns Domain name is too small!\r\n");
-        }
-        else if(dns_status == 0)
-        {
-            printf("DNS Timeout or Parse error!\r\n");
-        }
-        else if(dns_status == 1)
-        {
-            printf("DNS success!\r\n");
-            printf("s_ip:%d.%d.%d.%d\r\n",eth_msg_get.dns_sip[0],eth_msg_get.dns_sip[1],eth_msg_get.dns_sip[2],eth_msg_get.dns_sip[3]);
-        }
-   #ifdef USE_WIFI
-        esp8266_at_fsm();
-        if(get_esp8266_status() == ESP8266_STATUS_COMMUNICATE)
-        {
-            
-
-            if(get_sys_time_s() - temp_timeout> 30)
+            if(opt & NET_RX_BUF_WRITE_EVENT)
             {
-                temp_timeout = get_sys_time_s();
-                printf("wifi tx time:%d\r\n",temp_timeout);
-                memcpy(uart3_tx_buf,temp_buf,20);
-                wifi_tx_len = 20;
+
+            }
+            if(opt & NET_TX_BUF_WRITE_EVENT)
+            {
+
             }
             
         }
-   #else
-//        gprs_at_fsm();
-   #endif
+
         rt_thread_delay(RT_TICK_PER_SECOND / 2);
     }
 }
+
+void network_thread_init(void)
+{
+    net_rx_sem = rt_sem_create("NetRxS", 1, RT_IPC_FLAG_FIFO);
+    if(net_rx_sem == RT_NULL)
+    {
+        ibox_printf(ibox_net_debug, ("net rx sem create fail!\r\n"));
+    }
+    net_tx_sem = rt_sem_create("NetTxS", 1, RT_IPC_FLAG_FIFO);
+    if(net_tx_sem == RT_NULL)
+    {
+        ibox_printf(ibox_net_debug, ("net tx sem create fail!\r\n"));
+    }
+
+    network_thread_event = rt_event_create("NetworkEvent", RT_IPC_FLAG_FIFO);
+    if(network_thread_event == RT_NULL)
+    {
+        ibox_printf(1, ("network event create fail!\r\n"));
+    }
+}
+uint8_t net_tx_write(void *prt, uint16_t len)
+{
+    IBOX_ASSERT(prt == NULL);
+
+    if(rt_sem_take(net_tx_sem, RT_TICK_PER_SECOND) != RT_EOK)
+    {
+        net_tx_len = len;
+        memset(net_tx_buf, 0, sizeof(net_tx_buf));
+        memcpy(net_tx_buf, prt, len);
+        ibox_printf(ibox_net_debug, ("net tx write!\r\n"));
+        rt_event_send(network_thread_event, NET_TX_BUF_WRITE_EVENT);
+        return 1;
+    }
+    else{
+        ibox_printf(ibox_net_debug, ("net tx write tiemout!\r\n"));
+        return 0;
+    }
+}
+void net_tx_sem_release(void)
+{
+    rt_sem_release(net_tx_sem);
+}
+uint8_t net_rx_write(void *prt, uint16_t len)
+{
+    IBOX_ASSERT(prt == NULL);
+
+    if(rt_sem_take(net_rx_sem, RT_TICK_PER_SECOND) != RT_EOK)
+    {
+        net_rx_len = len;
+        memset(net_rx_buf, 0, sizeof(net_rx_buf));
+        memcpy(net_rx_buf, prt, len);
+        ibox_printf(ibox_net_debug, ("net rx write!\r\n"));
+        rt_event_send(network_thread_event, NET_RX_BUF_WRITE_EVENT);
+        return 1;
+    }
+    else{
+        ibox_printf(ibox_net_debug, ("net rx write tiemout!\r\n"));
+        return 0;
+    }
+}
+void net_rx_read(void *prt, uint16_t *len)
+{
+    IBOX_ASSERT(prt == NULL);
+    IBOX_ASSERT(len == NULL);
+
+    *len = net_rx_len;
+    memcpy(prt, net_rx_buf, net_rx_len);
+    ibox_printf(ibox_net_debug, ("net rx buf read!\r\n"));
+    rt_sem_release(net_rx_sem);
+}
+void net_rx_sem_release(void)
+{
+    rt_sem_release(net_rx_sem);
+}
+
 
 void net_send_data(uint8_t *buf, uint16_t len) {}

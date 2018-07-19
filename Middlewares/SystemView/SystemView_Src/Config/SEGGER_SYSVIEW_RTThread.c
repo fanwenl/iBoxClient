@@ -53,7 +53,7 @@ Revision: $Rev: 3745 $
 #include "SEGGER_RTT.h"
 
 #ifndef PKG_USING_SYSTEMVIEW
-#error "SystemView is only works when feature PKG_USING_SYSTEMVIEW is enable."
+//#error "SystemView is only works when feature PKG_USING_SYSTEMVIEW is enable."
 #endif
 static rt_thread_t tidle;
 
@@ -280,14 +280,16 @@ int rt_trace_init(void)
     
     return 0;
 }
+#ifdef PKG_USING_SYSTEMVIEW
 INIT_COMPONENT_EXPORT(rt_trace_init);
+#endif
 
 int rtt_show_address(int argc, char **argv)
 {
     rt_kprintf("RTT Control Block Detection Address is 0x%x\n", &_SEGGER_RTT);
     return RT_EOK;
 }
-#ifdef FINSH_USING_MSH
+#if(defined(FINSH_USING_MSH) && defined(PKG_USING_SYSTEMVIEW))
 FINSH_FUNCTION_EXPORT_ALIAS(rtt_show_address, __cmd_rtt_show_address, Show RTT Control Block Address.);
 #endif
 /*************************** End of file ****************************/

@@ -32,6 +32,7 @@ typedef enum {
     ESP8266_STATUS_LINK_OK,
     ESP8266_STATUS_GET_IP,
     ESP8266_STATUS_GET_MAC,
+    ESP8266_STATUS_CONNECT_SERVER,
     ESP8266_STATUS_WAIT_LINK_SERVER,
     ESP8266_STATUS_COMMUNICATE, //正常的通信状态communication
     /*如果采用透传模式，不好判断是否断网，所有先不采用透传模式*/

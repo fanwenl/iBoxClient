@@ -102,8 +102,9 @@ typedef struct __IBOX_CONFIG {
 #define STM32_SRAM_SIZE         64
 #define STM32_SRAM_END          (0x20000000 + STM32_SRAM_SIZE * 1024)
 
-#define IBOX_ASSERT(expr) ((expr) ? (void)0 : \
-ibox_printf(1,("(%s) assertion failed at function:%s, line number:%d \n", expr, __FUNCTION__, __LINE__)))
+void ibox_assert(const char *exp, const char *func, uint32_t line);
+
+#define IBOX_ASSERT(expr) ((expr) ? (void)0 : ibox_assert(#expr, __FUNCTION__, __LINE__))
 
 void rt_hw_board_init(void);
 

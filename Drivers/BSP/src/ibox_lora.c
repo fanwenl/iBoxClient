@@ -59,7 +59,7 @@ void lora_init(void)
  */
 void EXTI9_5_IRQHandler(void)
 {
-	uint8_t lora_irq = 0;
+//	uint8_t lora_irq = 0;
 	
 	// if(EXTI_GetITStatus(EXTI_Line7) != RESET)
 	// {

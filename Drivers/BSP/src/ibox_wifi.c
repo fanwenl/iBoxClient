@@ -11,13 +11,16 @@
 #include "ibox_wifi.h"
 #include "ibox_sys.h"
 #include "ibox_uart.h"
-#include "string.h"
 #include "ibox_board.h"
-#include "stdio.h"
+#include "network.h"
+
+#include <stdio.h>
+#include <string.h>
 
 uint8_t wifi_status_error_count = 0; // wifi状态机错误计数器
 uint8_t wifi_link_error_count   = 0; // wifi连接错误计数器
 uint8_t wifi_error_count        = 0; // wifi错误计数器
+uint8_t wifi_tcp_error_count    = 0; // wifi TCP连接错误计数器
 uint32_t wifi_timeout           = 0; // wifi连接超时
 
 uint16_t wifi_tx_len = 0; //wifi需要发送的数据长度
@@ -25,6 +28,7 @@ ESP8266_STATUS_ENUM esp8266_status = ESP8266_STATUS_CHECK;
 
 
 #ifdef USE_WIFI
+static void wifi_server_connect(void);
 static void wifi_ctrl_pin_config(void)
 {
     GPIO_InitTypeDef GPIO_InitStruct;
@@ -44,8 +48,12 @@ static void wifi_ctrl_pin_config(void)
 void esp8266_at_fsm(void)
 {
     static uint8_t wifi_rx_temp[UART3_RX_SIZE];
+    char *p_strstr = NULL;
 
     uint16_t wifi_rx_len = 0;
+    uint16_t wifi_rx_temp_len  = 0;
+    uint16_t  count = 0;
+    char atoi_buf[3];
     uint8_t wifi_mode = 0;
 
     memset(wifi_rx_temp, 0, UART3_RX_SIZE);
@@ -53,14 +61,12 @@ void esp8266_at_fsm(void)
     wifi_rx_len = get_line_from_uart3(wifi_rx_temp);
     if (wifi_rx_len) {
         ibox_printf(ibox_wifi_debug, ("[WIFI_REC]:%s\r\n", wifi_rx_temp));
-    } else {
-//        return;
     }
 
     switch (esp8266_status) {
     case ESP8266_STATUS_CHECK: //检测模块；ATE0关闭回显
         uart3_rx_buf_clear();
-        uart3_send_str("ATE0\r\n");
+        uart3_send_str("AT\r\n");
         wifi_status_error_count = 0;
         wifi_timeout            = get_sys_time_s();
         esp8266_status = ESP8266_STATUS_CHECK_MODE;
@@ -86,8 +92,10 @@ void esp8266_at_fsm(void)
         }
         break;
     case ESP8266_STATUS_WAIT_CHECK_MODE: //等待检测模式
-        if (strstr((char *) wifi_rx_temp, "+CWMODE:") != NULL) {
-            sscanf((char *) wifi_rx_temp, "+CWMODE:%d", (int *)&wifi_mode);
+        p_strstr = NULL;
+        p_strstr = strstr((char *) wifi_rx_temp, "+CWMODE:");
+        if (p_strstr != NULL) {
+            wifi_mode = p_strstr[8] - '0';
             if (wifi_mode == 1) {
                 esp8266_status = ESP8266_STATUS_LINK_OK;        //模式正确尝试获取本机IP
             } else {
@@ -282,10 +290,10 @@ void esp8266_at_fsm(void)
             /*两种连接方式,域名连接方式命令验证*/
             //sprintf((char *)uart3_tx_buf, "AT+CIPSTART=\"TCP\",\"%s\",%d\r\n",ibox_config.server_dsn, ibox_config.server_port); 
             uart3_rx_buf_clear();//要等待上面的状态完成,这个地方需要需要等待OK
-            memset(uart3_tx_buf, 0, UART3_TX_SIZE);
-            sprintf((char *)uart3_tx_buf, "AT+CIPSTART=\"TCP\",\"%s\",%d\r\n",ibox_config.server_ip, ibox_config.server_port); 
-            uart3_send_str((char *)uart3_tx_buf); /*连接服务器*/
-            esp8266_status = ESP8266_STATUS_WAIT_LINK_SERVER;
+            //memset(uart3_tx_buf, 0, UART3_TX_SIZE);
+            //sprintf((char *)uart3_tx_buf, "AT+CIPSTART=\"TCP\",\"%s\",%d\r\n",ibox_config.server_ip, ibox_config.server_port); 
+            //uart3_send_str((char *)uart3_tx_buf); /*连接服务器*/
+            esp8266_status = ESP8266_STATUS_CONNECT_SERVER;
         } else {
             if (get_sys_time_s() - wifi_timeout > 2) {
                 wifi_timeout = get_sys_time_s();
@@ -300,11 +308,18 @@ void esp8266_at_fsm(void)
             esp8266_status = ESP8266_STATUS_GET_MAC;
         }
         break;
+    case ESP8266_STATUS_CONNECT_SERVER:
+        wifi_server_connect();
+        esp8266_status = ESP8266_STATUS_WAIT_LINK_SERVER;
+        break;
     case ESP8266_STATUS_WAIT_LINK_SERVER:
         if (strstr((char *) wifi_rx_temp, "ERROR") != NULL) {
+            wifi_tcp_error_count++;
+            esp8266_status = ESP8266_STATUS_CONNECT_SERVER;
 
         }
         if (strstr((char *) wifi_rx_temp, "CONNECT") != NULL) {
+            wifi_tcp_error_count = 0;
             wifi_status_error_count = 0;
             wifi_timeout            = get_sys_time_s();
             esp8266_status = ESP8266_STATUS_COMMUNICATE;
@@ -335,9 +350,29 @@ void esp8266_at_fsm(void)
             */
         }
         // 判断是否有数据接收
-        if(wifi_rx_len)
-        {
-            //+IPD,11:list_thread
+        if(wifi_rx_len){
+            p_strstr = NULL;
+            p_strstr = strstr((char *) wifi_rx_temp, "+IPD,");
+            if(p_strstr != NULL)
+            {
+                wifi_rx_temp_len = 0;
+                p_strstr += 5;
+                while(*p_strstr != ':')
+                {
+                    wifi_rx_temp_len = wifi_rx_temp_len * 10 + *p_strstr - '0';
+                    p_strstr++;
+                }
+                p_strstr++;
+                /*
+                //使用cJSON直接处理字符串，不用下面的转换
+                for (count = 0; count < wifi_rx_temp_len; count++) {
+                    atoi_buf[0] = *(p_strstr + count * 2);
+                    atoi_buf[1] = *(p_strstr + (count * 2 + 1));
+                    net_rx_bottom_buf[count] = strtol((const char *) atoi_buf, NULL, 16);
+                }
+                */
+                net_rx_write(p_strstr, wifi_rx_temp_len);
+            }
         }
         break;
     default:
@@ -380,5 +415,27 @@ void esp8266_send_data(void)
 ESP8266_STATUS_ENUM get_esp8266_status(void)
 {
     return esp8266_status;
+}
+static void wifi_server_connect(void)
+{
+    char temp_buf[6];
+    uart3_send_str("AT+CIPSTART=\"TCP\",\"");
+
+    /* tcp错误计数超了 选用原有域名重新连接服务器.或者是默认使用IP连接服务器*/
+    if ((ibox_config.use_dns == 0) || (wifi_tcp_error_count >= 3)) {
+        ibox_printf(ibox_wifi_debug, ("wifi tcp connect err out range || default use the ip \"%s\" port \"%d\"connect\r\n",
+                                       ibox_config.server_ip, ibox_config.server_port));
+        uart3_send_str(ibox_config.server_ip);
+        uart3_send_str("\",");
+    } else {
+        ibox_printf(ibox_wifi_debug, ("wifi tcp connect use the DNS \"%s\" port \"%d\"connect\r\n", ibox_config.server_dsn,
+                                       ibox_config.server_port));
+        uart3_send_str(ibox_config.server_dsn);
+        uart3_send_str("\",");
+    }
+    memset((uint8_t *)temp_buf, 0, 6);
+    sprintf(temp_buf, "%d", ibox_config.server_port);
+    uart3_send_str(temp_buf);
+    uart3_send_str("\r\n");
 }
 #endif

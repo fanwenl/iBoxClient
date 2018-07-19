@@ -133,3 +133,9 @@ uint16_t rt_hw_console_getchar(char *ch)
     return get_char_form_uart1(ch);
 }
 #endif
+
+void ibox_assert(const char *exp, const char *func, uint32_t line)
+{
+    ibox_printf(1,("(%s) assertion failed at function:%s, line number:%d \n", exp, func, line));
+    while (1);
+}
