@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <rtthread.h>
 
 #define NET_TX_BUF_SIZE 1460
 #define NET_RX_BUF_SIZE 1460
@@ -18,10 +19,12 @@
 #define NET_TX_BUF_WRITE_EVENT              (1u << 1)
 
 #define NETWORK_THREAD_EVENT_ALL            NET_RX_BUF_WRITE_EVENT|\
-                                            NET_TX_BUF_WRITE_EVENT      
+                                            NET_TX_BUF_WRITE_EVENT
 
 
 extern uint8_t net_rx_bottom_buf[];
+extern rt_event_t network_thread_event;
+
 
 void network_thread_init(void);
 uint8_t net_tx_write(void *prt, uint16_t len);

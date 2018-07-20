@@ -48,6 +48,10 @@ extern "C" {
 #include "dhcp.h"
 #include "dns.h"
 
+#include "network.h"
+#include "main_thread.h"
+#include "ibox_def.h"
+
 /*下面的这些长度需要多定义一位存放'/0',否则和后面数据连起来*/
 #define MAX_IP_LEN              16
 #define MAX_ETH_MAC_LEN         13

@@ -8,7 +8,8 @@ Language: Cpp
 #If true, analyze the formatted file for the most common alignment of & and *. PointerAlignment is then used only as fallback.
 BasedOnStyle: LLVM
 
-BreakBeforeBraces: Linux
+# LInux 方式,Allman Win的方式
+BreakBeforeBraces: Allman
 
 IndentCaseLabels: false
 

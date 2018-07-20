@@ -19,8 +19,8 @@ uint8_t net_rx_buf[NET_RX_BUF_SIZE];
 uint8_t net_rx_bottom_buf[NET_RX_BUF_SIZE];
 
 /*创建net相关的信号量*/
-rt_sem_t net_rx_sem = RT_NULL;
-rt_sem_t net_tx_sem = RT_NULL;
+static rt_sem_t net_rx_sem = RT_NULL;
+static rt_sem_t net_tx_sem = RT_NULL;
 
 /*创建network的事件*/
 rt_event_t network_thread_event = RT_NULL;
@@ -39,10 +39,11 @@ void network_thread_entry(void *parameter)
         {
             if(opt & NET_RX_BUF_WRITE_EVENT)
             {
-
+                rt_event_send(main_thread_event, MAIN_RECEIVE_DATA_EVENT);
             }
             if(opt & NET_TX_BUF_WRITE_EVENT)
             {
+                /*判断网络的连接状态，选择通道发送（有线或者是无线）*/
 
             }
             

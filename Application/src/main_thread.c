@@ -21,9 +21,10 @@ void main_thread_entry(void *parameter)
         {
             if(opt & MAIN_RECEIVE_DATA_EVENT)
             {
-
+                /*收到数据进行cJSON解析。执行下发的数据和命令*/
             }
         }
+        /*判断时间间隔进行周期性的数据上报*/
 
         rt_thread_delay(RT_TICK_PER_SECOND / 2);
     }

@@ -14,3 +14,9 @@
 #define MAIN_RECEIVE_DATA_EVENT              (1u << 0)
 
 #define MAIN_THREAD_EVENT_ALL            MAIN_RECEIVE_DATA_EVENT
+
+extern rt_event_t main_thread_event;
+
+void main_thread_init(void);
+void main_thread_entry(void *parameter);
+

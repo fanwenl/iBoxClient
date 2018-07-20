@@ -12,7 +12,9 @@
         "unity_fixture.h": "c",
         "stdint.h": "c",
         "ibox_sys.h": "c",
-        "cmath": "c"
+        "cmath": "c",
+        "application.h": "c",
+        "rtthread.h": "c"
     },
     "C_Cpp.dimInactiveRegions": true,
     "gitlens.codeLens.enabled": false,

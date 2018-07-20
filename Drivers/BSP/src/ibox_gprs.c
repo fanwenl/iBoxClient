@@ -69,17 +69,19 @@ void gprs_at_fsm(void)
     uint16_t gprs_sq       = 0;    //信号强度
     uint16_t gprs_countnum = 0;
 
-    uint16_t count = 0;
-    uint8_t  atoi_buf[3]={0,0,0};
+    uint16_t count      = 0;
+    uint8_t atoi_buf[3] = {0, 0, 0};
 
     memset(gprs_rx_temp, 0, UART3_RX_SIZE);
     /*获取一帧数据*/
     gprs_rx_len = get_line_from_uart3(gprs_rx_temp);
-    if (gprs_rx_len) {
-        ibox_printf(ibox_gprs_debug, ("[GPRS_REC]:%s\r\n", gprs_rx_temp));
+    if (gprs_rx_len)
+    {
+        ibox_printf(ibox_gprs_debug, ("[GPRS_REC->]:%s\r\n", gprs_rx_temp));
     }
 
-    switch (gprs_status) {
+    switch (gprs_status)
+    {
     case GPRS_STATUS_CHECK: //检测模块；ATE0关闭回显
         uart3_rx_buf_clear();
         uart3_send_str("AT\r\n");
@@ -88,26 +90,35 @@ void gprs_at_fsm(void)
         gprs_status             = GPRS_STATUS_INIT;
         break;
     case GPRS_STATUS_INIT: //检查SIM卡
-        if (strstr((char *) gprs_rx_temp, "OK") != NULL) {
+        if (strstr((char *) gprs_rx_temp, "OK") != NULL)
+        {
             gprs_status_error_count = 0;
             gprs_timeout            = get_sys_time_s();
             ibox_printf(ibox_gprs_debug, ("AT+CPIN?\r\n"));
             uart3_send_str("AT+CPIN?\r\n");
             gprs_status = GPRS_STATUS_SET_MISC;
-        } else {
-            if (get_sys_time_s() - gprs_timeout > 2) {
+        }
+        else
+        {
+            if (get_sys_time_s() - gprs_timeout > 2)
+            {
                 gprs_timeout = get_sys_time_s();
                 gprs_status_error_count++;
-                if (gprs_status_error_count > 5) {
+                if (gprs_status_error_count > 5)
+                {
                     gprs_link_error_count++;
-                } else {
+                    gprs_status_error_count = 0;
+                }
+                else
+                {
                     uart3_send_str("AT\r\n");
                 }
             }
         }
         break;
     case GPRS_STATUS_SET_MISC: //设置杂项
-        if (strstr((char *) gprs_rx_temp, "READY") != NULL) {
+        if (strstr((char *) gprs_rx_temp, "READY") != NULL)
+        {
             uart3_send_str("AT+CIPSHUT\r\n"); //关闭连接
             sys_delay_ms(1000);
             uart3_send_str("AT+CIPRXGET=1\r\n"); //接受数据模式改为主动接收
@@ -120,13 +131,20 @@ void gprs_at_fsm(void)
             gprs_status             = GPRS_STATUS_CHECK_CSQ;
             gprs_timeout            = get_sys_time_s();
             gprs_status_error_count = 0;
-        } else {
-            if (get_sys_time_s() - gprs_timeout > 2) {
+        }
+        else
+        {
+            if (get_sys_time_s() - gprs_timeout > 2)
+            {
                 gprs_timeout = get_sys_time_s();
                 gprs_status_error_count++;
-                if (gprs_status_error_count > 5) {
+                if (gprs_status_error_count > 5)
+                {
                     gprs_link_error_count++;
-                } else {
+                    gprs_status_error_count = 0;
+                }
+                else
+                {
                     uart3_send_str("AT+CPIN?\r\n");
                 }
             }
@@ -135,13 +153,18 @@ void gprs_at_fsm(void)
     case GPRS_STATUS_CHECK_CSQ: //检测信号强度
         p_strstr = NULL;
         p_strstr = strstr((char *) gprs_rx_temp, "+CSQ:");
-        if (p_strstr != NULL) {
-            if (p_strstr[7] != ',') {
+        if (p_strstr != NULL)
+        {
+            if (p_strstr[7] != ',')
+            {
                 gprs_sq = (p_strstr[6] - 0x30) * 10 + (p_strstr[7] - 0x30);
-            } else {
+            }
+            else
+            {
                 gprs_sq = (p_strstr[6] - 0x30);
             }
-            if ((gprs_sq >= 10) && (gprs_sq <= 31)) {
+            if ((gprs_sq >= 10) && (gprs_sq <= 31))
+            {
                 ibox_printf(ibox_gprs_debug, ("GPRS CSQ:%d", gprs_sq));
                 uart3_send_str("AT+CREG?\r\n"); //检测当前注册状态
                 ibox_printf(ibox_gprs_debug, ("AT Req -> AT+CREG?"));
@@ -149,13 +172,20 @@ void gprs_at_fsm(void)
                 gprs_timeout            = get_sys_time_s();
                 gprs_status_error_count = 0;
             }
-        } else {
-            if (get_sys_time_s() - gprs_timeout > 2) {
+        }
+        else
+        {
+            if (get_sys_time_s() - gprs_timeout > 2)
+            {
                 gprs_timeout = get_sys_time_s();
                 gprs_status_error_count++;
-                if (gprs_status_error_count > 5) {
+                if (gprs_status_error_count > 5)
+                {
                     gprs_link_error_count++;
-                } else {
+                    gprs_status_error_count = 0;
+                }
+                else
+                {
                     uart3_send_str("AT+CSQ\r\n");
                 }
             }
@@ -163,32 +193,40 @@ void gprs_at_fsm(void)
         break;
     case GPRS_STATUS_CHECK_REG:
         p_strstr = strstr((char *) gprs_rx_temp, "+CREG:");
-        if (p_strstr != NULL) {
+        if (p_strstr != NULL)
+        {
             if ((p_strstr[9] == '1') || (p_strstr[9] == '5')) //注册成功
             {
                 ibox_printf(ibox_gprs_debug, ("CREG OK"));
                 gprs_timeout            = get_sys_time_s();
                 gprs_status_error_count = 0;
-                // gprs附着
-                // CLEAR_GSM_RECV_BUF();
+                uart3_rx_buf_clear();
                 uart3_send_str("AT+CGATT?\r\n");
                 ibox_printf(ibox_gprs_debug, ("AT Req -> AT+CGATT?"));
                 gprs_status = GPRS_STATUS_CHECK_CGATT;
             }
-        } else {
-            if (get_sys_time_s() - gprs_timeout > 2) {
+        }
+        else
+        {
+            if (get_sys_time_s() - gprs_timeout > 2)
+            {
                 gprs_timeout = get_sys_time_s();
                 gprs_status_error_count++;
-                if (gprs_status_error_count > 5) {
+                if (gprs_status_error_count > 5)
+                {
+                    gprs_status_error_count = 0;
                     gprs_link_error_count++;
-                } else {
+                }
+                else
+                {
                     uart3_send_str("AT+CREG?\r\n");
                 }
             }
         }
         break;
     case GPRS_STATUS_CHECK_CGATT: //检测GPS附着
-        if (strstr((char *) gprs_rx_temp, "+CGATT: 1") != NULL) {
+        if (strstr((char *) gprs_rx_temp, "+CGATT: 1") != NULL)
+        {
             ibox_printf(ibox_gprs_debug, ("CGATT OK"));
             gprs_status_error_count = 0;
             memset(gprs_send_str, 0, GPRS_SEND_STR_SIZE);
@@ -196,62 +234,124 @@ void gprs_at_fsm(void)
             uart3_send_str(gprs_send_str);
             gprs_status  = GPRS_STATUS_SET_APN;
             gprs_timeout = get_sys_time_s();
-        } else {
-            if (get_sys_time_s() - gprs_timeout > 2) {
+        }
+        else
+        {
+            if (get_sys_time_s() - gprs_timeout > 2)
+            {
                 gprs_timeout = get_sys_time_s();
                 gprs_status_error_count++;
-                if (gprs_status_error_count > 5) {
+                if (gprs_status_error_count > 5)
+                {
                     gprs_link_error_count++;
-                } else {
+                    gprs_status_error_count = 0;
+                }
+                else
+                {
                     uart3_send_str("AT+CGATT?\r\n");
                 }
             }
         }
         break;
-    case GPRS_STATUS_SET_APN: // set apn
-        if (strstr((char *) gprs_rx_temp, "OK") != NULL) {
+    case GPRS_STATUS_SET_APN: // set apn ok
+        if (strstr((char *) gprs_rx_temp, "OK") != NULL)
+        {
             gprs_status_error_count = 0;
             gprs_timeout            = get_sys_time_s();
-            // CLEAR_GSM_RECV_BUF();
             uart3_send_str("AT+CIICR\r\n");
             ibox_printf(ibox_gprs_debug, ("AT Req -> AT+CIICR"));
             gprs_status = GPRS_STATUS_SET_CIICR;
-
-        } else if (strstr((char *) gprs_rx_temp, "ERROR") != NULL) {
+        }
+        else if (strstr((char *) gprs_rx_temp, "ERROR") != NULL)
+        {
             /*已经有错误状态的，不用再重发了*/
             gprs_status_error_count = 0;
             gprs_timeout            = get_sys_time_s();
             ibox_printf(ibox_gprs_debug, ("GPRS set APN ERROR!\r\n"));
             gprs_status = GPRS_STATUS_CHECK;
-        } else {
+        }
+        else
+        {
+            if (get_sys_time_s() - gprs_timeout > 2)
+            {
+                gprs_timeout = get_sys_time_s();
+                gprs_status_error_count++;
+                if (gprs_status_error_count > 5)
+                {
+                    gprs_link_error_count++;
+                    gprs_status_error_count = 0;
+                }
+                else
+                {
+                    memset(gprs_send_str, 0, GPRS_SEND_STR_SIZE);
+                    sprintf((char *) gprs_send_str, "AT+CSTT=\"%s\"\r\n", (char *) ibox_config.gsm_apn);
+                    uart3_send_str(gprs_send_str);
+                }
+            }
         }
         break;
     case GPRS_STATUS_SET_CIICR: //建立无限链路
-        if (strstr((char *) gprs_rx_temp, "OK") != NULL) {
+        if (strstr((char *) gprs_rx_temp, "OK") != NULL)
+        {
             gprs_status_error_count = 0;
             gprs_timeout            = get_sys_time_s();
-            // CLEAR_GSM_RECV_BUF();
             uart3_send_str("AT+CIFSR\r\n");
             ibox_printf(ibox_gprs_debug, ("AT Req -> AT+CIFSR"));
             gprs_status = GPRS_STATUS_GET_IP;
-        } else if (strstr((char *) gprs_rx_temp, "ERROR") != NULL) {
+        }
+        else if (strstr((char *) gprs_rx_temp, "ERROR") != NULL)
+        {
             gprs_timeout = get_sys_time_s();
             gprs_status  = GPRS_STATUS_CHECK;
-        } else {
+        }
+        else
+        {
+            if (get_sys_time_s() - gprs_timeout > 2)
+            {
+                gprs_timeout = get_sys_time_s();
+                gprs_status_error_count++;
+                if (gprs_status_error_count > 5)
+                {
+                    gprs_link_error_count++;
+                    gprs_status_error_count = 0;
+                }
+                else
+                {
+                    uart3_send_str("AT+CIICR\r\n");
+                }
+            }
         }
         break;
     case GPRS_STATUS_GET_IP: //获取IP地址
-        if (strstr((char *) gprs_rx_temp, ".") != NULL) {
+        if (strstr((char *) gprs_rx_temp, ".") != NULL)
+        {
             ibox_printf(ibox_gprs_debug, ("Get Local IP OK"));
             gprs_status = GPRS_STATUS_START_TCP;
-        } else if (strstr((char *) gprs_rx_temp, "ERROR") != NULL) {
-            gprs_timeout = get_sys_time_s();
-            gprs_status  = GPRS_STATUS_INIT;
-        } else {
+        }
+        else if (strstr((char *) gprs_rx_temp, "ERROR") != NULL)
+        {
+            gprs_status = GPRS_STATUS_INIT;
+        }
+        else
+        {
+            if (get_sys_time_s() - gprs_timeout > 2)
+            {
+                gprs_timeout = get_sys_time_s();
+                gprs_status_error_count++;
+                if (gprs_status_error_count > 5)
+                {
+                    gprs_link_error_count++;
+                    gprs_status_error_count = 0;
+                }
+                else
+                {
+                    uart3_send_str("AT+CIFSR\r\n");
+                }
+            }
         }
         break;
     case GPRS_STATUS_START_TCP: //锚点
-        // CLEAR_GSM_RECV_BUF();
+        uart3_rx_buf_clear();
         gprs_server_connect();
         gprs_timeout = get_sys_time_s();
         gprs_status  = GPRS_STATUS_TCP_CONNECT;
@@ -261,68 +361,76 @@ void gprs_at_fsm(void)
         gprs_tcp_error_count++;
         uart3_send_str("AT+CIPCLOSE\r\n"); //关闭TCP连接
         sys_delay_ms(1000);
-        // CLEAR_GSM_RECV_BUF();
+        uart3_rx_buf_clear();
         gprs_status            = GPRS_STATUS_START_TCP;
         gprs_tx_counter        = 0;
         gprs_send_flag         = 0;
         gprs_send_timeout_flag = 0;
         break;
     case GPRS_STATUS_TCP_CONNECT: // tcp连接
-        if (strstr((char *) gprs_rx_temp, "CONNECT OK") != NULL) {
-            //reg_error_count = 0;
-            gprs_timeout    = get_sys_time_s();
-          ibox_printf(ibox_gprs_debug, ("SERVER CONNECT OK"));                
-          gprs_status = GPRS_STATUS_COMMUNICATE;
-          //uart3_send_str("AT+CDNSGIP=lot.zxbike.cc\r\n");
-          //rt_event_send(&net_thread_event,NET_THREAD_EVENT_GPRS_CONNECT);
-          ibox_printf(ibox_gprs_debug, ("send verify message"));
-          gprs_send_flag = 1;
+        if (strstr((char *) gprs_rx_temp, "CONNECT OK") != NULL)
+        {
+            // reg_error_count = 0;
+            gprs_timeout = get_sys_time_s();
+            ibox_printf(ibox_gprs_debug, ("SERVER CONNECT OK"));
+            gprs_status = GPRS_STATUS_COMMUNICATE;
+            // uart3_send_str("AT+CDNSGIP=lot.zxbike.cc\r\n");
+            // rt_event_send(&net_thread_event,NET_THREAD_EVENT_GPRS_CONNECT);
+            ibox_printf(ibox_gprs_debug, ("send verify message"));
+            gprs_send_flag = 1;
         }
         //已经连接上了
-        else if (strstr((char *) gprs_rx_temp, "ALREADY CONNECT") != NULL) {
+        else if (strstr((char *) gprs_rx_temp, "ALREADY CONNECT") != NULL)
+        {
             gprs_timeout = get_sys_time_s();
             gprs_tcp_error_count++;
             ibox_printf(ibox_gprs_debug, ("SERVER ALREADY CONNECT, RECONNECT..."));
             gprs_status = GPRS_STATUS_INIT;
         }
         //连接失败
-        else if (strstr((char *) gprs_rx_temp, "CONNECT FAIL") != NULL) {
+        else if (strstr((char *) gprs_rx_temp, "CONNECT FAIL") != NULL)
+        {
             gprs_timeout = get_sys_time_s();
             gprs_tcp_error_count++;
             ibox_printf(ibox_gprs_debug, ("SERVER CONNECT FAIL"));
             gprs_status = GPRS_STATUS_INIT;
         }
         if (get_sys_time_s() - gprs_timeout > RT_TICK_PER_SECOND * 10)
-            {
-                gprs_tcp_error_count++;
-                ibox_printf(ibox_gprs_debug, ("SERVER CONNECT timeout"));
-                gprs_status = GPRS_STATUS_INIT;
-            }
+        {
+            gprs_tcp_error_count++;
+            ibox_printf(ibox_gprs_debug, ("SERVER CONNECT timeout"));
+            gprs_status = GPRS_STATUS_INIT;
+        }
         break;
     case GPRS_STATUS_COMMUNICATE: // TCP正常通信的状态
-        if (strstr((char *) gprs_rx_temp, "CLOSED") != NULL) {
+        if (strstr((char *) gprs_rx_temp, "CLOSED") != NULL)
+        {
             gprs_status = GPRS_STATUS_RESTART_TCP;
             break;
         }
         //失去上下文
-        else if (strstr((char *) gprs_rx_temp, "+PDP DEACT") != NULL) {
+        else if (strstr((char *) gprs_rx_temp, "+PDP DEACT") != NULL)
+        {
             gprs_timeout = get_sys_time_s();
             ibox_printf(ibox_gprs_debug, ("GPRS context FaIL, Reactting..."));
             gprs_status = GPRS_STATUS_INIT;
             break;
         }
         //获取数据
-        else if (strstr((char *) gprs_rx_temp, "+CIPRXGET: 1") != NULL) {
+        else if (strstr((char *) gprs_rx_temp, "+CIPRXGET: 1") != NULL)
+        {
             //只有在正常获取数据之后tcp error才会清零
             gprs_tcp_error_count = 0;
             //数据处理
             gprs_status  = GPRS_STATUS_RX_PROC;
             gprs_timeout = get_sys_time_s();
-            uart3_send_str("AT+CIPRXGET=3,730\r\n"); //设置hex数据格式，最长730
+            // uart3_send_str("AT+CIPRXGET=3,730\r\n"); //设置hex数据格式，最长730
+            uart3_send_str("AT+CIPRXGET=2,1460\r\n"); //设置ASCII数据格式，最长1460
             break;
         }
         //发送成功
-        else if (strstr((char *) gprs_rx_temp, "SEND OK") != NULL) {
+        else if (strstr((char *) gprs_rx_temp, "SEND OK") != NULL)
+        {
             gprs_send_flag         = 1;
             gprs_send_timeout_flag = 0;
             gprs_tx_counter        = 0;
@@ -330,7 +438,8 @@ void gprs_at_fsm(void)
             break;
         }
         //发送失败
-        else if (strstr((char *) gprs_rx_temp, "SEND FAIL") != NULL) {
+        else if (strstr((char *) gprs_rx_temp, "SEND FAIL") != NULL)
+        {
             gprs_timeout = get_sys_time_s();
             ibox_printf(ibox_gprs_debug, ("Send Fail"));
             gprs_status            = GPRS_STATUS_INIT;
@@ -345,12 +454,14 @@ void gprs_at_fsm(void)
             break;
         }
         //发送数据
-        if (gprs_tx_counter && gprs_send_flag) {
+        if (gprs_tx_counter && gprs_send_flag)
+        {
 
             gprs_timeout = get_sys_time_s();
             ibox_printf(ibox_gprs_debug, ("Sending user data..."));
             gprs_countnum = 0;
-            while (gprs_countnum != gprs_tx_counter) {
+            while (gprs_countnum != gprs_tx_counter)
+            {
                 ibox_printf(ibox_gprs_debug, ("<%02X>", uart3_tx_buf[gprs_countnum]));
                 gprs_countnum++;
             }
@@ -361,54 +472,68 @@ void gprs_at_fsm(void)
 
             break;
         }
-        if ((get_sys_time_s() - gprs_timeout > RT_TICK_PER_SECOND * 10) && gprs_send_timeout_flag) {
-        ibox_printf(ibox_gprs_debug, ("send time out"));
-        gprs_status = GPRS_STATUS_RESTART_TCP;
-        break;
+        if ((get_sys_time_s() - gprs_timeout > RT_TICK_PER_SECOND * 10) && gprs_send_timeout_flag)
+        {
+            ibox_printf(ibox_gprs_debug, ("send time out"));
+            gprs_status = GPRS_STATUS_RESTART_TCP;
+            break;
         }
         break;
     case GPRS_STATUS_RX_PROC: //接收处理+CIPRXGET: 3,72,0
         p_strstr = NULL;
         p_strstr = strstr((char *) gprs_rx_temp, "+CIPRXGET: 3");
-        if (p_strstr != NULL) {
+        if (p_strstr != NULL)
+        {
             p_strstr += 13;
             gprs_rx_counter = 0;
-            while (*p_strstr != ',') {
+            while (*p_strstr != ',')
+            {
                 gprs_rx_counter = gprs_rx_counter * 10 + (*p_strstr - 0x30);
                 p_strstr++;
             }
-            if (gprs_rx_counter) {
+            if (gprs_rx_counter)
+            {
                 gprs_status = GPRS_STATUS_FRAME_PROC;
-            } else {
+            }
+            else
+            {
                 ibox_printf(ibox_gprs_debug, ("gprs recv error len , restart tcp!"));
                 gprs_status = GPRS_STATUS_RESTART_TCP;
             }
             gprs_timeout = get_sys_time_s();
             break;
         }
-        if (get_sys_time_s() - gprs_timeout > RT_TICK_PER_SECOND * 10) {
+        if (get_sys_time_s() - gprs_timeout > RT_TICK_PER_SECOND * 10)
+        {
             ibox_printf(ibox_gprs_debug, ("CIPRXGET No Answer!"));
             gprs_status = GPRS_STATUS_RESTART_TCP;
-        break;
+            break;
         }
         break;
     case GPRS_STATUS_FRAME_PROC:
-        if (gprs_rx_len) { //如果收到了数据
-            if (gprs_rx_len != (2 * gprs_rx_counter)) {
+        if (gprs_rx_len)
+        { //如果收到了数据
+            if (gprs_rx_len != (2 * gprs_rx_counter))
+            {
                 gprs_status = GPRS_STATUS_COMMUNICATE;
                 ibox_printf(ibox_gprs_debug, ("gprs receive error num\r\n"));
                 break;
             }
+            /*
             for (count = 0; count < gprs_rx_counter; count++) {
-                atoi_buf[0]     = gprs_rx_temp[count * 2];
-                atoi_buf[1]     = gprs_rx_temp[count * 2 + 1];
+                atoi_buf[0]              = gprs_rx_temp[count * 2];
+                atoi_buf[1]              = gprs_rx_temp[count * 2 + 1];
                 net_rx_bottom_buf[count] = strtol((const char *) atoi_buf, NULL, 16);
             }
-          ibox_printf(ibox_gprs_debug, ("\r\nnewdata is %d\r\n", gprs_rx_counter));
-          gprs_status = GPRS_STATUS_COMMUNICATE;
-          //net_rx_buf_write(rx_buff,gprs_rx_counter);
-        } else { //需要延迟一段时间
-            if (get_sys_time_s() - gprs_timeout > RT_TICK_PER_SECOND * 2) {
+            */
+            ibox_printf(ibox_gprs_debug, ("\r\nnewdata is %d\r\n", gprs_rx_counter));
+            gprs_status = GPRS_STATUS_COMMUNICATE;
+            net_rx_write(gprs_rx_temp, gprs_rx_counter);
+        }
+        else
+        { //需要延迟一段时间
+            if (get_sys_time_s() - gprs_timeout > RT_TICK_PER_SECOND * 2)
+            {
                 gprs_status = GPRS_STATUS_COMMUNICATE;
                 ibox_printf(ibox_gprs_debug, ("gprs receive error num\r\n"));
             }
@@ -444,16 +569,18 @@ void gprs_get_imei(void)
     uart3_rx_buf_clear();
     uart3_send_str("AT+GSN\r\n");
     sys_delay_ms(1000);
-    do{
+    do
+    {
         memset(imei_buf, 0, 20);
         i = get_line_from_uart3(imei_buf);
-        if ( i== 15) {
-            #ifndef USE_WIFI
+        if (i == 15)
+        {
+#ifndef USE_WIFI
             ibox_config.gprs_imei = atoll((const char *) imei_buf);
-            #endif
+#endif
             break;
         }
-    }while(i);
+    } while (i);
 
     uart3_rx_buf_clear();
 }
@@ -467,18 +594,21 @@ static void gprs_server_connect(void)
     uart3_send_str("AT+CIPSTART=\"TCP\",\"");
 
     /* tcp错误计数超了 选用原有域名重新连接服务器.或者是默认使用IP连接服务器*/
-    if ((ibox_config.use_dns == 0) || (gprs_tcp_error_count >= 3)) {
+    if ((ibox_config.use_dns == 0) || (gprs_tcp_error_count >= 3))
+    {
         ibox_printf(ibox_gprs_debug, ("tcp connect err out range || default use the ip \"%s\" port \"%d\"connect\r\n",
-                                       ibox_config.server_ip, ibox_config.server_port));
+                                      ibox_config.server_ip, ibox_config.server_port));
         uart3_send_str(ibox_config.server_ip);
         uart3_send_str("\",\"");
-    } else {
+    }
+    else
+    {
         ibox_printf(ibox_gprs_debug, ("tcp connect use the DNS \"%s\" port \"%d\"connect\r\n", ibox_config.server_dsn,
-                                       ibox_config.server_port));
+                                      ibox_config.server_port));
         uart3_send_str(ibox_config.server_dsn);
         uart3_send_str("\",\"");
     }
-    memset((uint8_t *)temp_buf, 0, 6);
+    memset((uint8_t *) temp_buf, 0, 6);
     sprintf(temp_buf, "%d", ibox_config.server_port);
     uart3_send_str(temp_buf);
     uart3_send_str("\"\r\n");
