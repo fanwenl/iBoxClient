@@ -13,4 +13,5 @@ C_SOURCES += Middlewares/MQTT/MQTTPacket/MQTTConnectClient.c            \
              Middlewares/MQTT/MQTTPacket/MQTTSubscribeClient.c          \
              Middlewares/MQTT/MQTTPacket/MQTTSubscribeServer.c          \
              Middlewares/MQTT/MQTTPacket/MQTTUnsubscribeClient.c        \
-             Middlewares/MQTT/MQTTPacket/MQTTUnsubscribeClient.c
+             Middlewares/MQTT/MQTTPacket/MQTTUnsubscribeClient.c        \
+             Middlewares/MQTT/MQTTClient-C/MQTTClient_iBox.c
