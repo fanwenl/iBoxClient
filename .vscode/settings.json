@@ -14,10 +14,12 @@
         "ibox_sys.h": "c",
         "cmath": "c",
         "application.h": "c",
-        "rtthread.h": "c"
+        "rtthread.h": "c",
+        "type_traits": "c"
     },
     "C_Cpp.dimInactiveRegions": true,
     "gitlens.codeLens.enabled": false,
     "editor.wordWrap": "wordWrapColumn",
-    "editor.wordWrapColumn": 120
+    "editor.wordWrapColumn": 120,
+    "cmake.configureOnOpen": true
 }

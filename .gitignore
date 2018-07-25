@@ -30,6 +30,7 @@
 # Debug files
 *.dSYM/
 Project/*
+build/*
 
 #other
 *.udb

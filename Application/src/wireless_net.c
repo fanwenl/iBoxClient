@@ -8,6 +8,7 @@
 * ************************************************************************************************
 */
 #include "ibox_board.h"
+extern uint16_t wifi_tx_len;
 void wireless_thread_entry(void *parameter)
 {
 #ifndef USE_WIFI
@@ -17,6 +18,7 @@ void wireless_thread_entry(void *parameter)
     {
 #ifdef USE_WIFI
         esp8266_at_fsm();
+        wifi_tx_len = 10;
 #else
         gprs_at_fsm();
 #endif

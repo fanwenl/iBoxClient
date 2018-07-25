@@ -4,14 +4,14 @@
 
 IBOX_CONFIG ibox_config = {
     0000001,            // device sn
-    "192.168.199.136",  // server ip
+    "192.168.199.120",  // server ip
     "lot.zxbike.cc",      // server dsn
     10002,               //server ip
     8000,               //local ip
     "CMNET",
     {0x00,0x7B,0x04,0xAA,0x58,0x69},     //eth mac
     {114, 114, 114, 114},
-    1,
+    0,
 #ifdef USE_WIFI
     "ziroom102",  // wifi_ssid[];
     "4001001111", // wifi_password[];
