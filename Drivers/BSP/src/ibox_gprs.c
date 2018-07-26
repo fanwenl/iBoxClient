@@ -69,8 +69,8 @@ void gprs_at_fsm(void)
     uint16_t gprs_sq       = 0;    //信号强度
     uint16_t gprs_countnum = 0;
 
-    uint16_t count      = 0;
-    uint8_t atoi_buf[3] = {0, 0, 0};
+//    uint16_t count      = 0;
+//    uint8_t atoi_buf[3] = {0, 0, 0};
 
     memset(gprs_rx_temp, 0, UART3_RX_SIZE);
     /*获取一帧数据*/

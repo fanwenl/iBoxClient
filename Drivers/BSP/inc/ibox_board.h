@@ -63,7 +63,7 @@ extern "C" {
 
 #pragma pack(1)
 typedef struct __IBOX_CONFIG {
-    uint32_t device_sn;
+    uint32_t device_sn;         //MQTT客户端标识限制sn不能多于10个字符
     char server_ip[MAX_IP_LEN];
     char server_dsn[MAX_DSN_LEN];
     uint16_t server_port;
@@ -80,6 +80,8 @@ typedef struct __IBOX_CONFIG {
 #else
     uint64_t gprs_imei;
 #endif
+    char mqtt_username[20];
+    char mqtt_password[20];
 } IBOX_CONFIG;
 #pragma pack()
 

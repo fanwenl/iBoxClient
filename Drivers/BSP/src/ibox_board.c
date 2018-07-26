@@ -20,6 +20,8 @@ IBOX_CONFIG ibox_config = {
 #else
     0,
 #endif
+    "admin",
+    "admin",
 };
 void SysTick_Handler(void)
 {

@@ -17,7 +17,7 @@ uint16_t net_tx_len = 0; //网络发送的数据长度
 uint16_t net_rx_len = 0;
 uint8_t net_tx_buf[NET_TX_BUF_SIZE];   
 uint8_t net_rx_buf[NET_RX_BUF_SIZE];
-char net_buf[2048];
+uint8_t net_buf[2048];
 net_fifo_t net_rx_fifo;
 //uint8_t net_rx_bottom_buf[NET_RX_BUF_SIZE];
 
@@ -34,13 +34,13 @@ extern uint16_t wifi_tx_len;
 extern uint8_t uart3_tx_buf[];
 uint32_t temp_timeout = 0;
 
-static void fifo_init(net_fifo_t *fifo, char *buffer, uint16_t size );
+static void fifo_init(net_fifo_t *fifo, unsigned char *buffer, uint16_t size );
 static uint16_t fifo_next( net_fifo_t *fifo, uint16_t index );
 static void fifo_push( net_fifo_t *fifo, char data );
 static unsigned char fifo_pop( net_fifo_t *fifo );
 static void fifo_flush(net_fifo_t *fifo );
 static bool is_fifo_full(net_fifo_t *fifo );
-static bool is_fifo_empty(net_fifo_t *fifo );
+//static bool is_fifo_empty(net_fifo_t *fifo );
 void push_data_to_net_fifo(void);
 
 
@@ -96,7 +96,7 @@ void network_thread_init(void)
 }
 uint8_t net_tx_write(void *prt, uint16_t len)
 {
-    IBOX_ASSERT(prt == NULL);
+    IBOX_ASSERT(prt != NULL);
 
     if(rt_sem_take(net_tx_sem, RT_TICK_PER_SECOND) != RT_EOK)
     {
@@ -142,7 +142,7 @@ void net_tx_sem_release(void)
 }
 uint8_t net_rx_write(void *prt, uint16_t len)
 {
-    IBOX_ASSERT(prt == NULL);
+    IBOX_ASSERT(prt != NULL);
 
     if(rt_sem_take(net_rx_sem, RT_TICK_PER_SECOND) != RT_EOK)
     {
@@ -205,7 +205,7 @@ static uint16_t fifo_next( net_fifo_t *fifo, uint16_t index )
 	return ( index + 1 ) % fifo->Size;
 }
 
-static void fifo_init(net_fifo_t *fifo, char *buffer, uint16_t size )
+static void fifo_init(net_fifo_t *fifo, unsigned char *buffer, uint16_t size )
 {
 	fifo->Begin = 0;
 	fifo->End = 0;
@@ -234,7 +234,7 @@ static void fifo_flush(net_fifo_t *fifo )
 	fifo->End = 0;
 }
 
-static bool is_fifo_empty(net_fifo_t *fifo )
+bool is_fifo_empty(net_fifo_t *fifo )
 {
 	return ( fifo->Begin == fifo->End );
 }

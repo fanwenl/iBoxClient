@@ -53,7 +53,7 @@
  * @details If you want to display debug & procssing message, Define _DHCP_DEBUG_ 
  * @note    If defined, it dependens on <stdio.h>
  */
-#define _DHCP_DEBUG_
+//#define _DHCP_DEBUG_
 
 
 /* Retry to processing DHCP */

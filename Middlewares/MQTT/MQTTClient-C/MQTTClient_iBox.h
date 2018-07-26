@@ -15,6 +15,7 @@
 #endif
 
 #include "MQTTPacket.h"
+#include <stdint.h>
 
 #if defined(MQTTCLIENT_PLATFORM_HEADER)
 /* The following sequence of macros converts the MQTTCLIENT_PLATFORM_HEADER value
@@ -80,8 +81,8 @@ struct MQTTClient
     unsigned int command_timeout_ms;
     size_t buf_size, readbuf_size;
     unsigned char *buf, *readbuf;
-    unsigned int keepAliveInterval;
-    char ping_outstanding;
+    unsigned int keepAliveInterval;     //保持在线
+    char ping_outstanding;              //是否已经断线了
     int isconnected;
     int cleansession;
     uint32_t tick_ping;
@@ -183,6 +184,10 @@ DLLExport int MQTTYield(MQTTClient* client, int time);
  *  @return truth value indicating whether the client is connected to the server
  */
 DLLExport int MQTTIsConnected(MQTTClient* client);
+
+int keepalive(MQTTClient *c);
+
+int MQTT_cycle(MQTTClient* c);
 
 #if defined(MQTT_TASK)
 /** MQTT start background thread for a client.  After this, MQTTYield should not be called.

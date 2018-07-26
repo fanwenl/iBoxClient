@@ -10,9 +10,11 @@
 #include "MQTTClient_iBox.h"
 #include "network.h"
 #include "ibox_sys.h"
+#include "ibox_board.h"
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 void timeout_init(timeout_t *timeout, uint32_t count)
 {
@@ -148,32 +150,28 @@ int deliverMessage(MQTTClient* c, MQTTString* topicName, MQTTMessage* message)
     return rc;
 }
 
+int keepalive(MQTTClient *c)
+{
+    int rc = MQTT_SUCCESS;
 
-// int keepalive(MQTTClient* c)
-// {
-//     int rc = MQTT_SUCCESS;
+    if (c->keepAliveInterval == 0)
+        goto exit;
 
-//     if (c->keepAliveInterval == 0)
-//         goto exit;
+    if (c->ping_outstanding)
+        rc = MQTT_FAILURE; /* PINGRESP not received in keepalive interval */
+    else
+    {
+        int len = MQTTSerialize_pingreq(c->buf, c->buf_size);
+        if (len > 0 && (rc = sendPacket(c, len)) == MQTT_SUCCESS)
+        {
+            c->tick_ping        = get_sys_time_ms();
+            c->ping_outstanding = 0;
+        }
+    }
 
-//     if (TimerIsExpired(&c->last_sent) || TimerIsExpired(&c->last_received))
-//     {
-//         if (c->ping_outstanding)
-//             rc = MQTT_FAILURE; /* PINGRESP not received in keepalive interval */
-//         else
-//         {
-//             Timer timer;
-//             TimerInit(&timer);
-//             TimerCountdownMS(&timer, 1000);
-//             int len = MQTTSerialize_pingreq(c->buf, c->buf_size);
-//             if (len > 0 && (rc = sendPacket(c, len, &timer)) == MQTT_SUCCESS) // send the ping packet
-//                 c->ping_outstanding = 1;
-//         }
-//     }
-
-// exit:
-//     return rc;
-// }
+exit:
+    return rc;
+}
 
 void MQTTCleanSession(MQTTClient* c)
 {

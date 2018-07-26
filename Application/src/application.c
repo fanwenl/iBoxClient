@@ -44,6 +44,7 @@ void rt_init_thread_entry(void* parameter)
 #endif
     /*线程初始化*/
     main_thread_init();
+    
     network_thread_init();
     /*初始化ETH网络*/
     ethernet_init();

@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD,HSE_VALUE=12000000,USE_WIFI</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\BSP\SX1276\src\radio;..\Drivers\BSP\SX1276\src\config;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth;..\Middlewares\CmBacktrace;..\Middlewares\SystemView\SystemView_Description;..\Middlewares\SystemView\SystemView_Src\Config;..\Middlewares\SystemView\SystemView_Src\SEGGER;..\Middlewares\RTOS\include;..\Middlewares\RTOS\include\libc;..\Middlewares\RTOS\components\finsh</IncludePath>
+              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\BSP\SX1276\src\radio;..\Drivers\BSP\SX1276\src\config;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth;..\Middlewares\CmBacktrace;..\Middlewares\SystemView\SystemView_Description;..\Middlewares\SystemView\SystemView_Src\Config;..\Middlewares\SystemView\SystemView_Src\SEGGER;..\Middlewares\RTOS\include;..\Middlewares\RTOS\include\libc;..\Middlewares\RTOS\components\finsh;..\Middlewares\cJSON;..\Middlewares\MQTT\MQTTPacket;..\Middlewares\MQTT\MQTTClient-C</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -565,6 +565,13 @@
         </Group>
         <Group>
           <GroupName>MQTT\Client</GroupName>
+          <Files>
+            <File>
+              <FileName>MQTTClient_iBox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTClient-C\MQTTClient_iBox.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>MQTT\Packet</GroupName>
@@ -1239,7 +1246,7 @@
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
@@ -1389,7 +1396,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F10X_HD,HSE_VALUE=12000000,USE_WIFI,IBOX_DEBUG,USE_RTOS</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\BSP\SX1276\src\radio;..\Drivers\BSP\SX1276\src\config;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth;..\Middlewares\CmBacktrace;..\Middlewares\SystemView\SystemView_Description;..\Middlewares\SystemView\SystemView_Src\Config;..\Middlewares\SystemView\SystemView_Src\SEGGER;..\Middlewares\RTOS\include;..\Middlewares\RTOS\include\libc;..\Middlewares\RTOS\components\finsh;..\Middlewares\cJSON</IncludePath>
+              <IncludePath>..\Application\inc;..\Drivers\BSP\inc;..\Drivers\BSP\SX1276\src\radio;..\Drivers\BSP\SX1276\src\config;..\Drivers\CMSIS\CM3\CoreSupport;..\Drivers\CMSIS\CM3\DeviceSupport\ST\STM32F10x;..\Drivers\STM32F10x_StdPeriph_Driver\inc;..\Middlewares\Eth;..\Middlewares\CmBacktrace;..\Middlewares\SystemView\SystemView_Description;..\Middlewares\SystemView\SystemView_Src\Config;..\Middlewares\SystemView\SystemView_Src\SEGGER;..\Middlewares\RTOS\include;..\Middlewares\RTOS\include\libc;..\Middlewares\RTOS\components\finsh;..\Middlewares\cJSON;..\Middlewares\MQTT\MQTTClient-C;..\Middlewares\MQTT\MQTTPacket</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1617,6 +1624,13 @@
         </Group>
         <Group>
           <GroupName>MQTT\Client</GroupName>
+          <Files>
+            <File>
+              <FileName>MQTTClient_iBox.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\MQTT\MQTTClient-C\MQTTClient_iBox.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>MQTT\Packet</GroupName>
