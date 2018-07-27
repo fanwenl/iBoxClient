@@ -72,6 +72,7 @@ typedef struct __IBOX_CONFIG {
     uint8_t eth_mac[MAX_ETH_MAC_LEN];
     uint8_t dns_ip[4];                      //DNS 服务器IP地址
     uint8_t use_dns;                        //1:使用dns,0:使用ip地址
+    uint8_t period;                         //上报周期，单位min。
 #ifdef USE_WIFI
     uint8_t wifi_ssid[MAX_WIFI_SSID_LEN];
     uint8_t wifi_password[MAX_WIFI_PASS_LEN];

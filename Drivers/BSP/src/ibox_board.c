@@ -12,6 +12,7 @@ IBOX_CONFIG ibox_config = {
     {0x00,0x7B,0x04,0xAA,0x58,0x69},     //eth mac
     {114, 114, 114, 114},
     0,
+    5,
 #ifdef USE_WIFI
     "ziroom102",  // wifi_ssid[];
     "4001001111", // wifi_password[];
