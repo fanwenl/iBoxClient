@@ -13,6 +13,7 @@
 #include "cJSON.h"
 
 rt_event_t main_thread_event = RT_NULL;
+uint32_t publish_time = 0;
 
 /*一个上报的topic,订阅两个topic,一个下发配置(含RTC),一个执行动作*/
 #define MQTT_WILLSUBTOPIC           "/mqtt/will"
@@ -37,25 +38,47 @@ void main_thread_init(void)
 
 static void mqtt_config_callback(MQTTClient *c, MessageData *msg_data)
 {
-    // *((char *)msg_data->message->payload + msg_data->message->payloadlen) = '\0';
-    // LOG_D("mqtt sub callback: %.*s %.*s",
-    //            msg_data->topicName->lenstring.len,
-    //            msg_data->topicName->lenstring.data,
-    //            msg_data->message->payloadlen,
-    //            (char *)msg_data->message->payload);
+    cJSON *root = NULL;
 
-    // return;
+    root = cJSON_Parse(msg_data->message->payload);
+    if(!root)
+    {
+        ibox_printf(1, ("config cJSON Parse fail!\r\n"));
+    }
+
+    cJSON *rtc = cJSON_GetObjectItem(root, "rtc");
+    if(!rtc)
+    {
+        RTC_SetCounter((uint32_t) rtc->valueint);
+        ibox_printf(1, ("set RTC counter:%d\r\n", rtc->valueint));
+    }
+
+    if(root)
+    {
+        cJSON_Delete(root);
+    }
 }
 static void mqtt_action_callback(MQTTClient *c, MessageData *msg_data)
 {
-    // *((char *)msg_data->message->payload + msg_data->message->payloadlen) = '\0';
-    // LOG_D("mqtt sub callback: %.*s %.*s",
-    //            msg_data->topicName->lenstring.len,
-    //            msg_data->topicName->lenstring.data,
-    //            msg_data->message->payloadlen,
-    //            (char *)msg_data->message->payload);
+    cJSON *root = NULL;
 
-    // return;
+    root = cJSON_Parse(msg_data->message->payload);
+    if(!root)
+    {
+        ibox_printf(1, ("action cJSON Parse fail!\r\n"));
+    }
+
+    cJSON *dac = cJSON_GetObjectItem(root, "dac");
+    if(!dac)
+    {
+        dac_set_vol((float)dac->valuedouble);
+        ibox_printf(1, ("set DAC value:%lf\r\n", dac->valuedouble));
+    }
+
+    if(root)
+    {
+        cJSON_Delete(root);
+    }
 }
 
 static void mqtt_sub_default_callback(MQTTClient *c, MessageData *msg_data)
@@ -122,23 +145,26 @@ char *create_msg(void)
 
     cJSON *root = cJSON_CreateObject();
 
-    if (cJSON_AddNumberToObject(root, "device_sn", 0000001) == NULL)
+    if (cJSON_AddNumberToObject(root, "device_sn", ibox_config.device_sn) == NULL)
     {
         goto end;
     }
-    if (cJSON_AddNumberToObject(root, "imei", 885869896892) == NULL)
+    if (cJSON_AddStringToObject(root, "eth_mac", ibox_config.eth_mac) == NULL)
     {
         goto end;
     }
-    if (cJSON_AddStringToObject(root, "eth_mac", "0:0:0:0") == NULL)
+#ifdef USE_WIFI
+    if (cJSON_AddStringToObject(root, "wifi_mac", ibox_config.wifi_mac) == NULL)
     {
         goto end;
     }
-    if (cJSON_AddStringToObject(root, "wifi_mac", "1:0:0:0") == NULL)
+#else
+    if (cJSON_AddNumberToObject(root, "imei", ibox_config.gprs_imei) == NULL)
     {
         goto end;
     }
-    if (cJSON_AddNumberToObject(root, "rtc", 15000399) == NULL)
+#endif
+    if (cJSON_AddNumberToObject(root, "rtc", get_sys_time_s()) == NULL)
     {
         goto end;
     }
@@ -150,11 +176,15 @@ char *create_msg(void)
     }
 
     cJSON *adc = cJSON_CreateObject();
-    if (cJSON_AddNumberToObject(adc, "temper", 440) == NULL)
+    if (cJSON_AddNumberToObject(adc, "temper", get_cpu_temperature()) == NULL)
     {
         goto end;
     }
-    if (cJSON_AddNumberToObject(adc, "adc1", 440) == NULL)
+    if (cJSON_AddNumberToObject(adc, "adc1", get_adc_voltage(ADC1_INDEX)) == NULL)
+    {
+        goto end;
+    }
+    if (cJSON_AddNumberToObject(adc, "adc2", get_adc_voltage(ADC2_INDEX)) == NULL)
     {
         goto end;
     }
@@ -191,55 +221,37 @@ end:
 /**
  * ibox 信息打包上传
  */ 
-void MQTT_msg_publish(void)
+int MQTT_msg_publish(void)
 {
     char *msg_ptr = NULL;
+    uint16_t msg_len = 0;
+    int rc = -1;
+    MQTTMessage message;
 
     msg_ptr = create_msg();
+    if(msg_ptr != NULL)
+    {
+        msg_len = strlen(msg_ptr);
 
-    ibox_printf(1,("%s",msg_ptr));
-        //     if (FD_ISSET(c->pub_pipe[0], &readset))
-        // {
-        //     MQTTMessage *message;
-        //     MQTTString topic = MQTTString_initializer;
+        message.dup = 0; // 0第一次发送
+        message.id  = (unsigned short) get_sys_time_s();
 
-        //     //LOG_D("pub_sock FD_ISSET");
+        message.retained   = 0; // 0不保留消息
+        message.qos        = QOS1;
+        message.payload    = msg_ptr;
+        message.payloadlen = msg_len;
 
-        //     len = read(c->pub_pipe[0], c->readbuf, c->readbuf_size);
+        rc = MQTTPublish(&client, MQTT_MSGPUBTOPIC, &message);
 
-        //     if (len < sizeof(MQTTMessage))
-        //     {
-        //         c->readbuf[len] = '\0';
-        //         LOG_D("pub_sock recv %d byte: %s", len, c->readbuf);
+        rt_free(msg_ptr);
 
-        //         if (strcmp((const char *)c->readbuf, "DISCONNECT") == 0)
-        //         {
-        //             LOG_D("DISCONNECT");
-        //             goto _mqtt_disconnect_exit;
-        //         }
+    }
+    else
+    {
+        ibox_printf(1, ("msg create fail!\r\n"));
+    }
 
-        //         continue;
-        //     }
-
-        //     message = (MQTTMessage *)c->readbuf;
-        //     message->payload = c->readbuf + sizeof(MQTTMessage);
-        //     topic.cstring = (char *)c->readbuf + sizeof(MQTTMessage) + message->payloadlen;
-        //     //LOG_D("pub_sock topic:%s, payloadlen:%d", topic.cstring, message->payloadlen);
-
-        //     len = MQTTSerialize_publish(c->buf, c->buf_size, 0, message->qos, message->retained, message->id,
-        //                                 topic, (unsigned char *)message->payload, message->payloadlen);
-        //     if (len <= 0)
-        //     {
-        //         LOG_D("MQTTSerialize_publish len: %d", len);
-        //         goto _mqtt_disconnect;
-        //     }
-
-        //     if ((rc = sendPacket(c, len)) != PAHO_SUCCESS) // send the subscribe packet
-        //     {
-        //         LOG_D("MQTTSerialize_publish sendPacket rc: %d", rc);
-        //         goto _mqtt_disconnect;
-        //     }
-        // } /* pbulish sock handler. */
+    return rc;
 }
 
 void main_thread_entry(void *parameter)
@@ -249,10 +261,12 @@ void main_thread_entry(void *parameter)
     
     MQTT_init();
 
+_mqtt_start:
     ret = MQTTConnect(&client);
     if(ret != MQTT_SUCCESS)
     {
         ibox_printf(1, ("MQTT Connect Faild!\r\n"));
+        goto _mqtt_restart;
     }
     
     /*订阅*/
@@ -260,12 +274,14 @@ void main_thread_entry(void *parameter)
     if(ret != MQTT_SUCCESS)
     {
         ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", MQTT_DOSUBTOPIC));
+        goto _mqtt_disconnect;
     }    
 
     ret = MQTTSubscribe(&client, MQTT_CIGSUBTOPIC, QOS1, mqtt_config_callback);
     if(ret != MQTT_SUCCESS)
     {
         ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", MQTT_CIGSUBTOPIC));
+        goto _mqtt_disconnect;
     }
     
     client.tick_ping = get_sys_time_ms();
@@ -274,20 +290,48 @@ void main_thread_entry(void *parameter)
         /*发送ping packet*/
         if(((get_sys_time_ms() - client.tick_ping) / RT_TICK_PER_SECOND) >  (client.condata.keepAliveInterval - 10))
         {
-            keepalive(&client);
+            ret = keepalive(&client);
+            if (ret != MQTT_SUCCESS)
+            {
+                ibox_printf(1, ("MQTT ping Faild!\r\n"));
+                goto _mqtt_disconnect;
+            }
+            else
+            {
+                client.tick_ping = get_sys_time_s();
+            }
         }
         /*处理收到的topic*/
         if (!is_fifo_empty(&net_rx_fifo))
         {
             ret = MQTT_cycle(&client);
-            // if (rc_t < 0)    goto _mqtt_disconnect;
-
-            // continue;
+            if (ret < 0)    
+                goto _mqtt_disconnect;
         }
 
         /*判断时间间隔进行周期性的数据上报*/
-        MQTT_msg_publish();
+        if((get_sys_time_s() - publish_time) > ibox_config.period * 60)
+        {
+            ret          = MQTT_msg_publish();
+            if (ret != MQTT_SUCCESS)
+            {
+                ibox_printf(1, ("MQTT publish Faild!\r\n"));
+                goto _mqtt_disconnect;
+            }
+            else
+            {
+                publish_time = get_sys_time_s();
+            }
+        }
 
         rt_thread_delay(RT_TICK_PER_SECOND / 2);
     }
+
+_mqtt_disconnect:
+    MQTTDisconnect(&client);
+
+_mqtt_restart:
+    rt_thread_delay(RT_TICK_PER_SECOND * 5);
+    ibox_printf(1, ("mqtt restart!\n"));
+    goto _mqtt_start;
 }
