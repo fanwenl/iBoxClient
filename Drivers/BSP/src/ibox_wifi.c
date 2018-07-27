@@ -509,6 +509,7 @@ ESP8266_STATUS_ENUM get_esp8266_status(void)
 {
     return esp8266_status;
 }
+
 static void wifi_server_connect(void)
 {
     char temp_buf[6];

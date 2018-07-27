@@ -8,6 +8,9 @@
 * ************************************************************************************************
 */
 #include "ibox_board.h"
+
+uint8_t is_wired_link_ok = 0;
+
 void wired_thread_entry(void *parameter)
 {
     while(1)
