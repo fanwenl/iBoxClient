@@ -18,6 +18,7 @@ uint16_t net_rx_len = 0;
 uint8_t net_tx_buf[NET_TX_BUF_SIZE];   
 uint8_t net_rx_buf[NET_RX_BUF_SIZE];
 uint8_t net_buf[2048];
+uint8_t is_net_link_ok = 0; //1:网络连接OK
 net_fifo_t net_rx_fifo;
 //uint8_t net_rx_bottom_buf[NET_RX_BUF_SIZE];
 
@@ -32,6 +33,9 @@ rt_event_t network_thread_event = RT_NULL;
 extern uint8_t DHCP_allocated_ip[];
 extern uint16_t wifi_tx_len;
 extern uint8_t uart3_tx_buf[];
+
+extern uint8_t is_wireless_link_ok;
+extern uint8_t is_wired_link_ok;
 uint32_t temp_timeout = 0;
 
 static void fifo_init(net_fifo_t *fifo, unsigned char *buffer, uint16_t size );
@@ -51,20 +55,35 @@ void network_thread_entry(void *parameter)
     /*初始化fifo*/
     fifo_init(&net_rx_fifo, net_buf, 2048);
 
-    while (1) {
+    while (1)
+    {
         if(rt_event_recv(network_thread_event, NETWORK_THREAD_EVENT_ALL, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,RT_TICK_PER_SECOND * 10, &opt) == RT_EOK)
         {
             if(opt & NET_RX_BUF_WRITE_EVENT)
             {
                 push_data_to_net_fifo();
+                if(ibox_net_debug)
+                {
+                    ibox_printf(ibox_net_debug, ("NET_RX:"));
+                    ibox_printf(ibox_net_debug, ("%s\r\n",net_rx_buf));
+                }
             }
             if(opt & NET_TX_BUF_WRITE_EVENT)
             {
                 /*判断网络的连接状态，选择通道发送（有线或者是无线）*/
+                /*打印TX的数据，调试使用*/
+                if(ibox_net_debug)
+                {
+                    ibox_printf(ibox_net_debug, ("NET_TX:"));
+                    ibox_printf(ibox_net_debug, ("%s\r\n",net_rx_buf));
+                }
 
             }
             
         }
+
+        /*判断网络的连接状态*/
+        is_net_link_ok = (is_wireless_link_ok || is_wired_link_ok) ? 1 : 0;
 
         rt_thread_delay(RT_TICK_PER_SECOND / 2);
     }

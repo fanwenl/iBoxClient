@@ -35,6 +35,7 @@ typedef struct _net_fifo
 extern net_fifo_t net_rx_fifo;
 extern uint8_t net_rx_bottom_buf[];
 extern rt_event_t network_thread_event;
+extern uint8_t is_net_link_ok;
 
 
 void network_thread_init(void);
