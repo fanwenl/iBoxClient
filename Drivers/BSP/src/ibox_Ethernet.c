@@ -22,6 +22,10 @@ uint8_t dhcp_dns_buf[RIP_MSG_SIZE];
 
 ETH_MSG eth_msg_get;
 
+void eth_ip_update(void);
+void eth_ip_assign(void);
+void eth_ip_conflict(void);
+
 static void w5500_reset_pin_config(void)
 {
     /*PD8,低电平有效(500us)*/
@@ -84,78 +88,83 @@ void w5500_hw_init(void)
 }
  void set_w5500_mac(void)
 {   
-    /*设备MAC地址出厂时设置保存,和设备号绑定*/
-    memcpy((char *)eth_msg_get.mac, (const char *)ibox_config.eth_mac, 6);
-    setSHAR(ibox_config.eth_mac);
+    setSHAR(eth_msg_get.mac);
 }
-void set_network(void)
-{
-  uint8_t ip[4] = {192,168,123,100}; 
-  uint8_t gw[4] = {192,168,123,1};
-  uint8_t sub[4] = {255,255,255,0};
-  uint8_t dns[4] = {192,168,123,1};
-  setSHAR(eth_msg_get.mac);/*����Mac��ַ*/
-  setSUBR(sub);/*������������*/
-  setGAR(gw);/*����Ĭ������*/
-  setSIPR(ip);/*����Ip��ַ*/
-
-  setRTR(2000);/*�������ʱ��ֵ*/
-  setRCR(3);/*����������·��ʹ���*/
- 
-  getSIPR (ip);
-  printf("IP : %d.%d.%d.%d\r\n", ip[0],ip[1],ip[2],ip[3]);
-  getSUBR(ip);
-  printf("SN : %d.%d.%d.%d\r\n", ip[0],ip[1],ip[2],ip[3]);
-  getGAR(ip);
-  printf("GW : %d.%d.%d.%d\r\n", ip[0],ip[1],ip[2],ip[3]);
-} 
 /**
  * 以太网相关的初始化
  * 包括DNS解析、HDCP动态获取...
  */ 
 uint8_t buffer[2048];
+
 void ethernet_init(void)
 {
-    uint8_t buf[]="hello!" ;
-    uint16_t remote_port=6000;
-    uint32_t len = 0;
+    /*设备MAC地址出厂时设置保存,和设备号绑定*/
+    sscanf(ibox_config.eth_mac, "%X:%X:%X:%X:%X:%X", &eth_msg_get.mac[0], &eth_msg_get.mac[1], &eth_msg_get.mac[2],
+           &eth_msg_get.mac[3], &eth_msg_get.mac[4], &eth_msg_get.mac[5]);
+
     set_w5500_mac();
     /*设置socket的大小*/
     wizchip_init(tx_socket_size, rx_socket_size);
     
     DHCP_init(CUS_DHCP_SOCKET, dhcp_dns_buf);
+    
+    /*DHCP 函数注册*/
+    reg_dhcp_cbfunc(eth_ip_assign, eth_ip_update, eth_ip_conflict);
 
     /*dns 解析和dhcp共用一个buf*/
     DNS_init(CUS_DNS_SOCKET,dhcp_dns_buf);
-    
-//    set_network();
-    
-//    uint8_t server_ip[4] = {192,168,123,94}; 
-//    while(1)
-//    {
-//		switch(getSn_SR(0))																						// ��ȡsocket0��״̬
-//		{
-//			case SOCK_UDP:																							// Socket���ڳ�ʼ�����(��)״̬
-//					sys_delay_ms(100);
-//					if(getSn_IR(0) & Sn_IR_RECV)
-//					{
-//						setSn_IR(0, Sn_IR_RECV);															// Sn_IR��RECVλ��1
-//					}
-//					// ���ݻػ����Գ������ݴ�Զ����λ������W5500��W5500���յ����ݺ��ٻظ�Զ����λ��
-//					if((len=getSn_RX_RSR(0))>0)
-//					{ 
-//                        getSn_RX_RSR(0);
-//						memset(buffer,0,len+1);
-//						len = recvfrom(0,buffer, len, server_ip,&remote_port);			// W5500��������Զ����λ�������ݣ���ͨ��SPI���͸�MCU
-//						printf("%d:%s\r\n",len,buffer);															// ���ڴ�ӡ���յ�������
-//						sendto(0,buffer,len, server_ip, 9000);		  		// ���յ����ݺ��ٻظ�Զ����λ����������ݻػ�
-//					}
-//			break;
-//			case SOCK_CLOSED:																						// Socket���ڹر�״̬
-//					socket(0,Sn_MR_UDP,6000,0);												// ��Socket0��������ΪUDPģʽ����һ�����ض˿�
-//			break;
-//		}
-//    }
+}
+
+void ethernet_run(void)
+{
+    static uint8_t sock_status;
+
+    /*获取socket0的状态*/
+    if (getsockopt(CUS_COMM_SOCKET, SO_STATUS, &sock_status) != SOCK_OK)
+    {
+        return;
+    }
+
+    switch (sock_status)
+    {
+    case SOCK_INIT:
+        /*设置SOCK keepalive 10s*/
+        setsockopt(CUS_COMM_SOCKET, SO_KEEPALIVEAUTO, 0x02);
+        connect(CUS_COMM_SOCKET, eth_msg_get.dns_sip, ibox_config.server_port);
+        break;
+    case SOCK_ESTABLISHED: // Socket处于连接建立状态
+        if (getSn_IR(0) & Sn_IR_CON)
+        {
+            setSn_IR(0, Sn_IR_CON); // Sn_IR的CON位置1，通知W5500连接已建立
+        }
+        // 数据回环测试程序：数据从上位机服务器发给W5500，W5500接收到数据后再回给服务器
+        len = getSn_RX_RSR(0); // len=Socket0接收缓存中已接收和保存的数据大小
+        if (len > 0)
+        {
+            recv(0, buffer, len);     // W5500接收来自服务器的数据，并通过SPI发送给MCU
+            printf("%s\r\n", buffer); // 串口打印接收到的数据
+            send(0, buffer, len);     // 接收到数据后再回给服务器，完成数据回环
+        }
+        // W5500从串口发数据给客户端程序，数据需以回车结束
+        if (USART_RX_STA & 0x8000) // 判断串口数据是否接收完成
+        {
+            len = USART_RX_STA & 0x3fff;      // 获取串口接收到数据的长度
+            send(0, USART_RX_BUF, len);       // W5500向客户端发送数据
+            USART_RX_STA = 0;                 // 串口接收状态标志位清0
+            memset(USART_RX_BUF, 0, len + 1); // 串口接收缓存清0
+        }
+        break;
+    case SOCK_CLOSE_WAIT:
+        /*Socket处于等待关闭状态*/
+        close(CUS_COMM_SOCKET);
+        break;
+    case SOCK_CLOSED:
+        /* 打开Socket，并配置为TCP无延时模式，打开一个本地端口*/
+        socket(CUS_COMM_SOCKET, Sn_MR_TCP, ibox_config.local_port, Sn_MR_ND);
+        break;
+    default:
+        break;
+    }
 }
 
 // void EXTI9_5_IRQHandler(void)
@@ -167,3 +176,45 @@ void ethernet_init(void)
 
 //     EXTI_ClearITPendingBit(EXTI_Line9);
 // }
+/**
+ * callback function for ip assign
+ */
+void eth_ip_assign(void)
+{
+    getIPfromDHCP(eth_msg_get.ip);
+    getGWfromDHCP(eth_msg_get.gw);
+    getSNfromDHCP(eth_msg_get.sub);
+
+    /*设置网络*/
+    setSUBR(eth_msg_get.sub);
+    setGAR(eth_msg_get.gw);
+    setSIPR(eth_msg_get.ip);
+
+    setRTR(2000); /*设置超时时间*/
+    setRCR(3);    /*设置最大重新发送次数*/
+
+    ibox_printf(ibox_eth_debug, ("eth ip is update:%d.%d.%d.%d\r\n", eth_msg_get.ip[0], eth_msg_get.ip[1],
+                                 eth_msg_get.ip[2], eth_msg_get.ip[3]));
+}
+
+/**
+ * callback function for ip update
+ */ 
+void eth_ip_update(void)
+{
+    /* WIZchip Software Reset */
+    setMR(MR_RST);
+    getMR(); // for delay
+    eth_ip_assign();
+    setSHAR(eth_msg_get.mac);
+}
+/**
+ * callback function for ip conflict
+ */ 
+void eth_ip_conflict(void)
+{
+    // WIZchip Software Reset
+    setMR(MR_RST);
+    getMR(); // for delay
+    setSHAR(eth_msg_get.mac);
+}
