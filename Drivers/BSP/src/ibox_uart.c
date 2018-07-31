@@ -79,6 +79,8 @@ void USART1_IRQHandler(void)
 {
     uint8_t data = 0;
 
+    rt_interrupt_enter();
+
     if(USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
     { 
         /* Read one byte from the receive data register */
@@ -102,6 +104,8 @@ void USART1_IRQHandler(void)
         USART_ReceiveData(USART1);
         ibox_printf(1, ("usart1 USART_FLAG_ORE is set\r\n"));
     }
+
+    rt_interrupt_leave();
 }
 
 uint8_t get_char_form_uart1(char *ch)

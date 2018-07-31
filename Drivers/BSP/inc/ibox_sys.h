@@ -42,6 +42,7 @@ extern uint8_t ibox_gprs_debug;
 extern uint8_t ibox_net_debug;
 extern uint8_t ibox_lora_debug;
 extern uint8_t ibox_mqtt_debug; 
+extern uint8_t ibox_eth_debug;
        
 void sys_clk_init(void);
 void sys_nvic_init(void);

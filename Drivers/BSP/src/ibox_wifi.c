@@ -71,7 +71,7 @@ void esp8266_at_fsm(void)
     {
     case ESP8266_STATUS_CHECK: //检测模块；ATE0关闭回显
         uart3_rx_buf_clear();
-        uart3_send_str("AT\r\n");
+        uart3_send_str("ATE0\r\n");
         wifi_status_error_count = 0;
         wifi_timeout            = get_sys_time_s();
         esp8266_status          = ESP8266_STATUS_CHECK_MODE;
@@ -98,7 +98,7 @@ void esp8266_at_fsm(void)
                 }
                 else
                 {
-                    uart3_send_str("AT\r\n");
+                    uart3_send_str("ATE0\r\n");
                 }
             }
         }
@@ -227,7 +227,7 @@ void esp8266_at_fsm(void)
                 }
                 else
                 {
-                    uart3_send_str("AT\r\n");
+                    uart3_send_str("ATE0\r\n");
                 }
             }
         }
@@ -409,22 +409,23 @@ void esp8266_at_fsm(void)
         // 判断是否有数据接收
         if (wifi_rx_len)
         {
-            /*重新连接WIFI*/
-            if (strstr((char *) wifi_rx_temp, "ERROR") != NULL)
-            {
-                esp8266_status = ESP8266_STATUS_WIFI_CONNECT;
-                break;
-            }
             /*TCP断开了,重新连接*/
             if (strstr((char *) wifi_rx_temp, "CLOSED") != NULL)
             {
                 esp8266_status = ESP8266_STATUS_RESTART_CONNECT_SEVER;
                 break;
             }
+            /*重新连接WIFI*/
+            if (strstr((char *) wifi_rx_temp, "ERROR") != NULL)
+            {
+                esp8266_status = ESP8266_STATUS_WIFI_CONNECT;
+                break;
+            }
             if (strstr((char *) wifi_rx_temp, "SEND OK") != NULL)
             {
                 wifi_tx_len    = 0;
                 wifi_send_flag = 1;
+                net_tx_sem_release();
                 break;
             }
             p_strstr = NULL;
@@ -451,20 +452,21 @@ void esp8266_at_fsm(void)
             }
             break;
         }
-                // 判断是否有数据要发送
+        // 判断是否有数据要发送
         if (wifi_tx_len && wifi_send_flag)
         {
             wifi_timeout   = get_sys_time_s();
             wifi_send_flag = 0;
             esp8266_send_data();
         }
-        if ((get_sys_time_s() - wifi_timeout > 5) && wifi_send_flag)
-        {
+        if ((get_sys_time_s() - wifi_timeout > 5) && (!wifi_send_flag))
+        {   
+            //wifi_send_flag = 1;
             /*有可能是wifi掉了,或者是TCP断了，重新来一遍*/
             ibox_printf(ibox_wifi_debug, ("wifi data send timeout...\r\n"));
-            uart3_send_str("AT+CIPCLOSE\r\n"); /*关闭TCP*/
-            sys_delay_ms(1000);
-            esp8266_status = ESP8266_STATUS_CHECK;
+            //uart3_send_str("AT+CIPCLOSE\r\n"); /*关闭TCP*/
+            //sys_delay_ms(1000);
+            esp8266_status = ESP8266_STATUS_RESTART_CONNECT_SEVER;
         }
         break;
         
@@ -495,15 +497,16 @@ void wifi_init(void)
  */
 void esp8266_send_data(void)
 {
-    uint16_t i;
     uint8_t temp[20];
 
     memset(temp, 0, 20);
     sprintf((char *) temp, "AT+CIPSEND=%d\r\n", wifi_tx_len);
     uart3_send_str((char *) temp);
+
+    ibox_printf(ibox_wifi_debug, ("wifi send data:%d\r\n", wifi_tx_len));
     sys_delay_ms(50);
-    uart3_send_data(temp, 10);
-    wifi_tx_len = 0;
+    uart3_send_data(uart3_tx_buf, wifi_tx_len);
+//    wifi_tx_len = 0;
 }
 ESP8266_STATUS_ENUM get_esp8266_status(void)
 {

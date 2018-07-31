@@ -26,6 +26,7 @@ net_fifo_t net_rx_fifo;
 static rt_sem_t net_rx_sem = RT_NULL;
 static rt_sem_t net_tx_sem = RT_NULL;
 static rt_mutex_t net_fifo_mutex = RT_NULL;
+rt_sem_t net_fifo_sem = RT_NULL;
 
 /*创建network的事件*/
 rt_event_t network_thread_event = RT_NULL;
@@ -44,13 +45,14 @@ static void fifo_push( net_fifo_t *fifo, char data );
 static unsigned char fifo_pop( net_fifo_t *fifo );
 static void fifo_flush(net_fifo_t *fifo );
 static bool is_fifo_full(net_fifo_t *fifo );
-//static bool is_fifo_empty(net_fifo_t *fifo );
+static bool is_fifo_empty(net_fifo_t *fifo );
 void push_data_to_net_fifo(void);
 
 
 void network_thread_entry(void *parameter)
 {
     rt_uint32_t opt = 0;
+    uint16_t count = 0;
 
     /*初始化fifo*/
     fifo_init(&net_rx_fifo, net_buf, 2048);
@@ -65,17 +67,25 @@ void network_thread_entry(void *parameter)
                 if(ibox_net_debug)
                 {
                     ibox_printf(ibox_net_debug, ("NET_RX:"));
-                    ibox_printf(ibox_net_debug, ("%s\r\n",net_rx_buf));
+                    for(count = 0; count < net_tx_len; count++)
+                        ibox_printf(ibox_net_debug, ("%c",net_rx_buf[count]));
+                    ibox_printf(ibox_net_debug, ("\r\n"));
                 }
+                rt_sem_release(net_rx_sem);
+                rt_sem_release(net_fifo_sem);
             }
             if(opt & NET_TX_BUF_WRITE_EVENT)
             {
                 /*判断网络的连接状态，选择通道发送（有线或者是无线）*/
+                wifi_tx_len = net_tx_len;
+                memcpy(uart3_tx_buf, net_tx_buf ,net_tx_len);
                 /*打印TX的数据，调试使用*/
                 if(ibox_net_debug)
                 {
                     ibox_printf(ibox_net_debug, ("NET_TX:"));
-                    ibox_printf(ibox_net_debug, ("%s\r\n",net_rx_buf));
+                    for(count = 0; count < net_tx_len; count++)
+                        ibox_printf(ibox_net_debug, ("%c",net_tx_buf[count]));
+                    ibox_printf(ibox_net_debug, ("\r\n"));
                 }
 
             }
@@ -112,12 +122,17 @@ void network_thread_init(void)
     {
         ibox_printf(ibox_net_debug,("net fifo mutex creat fail!\r\n"));
     }
+    net_fifo_sem = rt_sem_create("NetFifoSem", 1, RT_IPC_FLAG_FIFO);
+    if(net_fifo_sem == RT_NULL)
+    {
+        ibox_printf(ibox_net_debug, ("net fifo sem create fail!\r\n"));
+    }
 }
 uint8_t net_tx_write(void *prt, uint16_t len)
 {
     IBOX_ASSERT(prt != NULL);
 
-    if(rt_sem_take(net_tx_sem, RT_TICK_PER_SECOND) != RT_EOK)
+    if(rt_sem_take(net_tx_sem, RT_TICK_PER_SECOND * 10) == RT_EOK)
     {
         net_tx_len = len;
         memset(net_tx_buf, 0, sizeof(net_tx_buf));
@@ -163,7 +178,7 @@ uint8_t net_rx_write(void *prt, uint16_t len)
 {
     IBOX_ASSERT(prt != NULL);
 
-    if(rt_sem_take(net_rx_sem, RT_TICK_PER_SECOND) != RT_EOK)
+    if(rt_sem_take(net_rx_sem, RT_TICK_PER_SECOND) == RT_EOK)
     {
         net_rx_len = len;
         memset(net_rx_buf, 0, sizeof(net_rx_buf));

@@ -21,8 +21,10 @@ uint32_t publish_time = 0;
 #define MQTT_WILLMSG                "Goodbye!"
 
 #define MQTT_MSGPUBTOPIC            "mqtt/msg"
-#define MQTT_DOSUBTOPIC             "mqtt/action"             
-#define MQTT_CIGSUBTOPIC            "mqtt/config"
+#define MQTT_DOALLSUBTOPIC          "mqtt/action_all"     //通用动作订阅
+//#define MQTT_DOSUBTOPIC(sn)         "mqtt/action_"#sn""   //本机动作订阅
+#define MQTT_CIGSUBTOPIC            "mqtt/config"         //通用配置信息
+//#define MQTT_CIGSUBTOPIC(sn)        "mqtt/con_"#sn""      //本机配置
 
 static MQTTClient client;
 
@@ -94,14 +96,19 @@ static void mqtt_sub_default_callback(MQTTClient *c, MessageData *msg_data)
 
 static void MQTT_init(void)
 {
+    /*要使用指针，定义为static类型*/
+    static char client_id[23];
     /* init condata param by using MQTTPacket_connectData_initializer */
     MQTTPacket_connectData condata = MQTTPacket_connectData_initializer;
 
     /* config connect param */
     memcpy(&client.condata, &condata, sizeof(condata));
+    
+//    sprintf(client_id,"iBoxClient-%010d",ibox_config.device_sn);   
+    sprintf(client_id,"iBoxClient-%0101d",get_sys_time_s());
 
-    client.condata.clientID.cstring  = DEVICE_NAME(ibox_config.device_sn);
-    client.condata.keepAliveInterval = 60;      //单位s
+    client.condata.clientID.cstring  = client_id;
+    client.condata.keepAliveInterval = 300;      //单位s
     client.condata.cleansession      = 1;       //清理会话
     client.condata.username.cstring  = ibox_config.mqtt_username;
     client.condata.password.cstring  = ibox_config.mqtt_password;
@@ -258,6 +265,7 @@ void main_thread_entry(void *parameter)
 {
     rt_uint32_t opt = 0;
     int ret = -1;
+    char sub_temp[30];
     
     MQTT_init();
 
@@ -268,22 +276,38 @@ _mqtt_start:
         ibox_printf(1, ("MQTT Connect Faild!\r\n"));
         goto _mqtt_restart;
     }
-    
-    /*订阅*/
-    ret = MQTTSubscribe(&client, MQTT_DOSUBTOPIC, QOS2, mqtt_action_callback);
+
+    /*订阅统一动作主题*/
+    ret = MQTTSubscribe(&client, MQTT_DOALLSUBTOPIC, QOS2, mqtt_action_callback);
     if(ret != MQTT_SUCCESS)
     {
-        ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", MQTT_DOSUBTOPIC));
+        ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", MQTT_DOALLSUBTOPIC));
         goto _mqtt_disconnect;
-    }    
-
+    }
+    /*订阅本机动作主题*/
+    sprintf(sub_temp,"mqtt/action-%010ld", ibox_config.device_sn);
+    ret = MQTTSubscribe(&client, sub_temp, QOS2, mqtt_action_callback);
+    if(ret != MQTT_SUCCESS)
+    {
+        ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", sub_temp));
+        goto _mqtt_disconnect;
+    }        
+    //订阅通用配置
     ret = MQTTSubscribe(&client, MQTT_CIGSUBTOPIC, QOS1, mqtt_config_callback);
     if(ret != MQTT_SUCCESS)
     {
         ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", MQTT_CIGSUBTOPIC));
         goto _mqtt_disconnect;
     }
-    
+    //订阅本机配置
+    sprintf(sub_temp,"mqtt/con-%010ld", ibox_config.device_sn);
+    ret = MQTTSubscribe(&client, sub_temp, QOS1, mqtt_config_callback);
+    if(ret != MQTT_SUCCESS)
+    {
+        ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", sub_temp));
+        goto _mqtt_disconnect;
+    }
+
     client.tick_ping = get_sys_time_ms();
     while (1) 
     {
@@ -302,17 +326,14 @@ _mqtt_start:
             }
         }
         /*处理收到的topic*/
-        if (!is_fifo_empty(&net_rx_fifo))
-        {
-            ret = MQTT_cycle(&client);
-            if (ret < 0)    
-                goto _mqtt_disconnect;
-        }
+        ret = MQTT_cycle(&client);
+        if (ret < 0)
+            goto _mqtt_disconnect;
 
         /*判断时间间隔进行周期性的数据上报*/
         if((get_sys_time_s() - publish_time) > ibox_config.period * 60)
         {
-            ret          = MQTT_msg_publish();
+            ret = MQTT_msg_publish();
             if (ret != MQTT_SUCCESS)
             {
                 ibox_printf(1, ("MQTT publish Faild!\r\n"));

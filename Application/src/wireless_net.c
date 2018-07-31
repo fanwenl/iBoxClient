@@ -22,7 +22,7 @@ void wireless_thread_entry(void *parameter)
     {
 #ifdef USE_WIFI
         esp8266_at_fsm();
-        wifi_tx_len = 10;
+
         if(get_esp8266_status() == ESP8266_STATUS_COMMUNICATE)
         {
             is_wireless_link_ok = 1;
@@ -43,7 +43,7 @@ void wireless_thread_entry(void *parameter)
         // }
 #endif
  
-        rt_thread_delay(RT_TICK_PER_SECOND / 2);
+        rt_thread_delay(RT_TICK_PER_SECOND / 20);
     }
     
 }

@@ -61,6 +61,8 @@ static int sendPacket(MQTTClient *c, int length)
  */ 
 static int readPacket(MQTTClient* c)
 {
+    rt_sem_take(net_fifo_sem, RT_WAITING_FOREVER);
+    
     return MQTTPacket_read(c->readbuf, c->readbuf_size, &net_fifo_read);
 }
 
@@ -323,6 +325,8 @@ int MQTTIsConnected(MQTTClient* client)
 
 
 
+//extern net_fifo_t net_rx_fifo;
+//或者采用信号量的方式实现。
 int waitfor(MQTTClient* c, int packet_type, timeout_t *timeout)
 {
     int rc = MQTT_FAILURE;

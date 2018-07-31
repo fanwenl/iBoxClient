@@ -4,13 +4,13 @@
 
 IBOX_CONFIG ibox_config = {
     0000001,            // device sn
-    "192.168.199.120",  // server ip
+    "192.168.199.138",  // server ip 121.40.104.4
     "lot.zxbike.cc",      // server dsn
-    10002,               //server ip
+    61613,               //server ip
     8000,               //local ip
     "CMNET",
-    {0x00,0x7B,0x04,0xAA,0x58,0x69},     //eth mac
-    {114, 114, 114, 114},
+    "00:7B:04:AA:58:69",     //eth mac
+    "114.114.114.114",
     0,
     5,
 #ifdef USE_WIFI
@@ -22,7 +22,7 @@ IBOX_CONFIG ibox_config = {
     0,
 #endif
     "admin",
-    "admin",
+    "password",
 };
 void SysTick_Handler(void)
 {

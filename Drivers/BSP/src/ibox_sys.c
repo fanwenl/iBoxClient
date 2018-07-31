@@ -17,6 +17,7 @@ uint8_t ibox_gprs_debug = 1;
 uint8_t ibox_net_debug = 1;
 uint8_t ibox_lora_debug = 1;
 uint8_t ibox_mqtt_debug = 1;
+uint8_t ibox_eth_debug = 1;
 
 static void delay_ms(uint32_t delay);
 static void delay_us(uint32_t delay);

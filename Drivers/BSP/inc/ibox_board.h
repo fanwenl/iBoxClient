@@ -54,11 +54,10 @@ extern "C" {
 
 /*下面的这些长度需要多定义一位存放'/0',否则和后面数据连起来*/
 #define MAX_IP_LEN              16
-#define MAX_ETH_MAC_LEN         13
+#define MAX_MAC_LEN         18
 #define MAX_DSN_LEN             20
 #define MAX_WIFI_SSID_LEN       10
 #define MAX_WIFI_PASS_LEN       11
-#define MAX_WIFI_MAC_LEN        18
 #define MAX_APN_LEN             8
 
 #pragma pack(1)
@@ -68,16 +67,16 @@ typedef struct __IBOX_CONFIG {
     char server_dsn[MAX_DSN_LEN];
     uint16_t server_port;
     uint16_t local_port;
-    uint8_t gsm_apn[MAX_APN_LEN];
-    uint8_t eth_mac[MAX_ETH_MAC_LEN];
-    uint8_t dns_ip[4];                      //DNS 服务器IP地址
+    char gsm_apn[MAX_APN_LEN];
+    char eth_mac[MAX_MAC_LEN];
+    char dns_ip[MAX_IP_LEN];                      //DNS 服务器IP地址
     uint8_t use_dns;                        //1:使用dns,0:使用ip地址
     uint8_t period;                         //上报周期，单位min。
 #ifdef USE_WIFI
-    uint8_t wifi_ssid[MAX_WIFI_SSID_LEN];
-    uint8_t wifi_password[MAX_WIFI_PASS_LEN];
-    uint8_t wifi_mac[MAX_WIFI_MAC_LEN];
-    uint8_t wifi_ip[MAX_IP_LEN];
+    char wifi_ssid[MAX_WIFI_SSID_LEN];
+    char wifi_password[MAX_WIFI_PASS_LEN];
+    char wifi_mac[MAX_MAC_LEN];
+    char wifi_ip[MAX_IP_LEN];
 #else
     uint64_t gprs_imei;
 #endif

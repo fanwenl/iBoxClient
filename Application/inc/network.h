@@ -26,13 +26,14 @@
 
 typedef struct _net_fifo
 {
-	uint16_t Begin;
-	uint16_t End;
-	unsigned char *Data;
+    uint16_t Begin;
+    uint16_t End;
+    unsigned char *Data;
     uint16_t Size;
 }net_fifo_t;
 
 extern net_fifo_t net_rx_fifo;
+extern rt_sem_t net_fifo_sem; 
 extern uint8_t net_rx_bottom_buf[];
 extern rt_event_t network_thread_event;
 extern uint8_t is_net_link_ok;
@@ -45,6 +46,5 @@ uint8_t net_rx_write(void *prt, uint16_t len);
 void net_rx_read(void *prt, uint16_t *len);
 void net_rx_sem_release(void);
 int net_fifo_read(unsigned char* buf, int count);
-bool is_fifo_empty(net_fifo_t *fifo );
 
 #endif /*__NETWORK_H__*/
