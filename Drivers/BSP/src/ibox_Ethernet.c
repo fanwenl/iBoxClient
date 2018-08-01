@@ -8,17 +8,20 @@
 * ************************************************************************************************
 */
 #include "ibox_Ethernet.h"
-#include "ibox_sys.h"
-#include "ibox_spi.h"
-#include "ibox_board.h"
-#include "wizchip_conf.h"
 #include "dhcp.h"
 #include "dns.h"
+#include "ibox_board.h"
+#include "ibox_spi.h"
+#include "ibox_sys.h"
 #include "socket.h"
+#include "wizchip_conf.h"
 
-static uint8_t rx_socket_size[_WIZCHIP_SOCK_NUM_] = {2,2,2,2,2,2,2,2};
-static uint8_t tx_socket_size[_WIZCHIP_SOCK_NUM_] = {2,2,2,2,2,2,2,2};
+static uint8_t rx_socket_size[_WIZCHIP_SOCK_NUM_] = {2, 2, 2, 2, 2, 2, 2, 2};
+static uint8_t tx_socket_size[_WIZCHIP_SOCK_NUM_] = {2, 2, 2, 2, 2, 2, 2, 2};
 uint8_t dhcp_dns_buf[RIP_MSG_SIZE];
+
+/*eth 网口发送数据长度*/
+uint16_t eth_tx_len = 0;
 
 ETH_MSG eth_msg_get;
 
@@ -86,72 +89,74 @@ void w5500_hw_init(void)
     w5500_inth_pin_config();
     spi_init(ETHERNET);
 }
- void set_w5500_mac(void)
-{   
+void set_w5500_mac(void)
+{
+    /*设备MAC地址出厂时设置保存,和设备号绑定*/
+    sscanf(ibox_config.eth_mac, "%X:%X:%X:%X:%X:%X", (int *) &eth_msg_get.mac[0], (int *) &eth_msg_get.mac[1],
+           (int *) &eth_msg_get.mac[2], (int *) &eth_msg_get.mac[3], (int *) &eth_msg_get.mac[4],
+           (int *) &eth_msg_get.mac[5]);
     setSHAR(eth_msg_get.mac);
 }
 /**
  * 以太网相关的初始化
  * 包括DNS解析、HDCP动态获取...
- */ 
+ */
 uint8_t buffer[2048];
 
 void ethernet_init(void)
 {
-    /*设备MAC地址出厂时设置保存,和设备号绑定*/
-    sscanf(ibox_config.eth_mac, "%X:%X:%X:%X:%X:%X", &eth_msg_get.mac[0], &eth_msg_get.mac[1], &eth_msg_get.mac[2],
-           &eth_msg_get.mac[3], &eth_msg_get.mac[4], &eth_msg_get.mac[5]);
-
     set_w5500_mac();
     /*设置socket的大小*/
     wizchip_init(tx_socket_size, rx_socket_size);
-    
+
     DHCP_init(CUS_DHCP_SOCKET, dhcp_dns_buf);
-    
+
     /*DHCP 函数注册*/
     reg_dhcp_cbfunc(eth_ip_assign, eth_ip_update, eth_ip_conflict);
 
     /*dns 解析和dhcp共用一个buf*/
-    DNS_init(CUS_DNS_SOCKET,dhcp_dns_buf);
+    DNS_init(CUS_DNS_SOCKET, dhcp_dns_buf);
 }
 
-void ethernet_run(void)
+uint8_t ethernet_run(void)
 {
-    static uint8_t sock_status;
+    uint8_t sock_status;
+    uint16_t arg      = 0;
+    uint16_t data_len = 0;
+    uint8_t *data_ptr = NULL;
 
     /*获取socket0的状态*/
     if (getsockopt(CUS_COMM_SOCKET, SO_STATUS, &sock_status) != SOCK_OK)
     {
-        return;
+        return -1;
     }
 
     switch (sock_status)
     {
     case SOCK_INIT:
         /*设置SOCK keepalive 10s*/
-        setsockopt(CUS_COMM_SOCKET, SO_KEEPALIVEAUTO, 0x02);
+        arg = 2;
+        setsockopt(CUS_COMM_SOCKET, SO_KEEPALIVEAUTO, &arg);
         connect(CUS_COMM_SOCKET, eth_msg_get.dns_sip, ibox_config.server_port);
         break;
     case SOCK_ESTABLISHED: // Socket处于连接建立状态
-        if (getSn_IR(0) & Sn_IR_CON)
+        /*是否收到数据*/
+        getsockopt(CUS_COMM_SOCKET, SO_RECVBUF, &arg);
+        if (arg > 0)
         {
-            setSn_IR(0, Sn_IR_CON); // Sn_IR的CON位置1，通知W5500连接已建立
+            data_ptr = rt_malloc(2048);
+            data_len = recv(CUS_COMM_SOCKET, data_ptr, arg);
+            if (data_len > 0)
+            {
+                net_rx_write(data_ptr, data_len);
+            }
+            rt_free(data_ptr);
         }
-        // 数据回环测试程序：数据从上位机服务器发给W5500，W5500接收到数据后再回给服务器
-        len = getSn_RX_RSR(0); // len=Socket0接收缓存中已接收和保存的数据大小
-        if (len > 0)
+        /*发送数据*/
+        if (eth_tx_len)
         {
-            recv(0, buffer, len);     // W5500接收来自服务器的数据，并通过SPI发送给MCU
-            printf("%s\r\n", buffer); // 串口打印接收到的数据
-            send(0, buffer, len);     // 接收到数据后再回给服务器，完成数据回环
-        }
-        // W5500从串口发数据给客户端程序，数据需以回车结束
-        if (USART_RX_STA & 0x8000) // 判断串口数据是否接收完成
-        {
-            len = USART_RX_STA & 0x3fff;      // 获取串口接收到数据的长度
-            send(0, USART_RX_BUF, len);       // W5500向客户端发送数据
-            USART_RX_STA = 0;                 // 串口接收状态标志位清0
-            memset(USART_RX_BUF, 0, len + 1); // 串口接收缓存清0
+            send(CUS_COMM_SOCKET, net_tx_buf, eth_tx_len);
+            eth_tx_len = 0;
         }
         break;
     case SOCK_CLOSE_WAIT:
@@ -165,6 +170,8 @@ void ethernet_run(void)
     default:
         break;
     }
+
+    return sock_status;
 }
 
 // void EXTI9_5_IRQHandler(void)
@@ -199,7 +206,7 @@ void eth_ip_assign(void)
 
 /**
  * callback function for ip update
- */ 
+ */
 void eth_ip_update(void)
 {
     /* WIZchip Software Reset */
@@ -210,7 +217,7 @@ void eth_ip_update(void)
 }
 /**
  * callback function for ip conflict
- */ 
+ */
 void eth_ip_conflict(void)
 {
     // WIZchip Software Reset

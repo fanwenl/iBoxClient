@@ -105,7 +105,7 @@ static void MQTT_init(void)
     memcpy(&client.condata, &condata, sizeof(condata));
     
 //    sprintf(client_id,"iBoxClient-%010d",ibox_config.device_sn);   
-    sprintf(client_id,"iBoxClient-%0101d",get_sys_time_s());
+    sprintf(client_id,"iBoxClient-%010d",get_sys_time_s());
 
     client.condata.clientID.cstring  = client_id;
     client.condata.keepAliveInterval = 300;      //单位s

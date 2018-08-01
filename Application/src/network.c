@@ -93,9 +93,9 @@ void network_thread_entry(void *parameter)
         }
 
         /*判断网络的连接状态*/
-        is_net_link_ok = (is_wireless_link_ok || is_wired_link_ok) ? 1 : 0;
+        //is_net_link_ok = (is_wireless_link_ok || is_wired_link_ok) ? 1 : 0;
 
-        rt_thread_delay(RT_TICK_PER_SECOND / 2);
+        //rt_thread_delay(RT_TICK_PER_SECOND / 2);
     }
 }
 
