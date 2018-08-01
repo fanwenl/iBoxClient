@@ -37,7 +37,7 @@ extern rt_sem_t net_fifo_sem;
 extern uint8_t net_rx_bottom_buf[];
 extern rt_event_t network_thread_event;
 extern uint8_t is_net_link_ok;
-
+extern uint8_t net_tx_buf[]; 
 
 void network_thread_init(void);
 uint8_t net_tx_write(void *prt, uint16_t len);

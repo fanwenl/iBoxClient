@@ -187,29 +187,42 @@ uint16_t get_line_from_uart3(uint8_t *buf)
     uint8_t data      = 0;
     uint16_t data_len = 0;
 
-    if (!uart3_rx_lines) //无数据退出
+    //    if (!uart3_rx_lines) //无数据退出
+    //    {
+    //        buf = NULL;
+    //        return 0;
+    //    }
+    while (1)
     {
-        buf = NULL;
-        return 0;
-    }
-    while (1) {
-        if (uart3_rx_count) {
+        if (uart3_rx_count)
+        {
             data = get_char_form_uart3();
-        } else {
-            uart3_rx_lines = 0;
-            buf            = NULL;
-            return 0;
+            if (data == 0x0a) //换行直接丢掉
+                continue;
+            if (data == 0x0d)
+            { //回车，收到一帧
+                //uart3_rx_lines--;
+                *buf = '\0';
+                return data_len;
+            }
+            *buf = data;
+            buf++;
+            data_len++;
         }
-        if (data == 0x0a) //换行直接丢掉
-            continue;
-        if (data == 0x0d) { //回车，收到一帧
-            uart3_rx_lines--;
-            *buf = '\0';
-            return data_len;
+        else
+        {
+            if (!data_len)
+            {
+                //uart3_rx_lines = 0;
+                buf = NULL;
+                return 0;
+            }
+            else
+            {
+                *buf = '\0';
+                return data_len;
+            }
         }
-        *buf = data;
-        buf++;
-        data_len++;
     }
 }
 

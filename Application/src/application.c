@@ -61,16 +61,6 @@ void watchdog_thread_entry(void *parameter)
     while(1)
     {
         wdog_feed();
-        led_toggle(LED_LORA);
-        led_toggle(LED_NET);
-//        sys_delay_ms(100);
-//        max485_send_data(buf);
-
-//        ibox_printf(1, ("[CPU:%d][ADC1:%d][ADC2:%d]\r\n", get_cpu_temperature(), get_adc_voltage(0),
-//                        get_adc_voltage(1)));
-//        ibox_printf(1, ("[RTC:%ld]\r\n", RTC_GetCounter()));
-//        
-//        ibox_printf(1, ("%f\r\n", 3.1415926));
         rt_thread_delay(RT_TICK_PER_SECOND);
     }
     

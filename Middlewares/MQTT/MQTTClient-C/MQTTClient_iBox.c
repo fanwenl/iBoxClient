@@ -61,9 +61,8 @@ static int sendPacket(MQTTClient *c, int length)
  */ 
 static int readPacket(MQTTClient* c)
 {
-    rt_sem_take(net_fifo_sem, RT_WAITING_FOREVER);
-    
-    return MQTTPacket_read(c->readbuf, c->readbuf_size, &net_fifo_read);
+    if(rt_sem_take(net_fifo_sem, RT_WAITING_NO) == RT_EOK)
+        return MQTTPacket_read(c->readbuf, c->readbuf_size, &net_fifo_read);
 }
 
 /**客户端初始化
