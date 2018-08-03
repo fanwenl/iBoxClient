@@ -13,14 +13,11 @@ IBOX_CONFIG ibox_config = {
     "114.114.114.114",
     0,
     5,
-#ifdef USE_WIFI
     "ziroom102",  // wifi_ssid[];
     "4001001111", // wifi_password[];
     "0",
     "0",
-#else
     0,
-#endif
     "admin",
     "password",
 };

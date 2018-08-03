@@ -150,9 +150,14 @@ int rt_application_init(void)
 
     return 0;
 }
+extern uint8_t is_wired_link_ok;
+extern uint8_t is_wireless_link_ok;
+
 static void timer_1s_timeout(void *parameter)
 {
     DHCP_time_handler();
     DNS_time_handler();
     led_toggle(LED_SYS);
+    if(is_wired_link_ok || is_wireless_link_ok)
+        led_toggle(LED_NET);
 }

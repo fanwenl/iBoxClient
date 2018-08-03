@@ -193,6 +193,19 @@ uint8_t net_rx_write(void *prt, uint16_t len)
     }
 }
 /**
+ * net_rx_read()
+ * *prt buf指针
+ * len 需要读取的数据长度
+ * @return 返回实际读取的数据长度
+ */
+//uint16_t net_rx_read(void *ptr, uint16_t len)
+//{
+//    uint16_t size = len;
+
+//    if(net_tx_len)
+//        return 0;
+//} 
+/**
  * 从net buf中读取一个字节数据
  * *buf[]读取的数据buf
  * count要读取的数据个数

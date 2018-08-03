@@ -104,8 +104,7 @@ static void MQTT_init(void)
     /* config connect param */
     memcpy(&client.condata, &condata, sizeof(condata));
     
-//    sprintf(client_id,"iBoxClient-%010d",ibox_config.device_sn);   
-    sprintf(client_id,"iBoxClient-%010d",get_sys_time_s());
+    sprintf(client_id,"iBoxClient-%010d",ibox_config.device_sn);
 
     client.condata.clientID.cstring  = client_id;
     client.condata.keepAliveInterval = 300;      //单位s
@@ -152,6 +151,10 @@ char *create_msg(void)
 
     cJSON *root = cJSON_CreateObject();
 
+    if (cJSON_AddNumberToObject(root, "rtc", get_sys_time_s()) == NULL)
+    {
+        goto end;
+    }
     if (cJSON_AddNumberToObject(root, "device_sn", ibox_config.device_sn) == NULL)
     {
         goto end;
@@ -160,63 +163,40 @@ char *create_msg(void)
     {
         goto end;
     }
-#ifdef USE_WIFI
     if (cJSON_AddStringToObject(root, "wifi_mac", ibox_config.wifi_mac) == NULL)
     {
         goto end;
     }
-#else
     if (cJSON_AddNumberToObject(root, "imei", ibox_config.gprs_imei) == NULL)
     {
         goto end;
     }
-#endif
-    if (cJSON_AddNumberToObject(root, "rtc", get_sys_time_s()) == NULL)
+    if (cJSON_AddNumberToObject(root, "temper", get_cpu_temperature()) == NULL)
+    {
+        goto end;
+    }
+    if (cJSON_AddNumberToObject(root, "adc1", get_adc_voltage(ADC1_INDEX)) == NULL)
+    {
+        goto end;
+    }
+    if (cJSON_AddNumberToObject(root, "adc2", get_adc_voltage(ADC2_INDEX)) == NULL)
+    {
+        goto end;
+    }
+    if (cJSON_AddNumberToObject(root, "485", 440) == NULL)
+    {
+        goto end;
+    }
+    if (cJSON_AddNumberToObject(root, "lora1", 440) == NULL)
+    {
+        goto end;
+    }
+    if (cJSON_AddNumberToObject(root, "lora2", 440) == NULL)
     {
         goto end;
     }
 
-    cJSON *data = cJSON_AddArrayToObject(root, "data");
-    if (data == NULL)
-    {
-        goto end;
-    }
-
-    cJSON *adc = cJSON_CreateObject();
-    if (cJSON_AddNumberToObject(adc, "temper", get_cpu_temperature()) == NULL)
-    {
-        goto end;
-    }
-    if (cJSON_AddNumberToObject(adc, "adc1", get_adc_voltage(ADC1_INDEX)) == NULL)
-    {
-        goto end;
-    }
-    if (cJSON_AddNumberToObject(adc, "adc2", get_adc_voltage(ADC2_INDEX)) == NULL)
-    {
-        goto end;
-    }
-    cJSON_AddItemToArray(data, adc);
-
-    cJSON *rs485 = cJSON_CreateObject();
-    if (cJSON_AddNumberToObject(rs485, "485", 440) == NULL)
-    {
-        goto end;
-    }
-    cJSON_AddItemToArray(data, rs485);
-
-    cJSON *lora = cJSON_CreateObject();
-    if (cJSON_AddNumberToObject(lora, "lora1", 440) == NULL)
-    {
-        goto end;
-    }
-    if (cJSON_AddNumberToObject(lora, "lora2", 440) == NULL)
-    {
-        goto end;
-    }
-    cJSON_AddItemToArray(data, lora);
-
-
-    string = cJSON_Print(root);
+    string = cJSON_PrintUnformatted(root);
     if (string == NULL) {
         fprintf(stderr, "Failed to print monitor.\n");
     }
@@ -322,7 +302,7 @@ _mqtt_start:
             }
             else
             {
-                client.tick_ping = get_sys_time_s();
+                client.tick_ping = get_sys_time_ms();
             }
         }
         /*处理收到的topic*/
@@ -352,7 +332,7 @@ _mqtt_disconnect:
     MQTTDisconnect(&client);
 
 _mqtt_restart:
-    rt_thread_delay(RT_TICK_PER_SECOND * 5);
+    rt_thread_delay(RT_TICK_PER_SECOND * 10);
     ibox_printf(1, ("mqtt restart!\n"));
     goto _mqtt_start;
 }

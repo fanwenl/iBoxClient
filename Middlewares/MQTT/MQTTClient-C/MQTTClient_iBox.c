@@ -57,12 +57,13 @@ static int sendPacket(MQTTClient *c, int length)
 }
 /**读取Packet
  * @arg *c MQTT客户端
- * @return 返回packet type
+ * @return 返回packet type;返回0没有读到数据。
  */ 
 static int readPacket(MQTTClient* c)
 {
     if(rt_sem_take(net_fifo_sem, RT_WAITING_NO) == RT_EOK)
         return MQTTPacket_read(c->readbuf, c->readbuf_size, &net_fifo_read);
+    return 0;
 }
 
 /**客户端初始化
@@ -201,10 +202,6 @@ int MQTT_cycle(MQTTClient* c)
 
     switch (packet_type)
     {
-        default:
-            /* no more data to read, unrecoverable. Or read packet fails due to unexpected network error */
-            rc = packet_type;
-            goto exit;
         case 0: /* timed out reading packet */
             break;
         case CONNACK:
@@ -254,12 +251,15 @@ int MQTT_cycle(MQTTClient* c)
                 goto exit; // there was a problem
             break;
         }
-
         case PUBCOMP:
             break;
         case PINGRESP:
             c->ping_outstanding = 0;
             break;
+        default:
+            /* no more data to read, unrecoverable. Or read packet fails due to unexpected network error */
+            rc = packet_type;
+            goto exit;
     }
 
     // if (keepalive(c) != MQTT_SUCCESS) {
@@ -362,7 +362,7 @@ int MQTTConnectWithResults(MQTTClient* c, MQTTPacket_connectData* options, MQTTC
     if ((rc = sendPacket(c, len)) != MQTT_SUCCESS)  // send the connect packet
         goto exit; // there was a problem
 
-    timeout_init(&timeout, 500);
+    timeout_init(&timeout, 1000);
     // this will be a blocking call, wait for the connack
     if (waitfor(c, CONNACK, &timeout) == CONNACK)
     {

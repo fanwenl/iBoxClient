@@ -18,7 +18,6 @@ uint8_t uart3_rx_buf[UART3_RX_SIZE];
 uint8_t uart3_tx_buf[UART3_TX_SIZE];
 
 uint16_t uart3_rx_wr_index = 0; // uart3接收buf位置标记
-uint16_t uart3_rx_lines    = 0; // uart3接收到的行数计数器
 uint16_t uart3_rx_count    = 0; // uart3接收到的字符串计数器
 uint16_t uart3_rx_re_index = 0; // uart3读取位置标记
 
@@ -156,26 +155,26 @@ void uart3_send_str(const char *data)
 void USART3_IRQHandler(void)
 {
     uint8_t data;
-    if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET) {
+    if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
+    {
         /* Read one byte from the receive data register */
         data = USART_ReceiveData(USART3);
-        printf("%c",data);
-        if (data == 0x0d) //回车符
-            uart3_rx_lines++;
+        // printf("%c",data);
         uart3_rx_buf[uart3_rx_wr_index] = data;
         if (++uart3_rx_wr_index == UART3_RX_SIZE)
             uart3_rx_wr_index = 0;
         /*uart3_rx_buf[]满了，溢出了。*/
-        if (++uart3_rx_count == UART3_RX_SIZE) {
+        if (++uart3_rx_count == UART3_RX_SIZE)
+        {
             uart3_rx_wr_index = 0;
-            uart3_rx_lines    = 0;
             uart3_rx_count    = 0;
             uart3_rx_re_index = 0;
             memset(uart3_rx_buf, 0, UART3_RX_SIZE);
             ibox_printf(ibox_wifi_debug, ("uart3 USART_FLAG_ORE is set\r\n"));
         }
     }
-    if (USART_GetFlagStatus(USART3, USART_FLAG_ORE) == SET) {
+    if (USART_GetFlagStatus(USART3, USART_FLAG_ORE) == SET)
+    {
         USART_ClearFlag(USART3, USART_FLAG_ORE);
         USART_ReceiveData(USART3);
         ibox_printf(ibox_wifi_debug, ("uart3 USART_FLAG_ORE is set\r\n"));
@@ -187,21 +186,15 @@ uint16_t get_line_from_uart3(uint8_t *buf)
     uint8_t data      = 0;
     uint16_t data_len = 0;
 
-    //    if (!uart3_rx_lines) //无数据退出
-    //    {
-    //        buf = NULL;
-    //        return 0;
-    //    }
     while (1)
     {
         if (uart3_rx_count)
         {
             data = get_char_form_uart3();
-            if (data == 0x0a) //换行直接丢掉
+            if (data == 0x0a) /*'/0'*/
                 continue;
-            if (data == 0x0d)
-            { //回车，收到一帧
-                //uart3_rx_lines--;
+            if (data == 0x0d) /*'/n'*/
+            {
                 *buf = '\0';
                 return data_len;
             }
@@ -213,7 +206,6 @@ uint16_t get_line_from_uart3(uint8_t *buf)
         {
             if (!data_len)
             {
-                //uart3_rx_lines = 0;
                 buf = NULL;
                 return 0;
             }
@@ -228,7 +220,8 @@ uint16_t get_line_from_uart3(uint8_t *buf)
 
 uint8_t get_char_form_uart3(void)
 {
-    uint8_t data;
+    uint8_t data = 0;
+
     while (uart3_rx_count == 0) {
         ibox_printf(ibox_wifi_debug, ("uart3 rx count is 0\r\n"));
     }
@@ -238,13 +231,12 @@ uint8_t get_char_form_uart3(void)
     USART_ITConfig(USART3, USART_IT_RXNE, DISABLE);
     --uart3_rx_count;
     USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
-    return data;
+    return (data & 0xff);
 }
 //清除uart3的接收buf。
 void uart3_rx_buf_clear(void)
 {
     uart3_rx_wr_index = 0;
-    uart3_rx_lines    = 0;
     uart3_rx_count    = 0;
     uart3_rx_re_index = 0;
     memset(uart3_rx_buf, 0, UART3_RX_SIZE);

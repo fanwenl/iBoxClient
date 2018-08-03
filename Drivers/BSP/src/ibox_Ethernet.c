@@ -8,16 +8,16 @@
 * ************************************************************************************************
 */
 #include "ibox_Ethernet.h"
+#include "ibox_sys.h"
+#include "ibox_spi.h"
+#include "ibox_board.h"
+#include "wizchip_conf.h"
 #include "dhcp.h"
 #include "dns.h"
-#include "ibox_board.h"
-#include "ibox_spi.h"
-#include "ibox_sys.h"
 #include "socket.h"
-#include "wizchip_conf.h"
 
-static uint8_t rx_socket_size[_WIZCHIP_SOCK_NUM_] = {2, 2, 2, 2, 2, 2, 2, 2};
-static uint8_t tx_socket_size[_WIZCHIP_SOCK_NUM_] = {2, 2, 2, 2, 2, 2, 2, 2};
+static uint8_t rx_socket_size[_WIZCHIP_SOCK_NUM_] = {2,2,2,2,2,2,2,2};
+static uint8_t tx_socket_size[_WIZCHIP_SOCK_NUM_] = {2,2,2,2,2,2,2,2};
 uint8_t dhcp_dns_buf[RIP_MSG_SIZE];
 
 /*eth 网口发送数据长度*/
@@ -89,8 +89,8 @@ void w5500_hw_init(void)
     w5500_inth_pin_config();
     spi_init(ETHERNET);
 }
-void set_w5500_mac(void)
-{
+ void set_w5500_mac(void)
+{   
     /*设备MAC地址出厂时设置保存,和设备号绑定*/
     sscanf(ibox_config.eth_mac, "%X:%X:%X:%X:%X:%X", (int *) &eth_msg_get.mac[0], (int *) &eth_msg_get.mac[1],
            (int *) &eth_msg_get.mac[2], (int *) &eth_msg_get.mac[3], (int *) &eth_msg_get.mac[4],
@@ -100,7 +100,7 @@ void set_w5500_mac(void)
 /**
  * 以太网相关的初始化
  * 包括DNS解析、HDCP动态获取...
- */
+ */ 
 uint8_t buffer[2048];
 
 void ethernet_init(void)
@@ -108,27 +108,27 @@ void ethernet_init(void)
     set_w5500_mac();
     /*设置socket的大小*/
     wizchip_init(tx_socket_size, rx_socket_size);
-
+    
     DHCP_init(CUS_DHCP_SOCKET, dhcp_dns_buf);
-
+    
     /*DHCP 函数注册*/
     reg_dhcp_cbfunc(eth_ip_assign, eth_ip_update, eth_ip_conflict);
 
     /*dns 解析和dhcp共用一个buf*/
-    DNS_init(CUS_DNS_SOCKET, dhcp_dns_buf);
+    DNS_init(CUS_DNS_SOCKET,dhcp_dns_buf);
 }
 
 uint8_t ethernet_run(void)
 {
-    uint8_t sock_status;
-    uint16_t arg      = 0;
+    static uint8_t sock_status;
+    uint16_t arg = 0;
     uint16_t data_len = 0;
     uint8_t *data_ptr = NULL;
 
     /*获取socket0的状态*/
     if (getsockopt(CUS_COMM_SOCKET, SO_STATUS, &sock_status) != SOCK_OK)
     {
-        return -1;
+        return 0;
     }
 
     switch (sock_status)
@@ -157,7 +157,7 @@ uint8_t ethernet_run(void)
         {
             send(CUS_COMM_SOCKET, net_tx_buf, eth_tx_len);
             eth_tx_len = 0;
-        }
+       }
         break;
     case SOCK_CLOSE_WAIT:
         /*Socket处于等待关闭状态*/
@@ -206,7 +206,7 @@ void eth_ip_assign(void)
 
 /**
  * callback function for ip update
- */
+ */ 
 void eth_ip_update(void)
 {
     /* WIZchip Software Reset */
@@ -217,7 +217,7 @@ void eth_ip_update(void)
 }
 /**
  * callback function for ip conflict
- */
+ */ 
 void eth_ip_conflict(void)
 {
     // WIZchip Software Reset

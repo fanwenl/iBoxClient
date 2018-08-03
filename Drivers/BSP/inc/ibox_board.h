@@ -72,14 +72,11 @@ typedef struct __IBOX_CONFIG {
     char dns_ip[MAX_IP_LEN];                      //DNS 服务器IP地址
     uint8_t use_dns;                        //1:使用dns,0:使用ip地址
     uint8_t period;                         //上报周期，单位min。
-#ifdef USE_WIFI
     char wifi_ssid[MAX_WIFI_SSID_LEN];
     char wifi_password[MAX_WIFI_PASS_LEN];
     char wifi_mac[MAX_MAC_LEN];
     char wifi_ip[MAX_IP_LEN];
-#else
     uint64_t gprs_imei;
-#endif
     char mqtt_username[20];
     char mqtt_password[20];
 } IBOX_CONFIG;
