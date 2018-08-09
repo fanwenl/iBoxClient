@@ -1,3 +1,6 @@
 [submodule "tests/Unity"]
 	path = tests/Unity
 	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "Middlewares/mbedTLS/mbedtls"]
+	path = Middlewares/mbedTLS/mbedtls
+	url = https://github.com/ARMmbed/mbedtls.git
