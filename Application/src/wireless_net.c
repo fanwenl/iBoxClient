@@ -9,7 +9,7 @@
 */
 #include "ibox_board.h"
 
-extern uint16_t wifi_tx_len;
+//extern uint16_t wifi_tx_len;
 
 uint8_t is_wireless_link_ok = 0;
 

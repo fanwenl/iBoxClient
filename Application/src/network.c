@@ -32,7 +32,7 @@ rt_sem_t net_fifo_sem = RT_NULL;
 rt_event_t network_thread_event = RT_NULL;
 
 extern uint8_t DHCP_allocated_ip[];
-extern uint16_t wifi_tx_len;
+//extern uint16_t wifi_tx_len;
 extern uint8_t uart3_tx_buf[];
 
 extern uint8_t is_wireless_link_ok;

@@ -28,7 +28,7 @@ uint8_t wifi_send_flag = 1; // wifi数据发送标志位
 uint16_t wifi_tx_len               = 0; // wifi需要发送的数据长度
 ESP8266_STATUS_ENUM esp8266_status = ESP8266_STATUS_CHECK;
 
-#ifdef USE_WIFI
+
 static void wifi_server_connect(void);
 static void wifi_ctrl_pin_config(void)
 {
@@ -539,4 +539,4 @@ static void wifi_server_connect(void)
     uart3_send_str(temp_buf);
     uart3_send_str("\r\n");
 }
-#endif
+

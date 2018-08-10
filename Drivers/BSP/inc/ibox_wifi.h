@@ -59,6 +59,8 @@ typedef enum {
 #define WIFI_CH_PD_L GPIO_ResetBits(WIFI_CH_PD_PORT, WIFI_CH_PD_PIN)
 #define WIFI_CH_PD_H GPIO_SetBits(WIFI_CH_PD_PORT, WIFI_CH_PD_PIN)
 
+extern uint16_t wifi_tx_len;
+
 void wifi_init(void);
 void esp8266_at_fsm(void);
 
