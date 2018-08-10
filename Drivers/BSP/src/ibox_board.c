@@ -3,7 +3,7 @@
 #include <rtthread.h>
 
 IBOX_CONFIG ibox_config = {
-    0000001,            // device sn
+    888888888,            // device sn
     "192.168.199.138",  // server ip 121.40.104.4
     "lot.zxbike.cc",      // server dsn
     61613,               //server ip
@@ -17,7 +17,7 @@ IBOX_CONFIG ibox_config = {
     "4001001111", // wifi_password[];
     "0",
     "0",
-    0,
+    865691033833807,
     "admin",
     "password",
 };
@@ -36,9 +36,6 @@ void SysTick_Handler(void)
  */
 void rt_hw_board_init(void)
 {
-    /* NVIC Configuration */
-    uint8_t buf[] = "20180419225500\r\n";
-
     RCC_ClocksTypeDef RCC_ClockFreq;
     /*系统时钟初始化*/
     sys_clk_init();
@@ -57,31 +54,23 @@ void rt_hw_board_init(void)
     /* Configure the SysTick */
     SysTick_Config( SystemCoreClock / RT_TICK_PER_SECOND );
 
-
-
     led_init(LED_LORA);
     led_init(LED_NET);
     led_init(LED_SYS);
     uart_init(UART1_DEBUG, 115200);
 
-
     adc_init();
     dac_init();
 
-
-    dac_set_vol(2.0);
-
-
-
     RTC_alarm_init();
-    RTC_StrSetTime(buf);
-//    ibox_printf(1, ("system is runing....\r\n"));
-//    uart_init(UART3_GPRS_WIFI, 115200);
+
     max485_init();
-    wdog_init();
     reset_key_init();
     w5500_hw_init();
-    
+
+    spi_init(LOAR_SPI);
+    SX1276Init();
+        
 #ifdef USE_WIFI
     wifi_init();
 #else
@@ -96,6 +85,8 @@ void rt_hw_board_init(void)
     rt_hw_usart_init();
     rt_console_set_device(RT_CONSOLE_DEVICE_NAME);
 #endif
+    
+    wdog_init();
 
 #ifdef RT_USING_COMPONENTS_INIT
     rt_components_board_init();

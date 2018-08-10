@@ -21,7 +21,7 @@ uint32_t publish_time = 0;
 #define MQTT_WILLMSG                "Goodbye!"
 
 #define MQTT_MSGPUBTOPIC            "mqtt/msg"
-#define MQTT_DOALLSUBTOPIC          "mqtt/action_all"     //通用动作订阅
+#define MQTT_DOALLSUBTOPIC          "mqtt/action"     //通用动作订阅
 //#define MQTT_DOSUBTOPIC(sn)         "mqtt/action_"#sn""   //本机动作订阅
 #define MQTT_CIGSUBTOPIC            "mqtt/config"         //通用配置信息
 //#define MQTT_CIGSUBTOPIC(sn)        "mqtt/con_"#sn""      //本机配置
@@ -49,7 +49,7 @@ static void mqtt_config_callback(MQTTClient *c, MessageData *msg_data)
     }
 
     cJSON *rtc = cJSON_GetObjectItem(root, "rtc");
-    if(!rtc)
+    if(rtc)
     {
         RTC_SetCounter((uint32_t) rtc->valueint);
         ibox_printf(1, ("set RTC counter:%d\r\n", rtc->valueint));
@@ -63,6 +63,7 @@ static void mqtt_config_callback(MQTTClient *c, MessageData *msg_data)
 static void mqtt_action_callback(MQTTClient *c, MessageData *msg_data)
 {
     cJSON *root = NULL;
+    float temp = 0;
 
     root = cJSON_Parse(msg_data->message->payload);
     if(!root)
@@ -71,10 +72,11 @@ static void mqtt_action_callback(MQTTClient *c, MessageData *msg_data)
     }
 
     cJSON *dac = cJSON_GetObjectItem(root, "dac");
-    if(!dac)
+    if(dac)
     {
-        dac_set_vol((float)dac->valuedouble);
-        ibox_printf(1, ("set DAC value:%lf\r\n", dac->valuedouble));
+        temp = dac->valueint / 100.0;
+        dac_set_vol(temp);
+        ibox_printf(1, ("set DAC value:%d\r\n", dac->valueint));
     }
 
     if(root)
@@ -257,52 +259,53 @@ _mqtt_start:
         goto _mqtt_restart;
     }
 
+    /*主题的订阅可以在connect_callback函数实现*/
     /*订阅统一动作主题*/
-    ret = MQTTSubscribe(&client, MQTT_DOALLSUBTOPIC, QOS2, mqtt_action_callback);
+    ret = MQTTSubscribe(&client, MQTT_DOALLSUBTOPIC, QOS0, mqtt_action_callback);
     if(ret != MQTT_SUCCESS)
     {
-        ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", MQTT_DOALLSUBTOPIC));
+        ibox_printf(1, ("MQTT \"%s\" subscribe Fail!\r\n", MQTT_DOALLSUBTOPIC));
         goto _mqtt_disconnect;
     }
     /*订阅本机动作主题*/
-    sprintf(sub_temp,"mqtt/action-%010ld", ibox_config.device_sn);
+    sprintf(sub_temp,"mqtt/action-%010d", ibox_config.device_sn);
     ret = MQTTSubscribe(&client, sub_temp, QOS2, mqtt_action_callback);
     if(ret != MQTT_SUCCESS)
     {
-        ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", sub_temp));
+        ibox_printf(1, ("MQTT \"%s\" subscribe Fail!\r\n", sub_temp));
         goto _mqtt_disconnect;
     }        
     //订阅通用配置
-    ret = MQTTSubscribe(&client, MQTT_CIGSUBTOPIC, QOS1, mqtt_config_callback);
+    ret = MQTTSubscribe(&client, MQTT_CIGSUBTOPIC, QOS0, mqtt_config_callback);
     if(ret != MQTT_SUCCESS)
     {
-        ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", MQTT_CIGSUBTOPIC));
+        ibox_printf(1, ("MQTT \"%s\" subscribe Fail!\r\n", MQTT_CIGSUBTOPIC));
         goto _mqtt_disconnect;
     }
     //订阅本机配置
-    sprintf(sub_temp,"mqtt/con-%010ld", ibox_config.device_sn);
+    sprintf(sub_temp,"mqtt/con-%010d", ibox_config.device_sn);
     ret = MQTTSubscribe(&client, sub_temp, QOS1, mqtt_config_callback);
     if(ret != MQTT_SUCCESS)
     {
-        ibox_printf(1, ("MQTT \"%s\" subscribe Faild!\r\n", sub_temp));
+        ibox_printf(1, ("MQTT \"%s\" subscribe Fail!\r\n", sub_temp));
         goto _mqtt_disconnect;
     }
 
-    client.tick_ping = get_sys_time_ms();
+    client.tick_ping = get_sys_time_s();
     while (1) 
     {
         /*发送ping packet*/
-        if(((get_sys_time_ms() - client.tick_ping) / RT_TICK_PER_SECOND) >  (client.condata.keepAliveInterval - 10))
+        if((get_sys_time_s() - client.tick_ping) > (client.condata.keepAliveInterval - 20))
         {
             ret = keepalive(&client);
             if (ret != MQTT_SUCCESS)
             {
-                ibox_printf(1, ("MQTT ping Faild!\r\n"));
+                ibox_printf(1, ("MQTT ping Fail!\r\n"));
                 goto _mqtt_disconnect;
             }
             else
             {
-                client.tick_ping = get_sys_time_ms();
+                client.tick_ping = get_sys_time_s();
             }
         }
         /*处理收到的topic*/
@@ -316,7 +319,7 @@ _mqtt_start:
             ret = MQTT_msg_publish();
             if (ret != MQTT_SUCCESS)
             {
-                ibox_printf(1, ("MQTT publish Faild!\r\n"));
+                ibox_printf(1, ("MQTT publish Fail!\r\n"));
                 goto _mqtt_disconnect;
             }
             else

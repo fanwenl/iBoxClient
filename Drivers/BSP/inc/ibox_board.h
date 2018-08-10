@@ -52,6 +52,9 @@ extern "C" {
 #include "main_thread.h"
 #include "ibox_def.h"
 
+#include "sx1276.h"
+#include "radio.h"
+
 /*下面的这些长度需要多定义一位存放'/0',否则和后面数据连起来*/
 #define MAX_IP_LEN              16
 #define MAX_MAC_LEN         18

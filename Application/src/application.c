@@ -152,6 +152,7 @@ int rt_application_init(void)
 }
 extern uint8_t is_wired_link_ok;
 extern uint8_t is_wireless_link_ok;
+extern uint8_t is_lora_link_ok;
 
 static void timer_1s_timeout(void *parameter)
 {
@@ -160,4 +161,7 @@ static void timer_1s_timeout(void *parameter)
     led_toggle(LED_SYS);
     if(is_wired_link_ok || is_wireless_link_ok)
         led_toggle(LED_NET);
+
+    if(is_lora_link_ok)
+        led_toggle(LED_LORA);
 }
