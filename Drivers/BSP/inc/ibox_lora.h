@@ -22,11 +22,22 @@ extern "C" {
 #define LORA_RST_CLK    RCC_APB2Periph_GPIOF
 
 #define LORA_DIO0_PIN    GPIO_Pin_7
-#define LORA_DIO0_PORT   GPIOG
-#define LORA_DIO0_CLK    RCC_APB2Periph_GPIOG
+#define LORA_DIO1_PIN    GPIO_Pin_8
+#define LORA_DIO2_PIN    GPIO_Pin_9
+#define LORA_DIO3_PIN    GPIO_Pin_10
+#define LORA_DIO5_PIN    GPIO_Pin_12
+#define LORA_DIO_PORT    GPIOG
+#define LORA_DIO_CLK     RCC_APB2Periph_GPIOG
 
 #define LORA_RST_SET_H    GPIO_SetBits(LORA_RST_PORT, GPIO_Pin_13)
 #define LORA_RST_SET_L    GPIO_ResetBits(LORA_RST_PORT, GPIO_Pin_13)
+
+void lora_init(void);
+uint8_t lora_dio0_read(void);
+uint8_t lora_dio1_read(void);
+uint8_t lora_dio2_read(void);
+uint8_t lora_dio3_read(void);
+uint8_t lora_dio5_read(void);
 
 #ifdef __cplusplus
 }

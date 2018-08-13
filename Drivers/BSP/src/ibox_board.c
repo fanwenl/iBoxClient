@@ -69,7 +69,6 @@ void rt_hw_board_init(void)
     w5500_hw_init();
 
     spi_init(LOAR_SPI);
-    SX1276Init();
         
 #ifdef USE_WIFI
     wifi_init();

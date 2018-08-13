@@ -48,12 +48,14 @@ void rt_init_thread_entry(void* parameter)
     network_thread_init();
     /*初始化ETH网络*/
     ethernet_init();
+    
+    /*初始化LoRa*/
+    lora_init();
 
     /*配置cJSON的hook*/
     cjson_hook_temp.malloc_fn = (void *(*)(size_t))rt_malloc;
     cjson_hook_temp.free_fn = rt_free;
     cJSON_InitHooks(&cjson_hook_temp);
-
 }
 
 void watchdog_thread_entry(void *parameter)

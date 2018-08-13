@@ -21,8 +21,7 @@
 #ifndef __SX1276_HAL_H__
 #define __SX1276_HAL_H__
 
-//#include "ioe.h"
-#include "ibox_sys.h"
+#include "ibox_board.h"
 #include <stdint.h>
 
 /*!
@@ -118,7 +117,7 @@ void SX1276ReadFifo( uint8_t *buffer, uint8_t size );
 static inline uint8_t SX1276ReadDio0( void )
 {
 	
-	return 0;
+	return lora_dio0_read();
 }
 
 /*!
@@ -128,7 +127,7 @@ static inline uint8_t SX1276ReadDio0( void )
  */
 static inline uint8_t SX1276ReadDio1( void )
 {
-		return 0;
+		return lora_dio1_read();
 }
 
 /*!
@@ -138,7 +137,7 @@ static inline uint8_t SX1276ReadDio1( void )
  */
 static inline uint8_t SX1276ReadDio2( void )
 {
-		return 0;
+		return lora_dio2_read();
 }
 
 /*!
@@ -148,7 +147,7 @@ static inline uint8_t SX1276ReadDio2( void )
  */
 static inline uint8_t SX1276ReadDio3( void )
 {
-		return 0;
+		return lora_dio3_read();
 }
 
 /*!
@@ -168,7 +167,7 @@ static inline uint8_t SX1276ReadDio4( void )
  */
 static inline uint8_t SX1276ReadDio5( void )
 {
-		return 0;
+		return lora_dio5_read();
 }
 
 /*!

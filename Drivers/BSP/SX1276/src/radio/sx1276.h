@@ -24,6 +24,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "sx1276-Hal.h"
+#include "sx1276-Fsk.h"
+#include "sx1276-LoRa.h"
+
 /*!
  * \brief SX1276 registers array
  */
